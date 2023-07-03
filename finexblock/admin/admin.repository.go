@@ -100,7 +100,7 @@ func (a *AdminRepository) DeleteAdminByID(tx *gorm.DB, id uint) error {
 	return nil
 }
 
-func NewAdminRepository(db *gorm.DB) RepositoryImpl {
+func newAdminRepository(db *gorm.DB) *AdminRepository {
 	return &AdminRepository{db: db}
 }
 
