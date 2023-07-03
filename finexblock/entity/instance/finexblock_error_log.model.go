@@ -1,4 +1,4 @@
-package information
+package instance
 
 import (
 	"database/sql/driver"

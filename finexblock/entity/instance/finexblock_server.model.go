@@ -1,4 +1,4 @@
-package information
+package instance
 
 type FinexblockServer struct {
 	ID   uint64 `gorm:"primaryKey;autoIncrement;comment:기본키"`
