@@ -34,3 +34,30 @@ service OrderBook {
   rpc GetOrderBook(GetOrderBookInput) returns(GetOrderBookOutput);
   rpc PushOrderBook(PushOrderBookInput) returns (Ack);
 }
+
+service PlacementProcess {
+  rpc Placement(Order) returns (Ack);
+}
+
+service RefundProcess {
+  rpc Refund(Order) returns (Ack);
+}
+
+service MatchProcess {
+  rpc LimitBidBigger(BidAsk) returns (Ack);
+  rpc LimitBidEqual(BidAsk) returns (Ack);
+  rpc LimitBidSmaller(BidAsk) returns (Ack);
+  rpc MarketBidBigger(BidAsk) returns (Ack);
+  rpc MarketBidEqual(BidAsk) returns (Ack);
+  rpc MarketBidSmaller(BidAsk) returns (Ack);
+  rpc LimitAskBigger(BidAsk) returns (Ack);
+  rpc LimitAskEqual(BidAsk) returns (Ack);
+  rpc LimitAskSmaller(BidAsk) returns (Ack);
+  rpc MarketAskBigger(BidAsk) returns (Ack);
+  rpc MarketAskEqual(BidAsk) returns (Ack);
+  rpc MarketAskSmaller(BidAsk) returns (Ack);
+}
+
+service ErrorProcess {
+  rpc Error(ErrorInput) returns(Ack);
+}

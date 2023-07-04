@@ -837,3 +837,770 @@ var OrderBook_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "proto/grpc_order/service.proto",
 }
+
+const (
+	PlacementProcess_Placement_FullMethodName = "/grpc_order.PlacementProcess/Placement"
+)
+
+// PlacementProcessClient is the client API for PlacementProcess service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type PlacementProcessClient interface {
+	Placement(ctx context.Context, in *Order, opts ...grpc.CallOption) (*Ack, error)
+}
+
+type placementProcessClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewPlacementProcessClient(cc grpc.ClientConnInterface) PlacementProcessClient {
+	return &placementProcessClient{cc}
+}
+
+func (c *placementProcessClient) Placement(ctx context.Context, in *Order, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, PlacementProcess_Placement_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// PlacementProcessServer is the server API for PlacementProcess service.
+// All implementations must embed UnimplementedPlacementProcessServer
+// for forward compatibility
+type PlacementProcessServer interface {
+	Placement(context.Context, *Order) (*Ack, error)
+	mustEmbedUnimplementedPlacementProcessServer()
+}
+
+// UnimplementedPlacementProcessServer must be embedded to have forward compatible implementations.
+type UnimplementedPlacementProcessServer struct {
+}
+
+func (UnimplementedPlacementProcessServer) Placement(context.Context, *Order) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Placement not implemented")
+}
+func (UnimplementedPlacementProcessServer) mustEmbedUnimplementedPlacementProcessServer() {}
+
+// UnsafePlacementProcessServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PlacementProcessServer will
+// result in compilation errors.
+type UnsafePlacementProcessServer interface {
+	mustEmbedUnimplementedPlacementProcessServer()
+}
+
+func RegisterPlacementProcessServer(s grpc.ServiceRegistrar, srv PlacementProcessServer) {
+	s.RegisterService(&PlacementProcess_ServiceDesc, srv)
+}
+
+func _PlacementProcess_Placement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Order)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PlacementProcessServer).Placement(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PlacementProcess_Placement_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PlacementProcessServer).Placement(ctx, req.(*Order))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// PlacementProcess_ServiceDesc is the grpc.ServiceDesc for PlacementProcess service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var PlacementProcess_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "grpc_order.PlacementProcess",
+	HandlerType: (*PlacementProcessServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Placement",
+			Handler:    _PlacementProcess_Placement_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "proto/grpc_order/service.proto",
+}
+
+const (
+	RefundProcess_Refund_FullMethodName = "/grpc_order.RefundProcess/Refund"
+)
+
+// RefundProcessClient is the client API for RefundProcess service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type RefundProcessClient interface {
+	Refund(ctx context.Context, in *Order, opts ...grpc.CallOption) (*Ack, error)
+}
+
+type refundProcessClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewRefundProcessClient(cc grpc.ClientConnInterface) RefundProcessClient {
+	return &refundProcessClient{cc}
+}
+
+func (c *refundProcessClient) Refund(ctx context.Context, in *Order, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, RefundProcess_Refund_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// RefundProcessServer is the server API for RefundProcess service.
+// All implementations must embed UnimplementedRefundProcessServer
+// for forward compatibility
+type RefundProcessServer interface {
+	Refund(context.Context, *Order) (*Ack, error)
+	mustEmbedUnimplementedRefundProcessServer()
+}
+
+// UnimplementedRefundProcessServer must be embedded to have forward compatible implementations.
+type UnimplementedRefundProcessServer struct {
+}
+
+func (UnimplementedRefundProcessServer) Refund(context.Context, *Order) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Refund not implemented")
+}
+func (UnimplementedRefundProcessServer) mustEmbedUnimplementedRefundProcessServer() {}
+
+// UnsafeRefundProcessServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RefundProcessServer will
+// result in compilation errors.
+type UnsafeRefundProcessServer interface {
+	mustEmbedUnimplementedRefundProcessServer()
+}
+
+func RegisterRefundProcessServer(s grpc.ServiceRegistrar, srv RefundProcessServer) {
+	s.RegisterService(&RefundProcess_ServiceDesc, srv)
+}
+
+func _RefundProcess_Refund_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Order)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RefundProcessServer).Refund(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RefundProcess_Refund_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RefundProcessServer).Refund(ctx, req.(*Order))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// RefundProcess_ServiceDesc is the grpc.ServiceDesc for RefundProcess service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var RefundProcess_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "grpc_order.RefundProcess",
+	HandlerType: (*RefundProcessServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Refund",
+			Handler:    _RefundProcess_Refund_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "proto/grpc_order/service.proto",
+}
+
+const (
+	MatchProcess_LimitBidBigger_FullMethodName   = "/grpc_order.MatchProcess/LimitBidBigger"
+	MatchProcess_LimitBidEqual_FullMethodName    = "/grpc_order.MatchProcess/LimitBidEqual"
+	MatchProcess_LimitBidSmaller_FullMethodName  = "/grpc_order.MatchProcess/LimitBidSmaller"
+	MatchProcess_MarketBidBigger_FullMethodName  = "/grpc_order.MatchProcess/MarketBidBigger"
+	MatchProcess_MarketBidEqual_FullMethodName   = "/grpc_order.MatchProcess/MarketBidEqual"
+	MatchProcess_MarketBidSmaller_FullMethodName = "/grpc_order.MatchProcess/MarketBidSmaller"
+	MatchProcess_LimitAskBigger_FullMethodName   = "/grpc_order.MatchProcess/LimitAskBigger"
+	MatchProcess_LimitAskEqual_FullMethodName    = "/grpc_order.MatchProcess/LimitAskEqual"
+	MatchProcess_LimitAskSmaller_FullMethodName  = "/grpc_order.MatchProcess/LimitAskSmaller"
+	MatchProcess_MarketAskBigger_FullMethodName  = "/grpc_order.MatchProcess/MarketAskBigger"
+	MatchProcess_MarketAskEqual_FullMethodName   = "/grpc_order.MatchProcess/MarketAskEqual"
+	MatchProcess_MarketAskSmaller_FullMethodName = "/grpc_order.MatchProcess/MarketAskSmaller"
+)
+
+// MatchProcessClient is the client API for MatchProcess service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type MatchProcessClient interface {
+	LimitBidBigger(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error)
+	LimitBidEqual(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error)
+	LimitBidSmaller(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error)
+	MarketBidBigger(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error)
+	MarketBidEqual(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error)
+	MarketBidSmaller(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error)
+	LimitAskBigger(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error)
+	LimitAskEqual(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error)
+	LimitAskSmaller(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error)
+	MarketAskBigger(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error)
+	MarketAskEqual(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error)
+	MarketAskSmaller(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error)
+}
+
+type matchProcessClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewMatchProcessClient(cc grpc.ClientConnInterface) MatchProcessClient {
+	return &matchProcessClient{cc}
+}
+
+func (c *matchProcessClient) LimitBidBigger(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, MatchProcess_LimitBidBigger_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *matchProcessClient) LimitBidEqual(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, MatchProcess_LimitBidEqual_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *matchProcessClient) LimitBidSmaller(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, MatchProcess_LimitBidSmaller_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *matchProcessClient) MarketBidBigger(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, MatchProcess_MarketBidBigger_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *matchProcessClient) MarketBidEqual(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, MatchProcess_MarketBidEqual_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *matchProcessClient) MarketBidSmaller(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, MatchProcess_MarketBidSmaller_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *matchProcessClient) LimitAskBigger(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, MatchProcess_LimitAskBigger_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *matchProcessClient) LimitAskEqual(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, MatchProcess_LimitAskEqual_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *matchProcessClient) LimitAskSmaller(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, MatchProcess_LimitAskSmaller_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *matchProcessClient) MarketAskBigger(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, MatchProcess_MarketAskBigger_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *matchProcessClient) MarketAskEqual(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, MatchProcess_MarketAskEqual_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *matchProcessClient) MarketAskSmaller(ctx context.Context, in *BidAsk, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, MatchProcess_MarketAskSmaller_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// MatchProcessServer is the server API for MatchProcess service.
+// All implementations must embed UnimplementedMatchProcessServer
+// for forward compatibility
+type MatchProcessServer interface {
+	LimitBidBigger(context.Context, *BidAsk) (*Ack, error)
+	LimitBidEqual(context.Context, *BidAsk) (*Ack, error)
+	LimitBidSmaller(context.Context, *BidAsk) (*Ack, error)
+	MarketBidBigger(context.Context, *BidAsk) (*Ack, error)
+	MarketBidEqual(context.Context, *BidAsk) (*Ack, error)
+	MarketBidSmaller(context.Context, *BidAsk) (*Ack, error)
+	LimitAskBigger(context.Context, *BidAsk) (*Ack, error)
+	LimitAskEqual(context.Context, *BidAsk) (*Ack, error)
+	LimitAskSmaller(context.Context, *BidAsk) (*Ack, error)
+	MarketAskBigger(context.Context, *BidAsk) (*Ack, error)
+	MarketAskEqual(context.Context, *BidAsk) (*Ack, error)
+	MarketAskSmaller(context.Context, *BidAsk) (*Ack, error)
+	mustEmbedUnimplementedMatchProcessServer()
+}
+
+// UnimplementedMatchProcessServer must be embedded to have forward compatible implementations.
+type UnimplementedMatchProcessServer struct {
+}
+
+func (UnimplementedMatchProcessServer) LimitBidBigger(context.Context, *BidAsk) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LimitBidBigger not implemented")
+}
+func (UnimplementedMatchProcessServer) LimitBidEqual(context.Context, *BidAsk) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LimitBidEqual not implemented")
+}
+func (UnimplementedMatchProcessServer) LimitBidSmaller(context.Context, *BidAsk) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LimitBidSmaller not implemented")
+}
+func (UnimplementedMatchProcessServer) MarketBidBigger(context.Context, *BidAsk) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarketBidBigger not implemented")
+}
+func (UnimplementedMatchProcessServer) MarketBidEqual(context.Context, *BidAsk) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarketBidEqual not implemented")
+}
+func (UnimplementedMatchProcessServer) MarketBidSmaller(context.Context, *BidAsk) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarketBidSmaller not implemented")
+}
+func (UnimplementedMatchProcessServer) LimitAskBigger(context.Context, *BidAsk) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LimitAskBigger not implemented")
+}
+func (UnimplementedMatchProcessServer) LimitAskEqual(context.Context, *BidAsk) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LimitAskEqual not implemented")
+}
+func (UnimplementedMatchProcessServer) LimitAskSmaller(context.Context, *BidAsk) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LimitAskSmaller not implemented")
+}
+func (UnimplementedMatchProcessServer) MarketAskBigger(context.Context, *BidAsk) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarketAskBigger not implemented")
+}
+func (UnimplementedMatchProcessServer) MarketAskEqual(context.Context, *BidAsk) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarketAskEqual not implemented")
+}
+func (UnimplementedMatchProcessServer) MarketAskSmaller(context.Context, *BidAsk) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarketAskSmaller not implemented")
+}
+func (UnimplementedMatchProcessServer) mustEmbedUnimplementedMatchProcessServer() {}
+
+// UnsafeMatchProcessServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to MatchProcessServer will
+// result in compilation errors.
+type UnsafeMatchProcessServer interface {
+	mustEmbedUnimplementedMatchProcessServer()
+}
+
+func RegisterMatchProcessServer(s grpc.ServiceRegistrar, srv MatchProcessServer) {
+	s.RegisterService(&MatchProcess_ServiceDesc, srv)
+}
+
+func _MatchProcess_LimitBidBigger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidAsk)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MatchProcessServer).LimitBidBigger(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MatchProcess_LimitBidBigger_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MatchProcessServer).LimitBidBigger(ctx, req.(*BidAsk))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MatchProcess_LimitBidEqual_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidAsk)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MatchProcessServer).LimitBidEqual(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MatchProcess_LimitBidEqual_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MatchProcessServer).LimitBidEqual(ctx, req.(*BidAsk))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MatchProcess_LimitBidSmaller_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidAsk)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MatchProcessServer).LimitBidSmaller(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MatchProcess_LimitBidSmaller_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MatchProcessServer).LimitBidSmaller(ctx, req.(*BidAsk))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MatchProcess_MarketBidBigger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidAsk)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MatchProcessServer).MarketBidBigger(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MatchProcess_MarketBidBigger_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MatchProcessServer).MarketBidBigger(ctx, req.(*BidAsk))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MatchProcess_MarketBidEqual_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidAsk)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MatchProcessServer).MarketBidEqual(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MatchProcess_MarketBidEqual_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MatchProcessServer).MarketBidEqual(ctx, req.(*BidAsk))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MatchProcess_MarketBidSmaller_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidAsk)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MatchProcessServer).MarketBidSmaller(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MatchProcess_MarketBidSmaller_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MatchProcessServer).MarketBidSmaller(ctx, req.(*BidAsk))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MatchProcess_LimitAskBigger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidAsk)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MatchProcessServer).LimitAskBigger(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MatchProcess_LimitAskBigger_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MatchProcessServer).LimitAskBigger(ctx, req.(*BidAsk))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MatchProcess_LimitAskEqual_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidAsk)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MatchProcessServer).LimitAskEqual(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MatchProcess_LimitAskEqual_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MatchProcessServer).LimitAskEqual(ctx, req.(*BidAsk))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MatchProcess_LimitAskSmaller_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidAsk)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MatchProcessServer).LimitAskSmaller(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MatchProcess_LimitAskSmaller_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MatchProcessServer).LimitAskSmaller(ctx, req.(*BidAsk))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MatchProcess_MarketAskBigger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidAsk)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MatchProcessServer).MarketAskBigger(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MatchProcess_MarketAskBigger_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MatchProcessServer).MarketAskBigger(ctx, req.(*BidAsk))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MatchProcess_MarketAskEqual_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidAsk)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MatchProcessServer).MarketAskEqual(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MatchProcess_MarketAskEqual_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MatchProcessServer).MarketAskEqual(ctx, req.(*BidAsk))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MatchProcess_MarketAskSmaller_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BidAsk)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MatchProcessServer).MarketAskSmaller(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MatchProcess_MarketAskSmaller_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MatchProcessServer).MarketAskSmaller(ctx, req.(*BidAsk))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// MatchProcess_ServiceDesc is the grpc.ServiceDesc for MatchProcess service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var MatchProcess_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "grpc_order.MatchProcess",
+	HandlerType: (*MatchProcessServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "LimitBidBigger",
+			Handler:    _MatchProcess_LimitBidBigger_Handler,
+		},
+		{
+			MethodName: "LimitBidEqual",
+			Handler:    _MatchProcess_LimitBidEqual_Handler,
+		},
+		{
+			MethodName: "LimitBidSmaller",
+			Handler:    _MatchProcess_LimitBidSmaller_Handler,
+		},
+		{
+			MethodName: "MarketBidBigger",
+			Handler:    _MatchProcess_MarketBidBigger_Handler,
+		},
+		{
+			MethodName: "MarketBidEqual",
+			Handler:    _MatchProcess_MarketBidEqual_Handler,
+		},
+		{
+			MethodName: "MarketBidSmaller",
+			Handler:    _MatchProcess_MarketBidSmaller_Handler,
+		},
+		{
+			MethodName: "LimitAskBigger",
+			Handler:    _MatchProcess_LimitAskBigger_Handler,
+		},
+		{
+			MethodName: "LimitAskEqual",
+			Handler:    _MatchProcess_LimitAskEqual_Handler,
+		},
+		{
+			MethodName: "LimitAskSmaller",
+			Handler:    _MatchProcess_LimitAskSmaller_Handler,
+		},
+		{
+			MethodName: "MarketAskBigger",
+			Handler:    _MatchProcess_MarketAskBigger_Handler,
+		},
+		{
+			MethodName: "MarketAskEqual",
+			Handler:    _MatchProcess_MarketAskEqual_Handler,
+		},
+		{
+			MethodName: "MarketAskSmaller",
+			Handler:    _MatchProcess_MarketAskSmaller_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "proto/grpc_order/service.proto",
+}
+
+const (
+	ErrorProcess_Error_FullMethodName = "/grpc_order.ErrorProcess/Error"
+)
+
+// ErrorProcessClient is the client API for ErrorProcess service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ErrorProcessClient interface {
+	Error(ctx context.Context, in *ErrorInput, opts ...grpc.CallOption) (*Ack, error)
+}
+
+type errorProcessClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewErrorProcessClient(cc grpc.ClientConnInterface) ErrorProcessClient {
+	return &errorProcessClient{cc}
+}
+
+func (c *errorProcessClient) Error(ctx context.Context, in *ErrorInput, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, ErrorProcess_Error_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ErrorProcessServer is the server API for ErrorProcess service.
+// All implementations must embed UnimplementedErrorProcessServer
+// for forward compatibility
+type ErrorProcessServer interface {
+	Error(context.Context, *ErrorInput) (*Ack, error)
+	mustEmbedUnimplementedErrorProcessServer()
+}
+
+// UnimplementedErrorProcessServer must be embedded to have forward compatible implementations.
+type UnimplementedErrorProcessServer struct {
+}
+
+func (UnimplementedErrorProcessServer) Error(context.Context, *ErrorInput) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Error not implemented")
+}
+func (UnimplementedErrorProcessServer) mustEmbedUnimplementedErrorProcessServer() {}
+
+// UnsafeErrorProcessServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ErrorProcessServer will
+// result in compilation errors.
+type UnsafeErrorProcessServer interface {
+	mustEmbedUnimplementedErrorProcessServer()
+}
+
+func RegisterErrorProcessServer(s grpc.ServiceRegistrar, srv ErrorProcessServer) {
+	s.RegisterService(&ErrorProcess_ServiceDesc, srv)
+}
+
+func _ErrorProcess_Error_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ErrorInput)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ErrorProcessServer).Error(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ErrorProcess_Error_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ErrorProcessServer).Error(ctx, req.(*ErrorInput))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ErrorProcess_ServiceDesc is the grpc.ServiceDesc for ErrorProcess service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ErrorProcess_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "grpc_order.ErrorProcess",
+	HandlerType: (*ErrorProcessServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Error",
+			Handler:    _ErrorProcess_Error_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "proto/grpc_order/service.proto",
+}

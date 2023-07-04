@@ -3,11 +3,19 @@ package grpc_order;
 option go_package = "./grpc_order";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
 
 enum OrderType {
   ORDER_NIL = 0;
   BID = 1; // 구매 매수
   ASK = 2; // 판매 매도
+}
+
+enum Priority {
+  PRIORITY_NIL = 0;
+  LOW = 1;
+  MEDIUM = 2;
+  HIGH = 3;
 }
 
 enum SymbolType {
@@ -74,44 +82,6 @@ message Order {
   OrderType OrderType = 5 [json_name = "order_type"];
   SymbolType Symbol = 6 [json_name = "symbol"];
   google.protobuf.Timestamp MakeTime = 7 [json_name = "make_time"];
-}
-
-message LimitOrderBid {
-  string UserUUID = 1 [json_name = "user_uuid"];
-  string OrderUUID = 2 [json_name = "order_uuid"];
-  double Quantity = 3 [json_name = "quantity"];
-  double UnitPrice = 4 [json_name = "unit_price"];
-  OrderType OrderType = 5 [json_name = "order_type"];
-  SymbolType Symbol = 6 [json_name = "symbol"];
-  google.protobuf.Timestamp MakeTime = 7 [json_name = "make_time"];
-}
-
-message LimitOrderAsk {
-  string UserUUID = 1 [json_name = "user_uuid"];
-  string OrderUUID = 2 [json_name = "order_uuid"];
-  double Quantity = 3 [json_name = "quantity"];
-  double UnitPrice = 4 [json_name = "unit_price"];
-  OrderType OrderType = 5 [json_name = "order_type"];
-  SymbolType Symbol = 6 [json_name = "symbol"];
-  google.protobuf.Timestamp MakeTime = 7 [json_name = "make_time"];
-}
-
-message MarketOrderBid {
-  string UserUUID = 1 [json_name = "user_uuid"];
-  string OrderUUID = 2 [json_name = "order_uuid"];
-  double Quantity = 3 [json_name = "quantity"];
-  OrderType OrderType = 4 [json_name = "order_type"];
-  SymbolType Symbol = 5 [json_name = "symbol"];
-  google.protobuf.Timestamp MakeTime = 6 [json_name = "make_time"];
-}
-
-message MarketOrderAsk {
-  string UserUUID = 1 [json_name = "user_uuid"];
-  string OrderUUID = 2 [json_name = "order_uuid"];
-  double Quantity = 3 [json_name = "quantity"];
-  OrderType OrderType = 4 [json_name = "order_type"];
-  SymbolType Symbol = 5 [json_name = "symbol"];
-  google.protobuf.Timestamp MakeTime = 6 [json_name = "make_time"];
 }
 
 message OrderCancellation {
@@ -197,7 +167,6 @@ message OrderPlacement {
   google.protobuf.Timestamp MakeTime = 7 [json_name = "make_time"];
 }
 
-
 message OrderPlacementFailed {
   string UserUUID = 1 [json_name = "user_uuid"];
   string OrderUUID = 2 [json_name = "order_uuid"];
@@ -258,4 +227,11 @@ message GetOrderBookOutput {
 
 message PushOrderBookInput {
   SymbolType symbol = 1 [json_name = "symbol"];
+}
+
+message ErrorInput {
+  string process = 1 [json_name = "process"];
+  string msg = 2 [json_name = "msg"];
+  Priority priority = 3 [json_name = "priority"];
+  google.protobuf.Struct metadata = 4 [json_name = "data"];
 }
