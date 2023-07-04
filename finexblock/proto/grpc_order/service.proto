@@ -40,7 +40,10 @@ service PlacementProcess {
 }
 
 service RefundProcess {
-  rpc Refund(Order) returns (Ack);
+  rpc MarketAskRefund(Order) returns (Ack);
+  rpc MarketBidRefund(Order) returns (Ack);
+  rpc LimitAskRefund(Order) returns (Ack);
+  rpc LimitBidRefund(Order) returns (Ack);
 }
 
 service MatchProcess {
