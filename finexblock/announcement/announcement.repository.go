@@ -2,12 +2,58 @@ package announcement
 
 import (
 	"database/sql"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity/announcement"
 	"gorm.io/gorm"
 )
 
 type announcementRepository struct {
 	db *gorm.DB
+}
+
+func (a *announcementRepository) FindAdminByID(tx *gorm.DB, id uint) (*admin.Admin, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *announcementRepository) FindAdminByEmail(tx *gorm.DB, email string) (*admin.Admin, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *announcementRepository) FindAdminCredentialsByID(tx *gorm.DB, id uint) (*admin.Admin, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *announcementRepository) FindAccessToken(tx *gorm.DB, limit, offset int) ([]*admin.AdminAccessToken, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *announcementRepository) FindAdminByGrade(tx *gorm.DB, grade admin.GradeType, limit, offset int) ([]*admin.Admin, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *announcementRepository) FindAllAdmin(tx *gorm.DB, limit, offset int) ([]*admin.Admin, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *announcementRepository) CreateAdmin(tx *gorm.DB, email, password string) (*admin.Admin, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *announcementRepository) UpdateAdminByID(tx *gorm.DB, id uint, admin *admin.Admin) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *announcementRepository) DeleteAdminByID(tx *gorm.DB, id uint) error {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (a *announcementRepository) FindAnnouncementByID(id uint) (*announcement.Announcement, error) {

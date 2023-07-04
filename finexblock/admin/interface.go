@@ -26,6 +26,7 @@ type Repository interface {
 }
 
 type Service interface {
+	types.Service
 	FindAllAdmin(ctx *fiber.Ctx, limit, offset int) error
 	FindAdminByGrade(ctx *fiber.Ctx, grade admin.GradeType, limit, offset int) error
 	FindLoginFailedLog(ctx *fiber.Ctx, adminID uint, limit, offset int) error

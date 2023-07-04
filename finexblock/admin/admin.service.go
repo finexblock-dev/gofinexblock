@@ -2,14 +2,20 @@ package admin
 
 import (
 	"context"
+	"database/sql"
 	"github.com/finexblock-dev/gofinexblock/finexblock/admin/dto"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 	"time"
 )
 
 type AdminService struct {
 	repo Repository
+}
+
+func (a *AdminService) Tx(level sql.IsolationLevel) *gorm.DB {
+	return a.repo.Tx(level)
 }
 
 func newAdminService(repo Repository) *AdminService {

@@ -18,4 +18,5 @@ type Repository interface {
 type Service interface {
 	Ctx() context.Context
 	CtxWithCancel(ctx context.Context) (context.Context, context.CancelFunc)
+	Tx(level sql.IsolationLevel) *gorm.DB
 }

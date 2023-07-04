@@ -2,11 +2,13 @@ package announcement
 
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity/announcement"
+	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
 type Repository interface {
+	types.Repository
 	FindAnnouncementByID(id uint) (*announcement.Announcement, error)
 	ScanAnnouncement(limit, offset int) ([]*announcement.Announcement, error) // find announcement by limit, offset
 	SearchAnnouncement(title, word string, visible, pinned bool, limit, offset int) ([]*announcement.Announcement, error)
@@ -21,6 +23,7 @@ type Repository interface {
 }
 
 type Service interface {
+	types.Service
 	FindAnnouncementByID(c *fiber.Ctx, id uint) (*announcement.Announcement, error)
 	FindAllAnnouncement(c *fiber.Ctx, limit, offset int) ([]*announcement.Announcement, error) // find announcement by limit, offset
 	// SearchAnnouncement FIXME: parameter 묶어서 struct로 처리

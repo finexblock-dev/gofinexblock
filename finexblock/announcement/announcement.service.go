@@ -2,12 +2,18 @@ package announcement
 
 import (
 	"context"
+	"database/sql"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity/announcement"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 type announcementService struct {
 	announcementRepository Repository
+}
+
+func (a *announcementService) Tx(level sql.IsolationLevel) *gorm.DB {
+	return a.announcementRepository.Tx(level)
 }
 
 func (a *announcementService) FindAnnouncementByID(c *fiber.Ctx, id uint) (*announcement.Announcement, error) {

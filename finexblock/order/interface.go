@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	"database/sql"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity/order"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
@@ -28,6 +29,10 @@ type Service interface {
 
 type orderService struct {
 	db *gorm.DB
+}
+
+func (o *orderService) Tx(level sql.IsolationLevel) *gorm.DB {
+	return o.db.Begin(&sql.TxOptions{Isolation: level})
 }
 
 func (o *orderService) Ctx() context.Context {
