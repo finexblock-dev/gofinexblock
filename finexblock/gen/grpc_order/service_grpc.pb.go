@@ -929,14 +929,20 @@ var PlacementProcess_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	RefundProcess_Refund_FullMethodName = "/grpc_order.RefundProcess/Refund"
+	RefundProcess_MarketAskRefund_FullMethodName = "/grpc_order.RefundProcess/MarketAskRefund"
+	RefundProcess_MarketBidRefund_FullMethodName = "/grpc_order.RefundProcess/MarketBidRefund"
+	RefundProcess_LimitAskRefund_FullMethodName  = "/grpc_order.RefundProcess/LimitAskRefund"
+	RefundProcess_LimitBidRefund_FullMethodName  = "/grpc_order.RefundProcess/LimitBidRefund"
 )
 
 // RefundProcessClient is the client API for RefundProcess service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RefundProcessClient interface {
-	Refund(ctx context.Context, in *Order, opts ...grpc.CallOption) (*Ack, error)
+	MarketAskRefund(ctx context.Context, in *Order, opts ...grpc.CallOption) (*Ack, error)
+	MarketBidRefund(ctx context.Context, in *Order, opts ...grpc.CallOption) (*Ack, error)
+	LimitAskRefund(ctx context.Context, in *Order, opts ...grpc.CallOption) (*Ack, error)
+	LimitBidRefund(ctx context.Context, in *Order, opts ...grpc.CallOption) (*Ack, error)
 }
 
 type refundProcessClient struct {
@@ -947,9 +953,36 @@ func NewRefundProcessClient(cc grpc.ClientConnInterface) RefundProcessClient {
 	return &refundProcessClient{cc}
 }
 
-func (c *refundProcessClient) Refund(ctx context.Context, in *Order, opts ...grpc.CallOption) (*Ack, error) {
+func (c *refundProcessClient) MarketAskRefund(ctx context.Context, in *Order, opts ...grpc.CallOption) (*Ack, error) {
 	out := new(Ack)
-	err := c.cc.Invoke(ctx, RefundProcess_Refund_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, RefundProcess_MarketAskRefund_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *refundProcessClient) MarketBidRefund(ctx context.Context, in *Order, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, RefundProcess_MarketBidRefund_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *refundProcessClient) LimitAskRefund(ctx context.Context, in *Order, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, RefundProcess_LimitAskRefund_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *refundProcessClient) LimitBidRefund(ctx context.Context, in *Order, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, RefundProcess_LimitBidRefund_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -960,7 +993,10 @@ func (c *refundProcessClient) Refund(ctx context.Context, in *Order, opts ...grp
 // All implementations must embed UnimplementedRefundProcessServer
 // for forward compatibility
 type RefundProcessServer interface {
-	Refund(context.Context, *Order) (*Ack, error)
+	MarketAskRefund(context.Context, *Order) (*Ack, error)
+	MarketBidRefund(context.Context, *Order) (*Ack, error)
+	LimitAskRefund(context.Context, *Order) (*Ack, error)
+	LimitBidRefund(context.Context, *Order) (*Ack, error)
 	mustEmbedUnimplementedRefundProcessServer()
 }
 
@@ -968,8 +1004,17 @@ type RefundProcessServer interface {
 type UnimplementedRefundProcessServer struct {
 }
 
-func (UnimplementedRefundProcessServer) Refund(context.Context, *Order) (*Ack, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Refund not implemented")
+func (UnimplementedRefundProcessServer) MarketAskRefund(context.Context, *Order) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarketAskRefund not implemented")
+}
+func (UnimplementedRefundProcessServer) MarketBidRefund(context.Context, *Order) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarketBidRefund not implemented")
+}
+func (UnimplementedRefundProcessServer) LimitAskRefund(context.Context, *Order) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LimitAskRefund not implemented")
+}
+func (UnimplementedRefundProcessServer) LimitBidRefund(context.Context, *Order) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LimitBidRefund not implemented")
 }
 func (UnimplementedRefundProcessServer) mustEmbedUnimplementedRefundProcessServer() {}
 
@@ -984,20 +1029,74 @@ func RegisterRefundProcessServer(s grpc.ServiceRegistrar, srv RefundProcessServe
 	s.RegisterService(&RefundProcess_ServiceDesc, srv)
 }
 
-func _RefundProcess_Refund_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RefundProcess_MarketAskRefund_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Order)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RefundProcessServer).Refund(ctx, in)
+		return srv.(RefundProcessServer).MarketAskRefund(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RefundProcess_Refund_FullMethodName,
+		FullMethod: RefundProcess_MarketAskRefund_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RefundProcessServer).Refund(ctx, req.(*Order))
+		return srv.(RefundProcessServer).MarketAskRefund(ctx, req.(*Order))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RefundProcess_MarketBidRefund_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Order)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RefundProcessServer).MarketBidRefund(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RefundProcess_MarketBidRefund_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RefundProcessServer).MarketBidRefund(ctx, req.(*Order))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RefundProcess_LimitAskRefund_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Order)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RefundProcessServer).LimitAskRefund(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RefundProcess_LimitAskRefund_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RefundProcessServer).LimitAskRefund(ctx, req.(*Order))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RefundProcess_LimitBidRefund_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Order)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RefundProcessServer).LimitBidRefund(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RefundProcess_LimitBidRefund_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RefundProcessServer).LimitBidRefund(ctx, req.(*Order))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1010,8 +1109,20 @@ var RefundProcess_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*RefundProcessServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Refund",
-			Handler:    _RefundProcess_Refund_Handler,
+			MethodName: "MarketAskRefund",
+			Handler:    _RefundProcess_MarketAskRefund_Handler,
+		},
+		{
+			MethodName: "MarketBidRefund",
+			Handler:    _RefundProcess_MarketBidRefund_Handler,
+		},
+		{
+			MethodName: "LimitAskRefund",
+			Handler:    _RefundProcess_LimitAskRefund_Handler,
+		},
+		{
+			MethodName: "LimitBidRefund",
+			Handler:    _RefundProcess_LimitBidRefund_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
