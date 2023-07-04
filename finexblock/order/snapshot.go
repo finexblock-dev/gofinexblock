@@ -1,8 +1,11 @@
 package order
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity/order"
+	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
+	"gorm.io/gorm"
 )
 
 func (o *orderService) Snapshot(tx *gorm.DB, symbolID uint, bids []*grpc_order.Order, asks []*grpc_order.Order) error {

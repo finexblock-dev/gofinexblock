@@ -1,7 +1,7 @@
 package instance
 
 type FinexblockServer struct {
-	ID   uint64 `gorm:"primaryKey;autoIncrement;comment:기본키"`
+	ID   uint   `gorm:"primaryKey;autoIncrement;comment:기본키"`
 	Name string `gorm:"type:LONGTEXT;not null;comment:서버명"`
 }
 

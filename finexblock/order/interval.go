@@ -1,6 +1,9 @@
 package order
 
-import "gorm.io/gorm"
+import (
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity/order"
+	"gorm.io/gorm"
+)
 
 func (o *orderService) FindRecentIntervalByName(tx *gorm.DB, name string) (*order.OrderInterval, error) {
 	var _interval *order.OrderInterval
