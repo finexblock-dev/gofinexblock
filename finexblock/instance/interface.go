@@ -25,21 +25,6 @@ func (i *instanceService) CtxWithCancel(ctx context.Context) (context.Context, c
 	return context.WithCancel(ctx)
 }
 
-func (i *instanceService) FindServerByName(tx *gorm.DB, name string) (*instance.FinexblockServer, error) {
-	var _server *instance.FinexblockServer
-	if err := tx.Table(_server.TableName()).Where("name = ?", name).First(&_server).Error; err != nil {
-		return nil, err
-	}
-	return _server, nil
-}
-
-func (i *instanceService) InsertErrorLog(tx *gorm.DB, errorLog *instance.FinexblockErrorLog) (*instance.FinexblockErrorLog, error) {
-	if err := tx.Table(errorLog.TableName()).Create(errorLog).Error; err != nil {
-		return nil, err
-	}
-	return errorLog, nil
-}
-
 func newInstanceService(db *gorm.DB) *instanceService {
 	return &instanceService{db: db}
 }
