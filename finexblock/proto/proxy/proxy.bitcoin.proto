@@ -1,0 +1,209 @@
+syntax = "proto3";
+package bitcoin_proxy;
+option go_package = "./bitcoin_proxy";
+
+
+service BitcoinProxy {
+  rpc GetBlockCount(GetBlockCountRequest) returns (GetBlockCountResponse);
+  rpc GetBlock(GetBlockRequest) returns (GetBlockResponse);
+  rpc GetRawTransaction(GetRawTransactionRequest) returns (GetRawTransactionResponse);
+  rpc CreateRawTransaction(CreateRawTransactionRequest) returns (CreateRawTransactionResponse);
+  rpc ListUnspent(ListUnspentRequest) returns (ListUnspentResponse);
+  rpc SignRawTransaction (SignRawTransactionRequest) returns (SignRawTransactionResponse);
+  rpc SendRawTransaction(SendRawTransactionRequest) returns (SendRawTransactionResponse);
+  rpc SendToAddress(SendToAddressRequest) returns (SendToAddressResponse);
+  rpc CreateWalletAddress(CreateWalletRequest) returns (CreateWalletResponse);
+  rpc GetNewAddress(GetNewAddressRequest) returns (GetNewAddressResponse);
+  rpc GetPrivateKey(GetPrivateKeyRequest) returns (GetPrivateKeyResponse);
+  rpc GetAddressUTXO(GetAddressUTXORequest) returns (GetAddressUTXOResponse);
+}
+
+message BlockHeader {
+  int32 Version = 1 [json_name = "version"];
+  string PrevBlock = 2 [json_name = "prev_block"];
+  string MerkleRoot = 3 [json_name = "merkle_root"];
+  int64 Timestamp = 4 [json_name = "timestamp"];
+  uint32 Bits = 5 [json_name = "bits"];
+  uint32 Nonce = 6 [json_name = "nonce"];
+}
+message BlockOutPoint {
+  string Hash = 1 [json_name = "hash"];
+  uint32 Index = 2 [json_name = "index"];
+}
+message BlockTransactionInput {
+  BlockOutPoint PreviousOutPoint = 1 [json_name = "previous_out_point"];
+  string SignatureScript = 2 [json_name = "signature_script"];
+  uint32 Sequence = 3 [json_name = "sequence"];
+}
+message BlockTransactionOutput {
+  int64 Value = 1 [json_name = "value"];
+  string ScriptPubKey = 2 [json_name = "script_pub_key"];
+}
+message BlockTransaction {
+  string txHash = 1 [json_name = "tx_hash"];
+  repeated BlockTransactionInput TxInputs = 2 [json_name = "tx_inputs"];
+  repeated BlockTransactionOutput TxOuts = 3 [json_name = "tx_outs"];
+}
+message GetBlockCountRequest {}
+message GetBlockCountResponse {
+  int64 Count = 1 [json_name = "count"];
+}
+message GetBlockRequest {
+  int64 Height = 1 [json_name = "height"];
+}
+message GetBlockResponse {
+  BlockHeader Header = 1 [json_name = "header"];
+  repeated BlockTransaction Tx = 2 [json_name = "tx"];
+}
+message Unspent {
+  string TxId = 1 [json_name = "txid"];
+  uint32 Vout = 2 [json_name = "vout"];
+  string ScriptPubKey = 3 [json_name = "script_pub_key"];
+  string Desc = 4 [json_name = "desc"];
+  double Amount = 5 [json_name = "amount"];
+  uint32 Height = 6 [json_name = "height"];
+}
+message UnspentOutput {
+  string txHash = 1 [json_name = "tx_hash"];
+  uint32 Vout = 2 [json_name = "vout"];
+  string Address = 3 [json_name = "address"];
+  string Account = 4 [json_name = "account"];
+  string ScriptPubKey = 5 [json_name = "script_pub_key"];
+  string RedeemScript = 6 [json_name = "redeem_script"];
+  double Amount = 7 [json_name = "amount"];
+  int64 Confirmations = 8 [json_name = "confirmations"];
+  bool Spendable = 9 [json_name = "spendable"];
+}
+message GetNewAddressRequest {
+}
+message GetNewAddressResponse {
+  string Address = 1 [json_name = "address"];
+}
+message CreateWalletRequest {
+  uint32 UserId = 1 [json_name = "user_id"];
+}
+message CreateWalletResponse {
+  string Address = 1 [json_name = "address"];
+}
+message ListUnspentRequest {
+  uint64 Minconf = 1 [json_name = "minconf"];
+  uint64 Maxconf = 2 [json_name = "maxconf"];
+  string Address = 3 [json_name = "addresses"];
+}
+message ListUnspentResponse {
+  repeated UnspentOutput UnspentOutputs = 1 [json_name = "unspent_outputs"];
+}
+message GetRawTransactionRequest {
+  string TxId = 1 [json_name = "tx_id"];
+}
+message Vout {
+  double Value = 1 [json_name = "value"];
+  uint32 N = 2 [json_name = "n"];
+  string ScriptPubKeyAms = 3 [json_name = "script_pub_key_ams"];
+  string ScriptPubKeyHex = 4 [json_name = "script_pub_key_hex"];
+  int32 ScriptPubKeyReqSigs = 5 [json_name = "script_pub_key_req_sigs"];
+  string ScriptPubKeyType = 6 [json_name = "script_pub_key_type"];
+  repeated string Address = 7 [json_name = "address"];
+}
+message Vin {
+  string Coinbase = 1 [json_name = "coinbase"];
+  string TxId = 2 [json_name = "tx_id"];
+  uint32 Vout = 3 [json_name = "vout"];
+  string ScriptSigAms = 4 [json_name = "script_sig_ams"];
+  string ScriptSigHex = 5 [json_name = "script_sig_hex"];
+  uint32 Sequence = 6 [json_name = "sequence"];
+  repeated string Witness = 7 [json_name = "witness"];
+}
+message GetRawTransactionResponse {
+  string Hex = 1 [json_name = "hex"];
+  string TxId = 2 [json_name = "tx_id"];
+  string Hash = 3 [json_name = "hash"];
+  int32 Size = 4 [json_name = "size"];
+  int32 Vsize = 5 [json_name = "vsize"];
+  int32 Weight = 6 [json_name = "weight"];
+  uint32 Version = 7 [json_name = "version"];
+  uint32 LockTime = 8 [json_name = "lockTime"];
+  repeated Vin Vin = 9 [json_name = "vin"];
+  repeated Vout Vout = 10 [json_name = "vout"];
+  string BlockHash = 11 [json_name = "blockHash"];
+  uint64 Confirmations = 12 [json_name = "confirmations"];
+  int64 Time = 13 [json_name = "time"];
+  int64 BlockTime = 14 [json_name = "block_time"];
+}
+message TransactionInput {
+  string TxId = 1 [json_name = "tx_id"];
+  int32 Vout = 2 [json_name = "vout"];
+}
+
+message TransactionOutput {
+  string Address = 1 [json_name = "address"];
+  double Value = 2 [json_name = "value"];
+}
+
+message OutPoint {
+  string Hash = 1 [json_name = "hash"];
+  uint32 Index = 2 [json_name = "index"];
+}
+message TxIn {
+  OutPoint PreviousOutpoint = 1 [json_name = "previous_outpoint"];
+  string SignatureScript = 2 [json_name = "signature_script"];
+  uint32 Sequence = 3 [json_name = "sequence"];
+}
+message TxOut {
+  int64 Value = 1 [json_name = "value"];
+  string ScriptPubKey = 2 [json_name = "script_pub_key"];
+}
+message CreateRawTransactionRequest {
+  repeated TransactionInput Inputs = 1 [json_name = "inputs"];
+  repeated TransactionOutput Outputs = 2 [json_name = "outputs"];
+}
+message CreateRawTransactionResponse {
+  string RawHex = 1 [json_name = "raw_hex"];
+  string SignedTx = 2 [json_name = "signed_tx"];
+}
+//message CreateRawTransactionResponse {
+//  repeated TxIn TxIn = 1 [json_name = "tx_in"];
+//  repeated TxOut TxOut = 2 [json_name = "tx_out"];
+//  int32 Version = 3 [json_name = "version"];
+//  uint32 LockTime = 4 [json_name = "lock_time"];
+//}
+message SignRawTransactionRequest {
+  string RawTx = 1 [json_name = "raw_tx"];
+  repeated string PrivateKeys = 2 [json_name = "private_keys"];
+  string RedeemScript = 3 [json_name = "redeem_script"];
+}
+
+message SignRawTransactionResponse {
+  string SignedTx = 1 [json_name = "signed_tx"];
+  bool Complete = 2 [json_name = "complete"];
+}
+message SendRawTransactionRequest {
+  string SignedTx = 1 [json_name = "signed_tx"];
+}
+message SendRawTransactionResponse {
+  string TxId = 1 [json_name = "tx_id"];
+}
+message SendToAddressRequest {
+  string ToAddress = 1 [json_name = "to_address"];
+  double Amount = 2 [json_name = "amount"];
+}
+message SendToAddressResponse {
+  string TxHash = 1 [json_name = "tx_hash"];
+}
+message GetPrivateKeyRequest {
+  uint32 UserId = 1 [json_name = "user_id"];
+}
+message GetPrivateKeyResponse {
+  string PrivateKey = 1 [json_name = "private_key"];
+}
+message GetAddressUTXORequest {
+  string Address = 1 [json_name = "address"];
+}
+message GetAddressUTXOResponse {
+  bool Success = 1 [json_name = "success"];
+  uint32 Txouts = 2 [json_name = "txouts"];
+  uint32 Height = 3 [json_name = "height"];
+  string BestBlock = 4 [json_name = "best_block"];
+  repeated Unspent Unspents = 5;
+  double TotalAmount = 6 [json_name = "total_amount"];
+}

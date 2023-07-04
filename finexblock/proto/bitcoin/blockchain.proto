@@ -1,0 +1,11 @@
+syntax = "proto3";
+package bitcoin;
+option go_package = "./bitcoin";
+
+import "proto/bitcoin/blockchain.message.proto";
+
+service Blockchain {
+  rpc GetBlockCount(GetBlockCountRequest) returns (GetBlockCountResponse);
+  rpc GetBlockHash(GetBlockHashRequest) returns (GetBlockHashResponse);
+  rpc GetBlock(GetBlockRequest) returns (GetBlockResponse);
+}

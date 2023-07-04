@@ -10,9 +10,6 @@ WHITE  := $(shell tput -Txterm setaf 7)
 CYAN   := $(shell tput -Txterm setaf 6)
 RESET  := $(shell tput -Txterm sgr0)
 
-## Vet:
-vet: ## Run `go vet cmd/main.go`
-	@$(GOCMD) vet $(CMD)/$(ENTRY)
 
 ## Vendor:
 vendor: ## Run `go mod vendor`
@@ -22,7 +19,7 @@ vendor: ## Run `go mod vendor`
 proto: ## Compile protobuf files
 	@echo "${YELLOW}Compiling protobuf...${YELLOW}"
 	@mkdir -p $(GEN)
-	@protoc --go_out=$(GEN) --go-grpc_out=$(GEN) ./$(PROTO_PATH)/*.proto
+	@protoc --go_out=$(GEN) --go-grpc_out=$(GEN) ./$(PROTO_PATH)/*/*.proto
 	@echo "${CYAN}Compile done${RESET}"
 
 ## Clean:

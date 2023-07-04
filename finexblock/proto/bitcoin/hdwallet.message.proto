@@ -1,0 +1,73 @@
+syntax = "proto3";
+package bitcoin;
+option go_package = "./bitcoin";
+
+message UnspentOutput {
+  string TxHash = 1 [json_name = "tx_hash"];
+  uint32 Vout = 2 [json_name = "vout"];
+  string Address = 3 [json_name = "address"];
+  string Account = 4 [json_name = "account"];
+  string ScriptPubKey = 5 [json_name = "script_pub_key"];
+  string RedeemScript = 6 [json_name = "redeem_script"];
+  double Amount = 7 [json_name = "amount"];
+  int64 Confirmations = 8 [json_name = "confirmations"];
+  bool Spendable = 9 [json_name = "spendable"];
+}
+
+message Unspent {
+  string TxId = 1 [json_name = "txid"];
+  uint32 Vout = 2 [json_name = "vout"];
+  string ScriptPubKey = 3 [json_name = "script_pub_key"];
+  string Desc = 4 [json_name = "desc"];
+  double Amount = 5 [json_name = "amount"];
+  uint32 Height = 6 [json_name = "height"];
+}
+message GetPrivateKeyRequest {
+  uint32 UserId = 1 [json_name = "user_id"];
+}
+message GetPrivateKeyResponse {
+  string PrivateKey = 1 [json_name = "private_key"];
+}
+message GetPubKeyHashRequest {
+  uint32 UserId = 1 [json_name = "user_id"];
+}
+message GetPubKeyHashResponse {
+  string PublicKey = 1 [json_name = "public_key"];
+}
+message CreateWalletRequest {
+  uint32 UserId = 1 [json_name = "user_id"];
+}
+message CreateWalletResponse {
+  string Address = 1 [json_name = "address"];
+}
+message GetNewAddressRequest {
+}
+message GetNewAddressResponse {
+  string Address = 1 [json_name = "address"];
+}
+message ListUnspentRequest {
+  uint64 Minconf = 1 [json_name = "minconf"];
+  uint64 Maxconf = 2 [json_name = "maxconf"];
+  string Address = 3 [json_name = "addresses"];
+}
+message ListUnspentResponse {
+  repeated UnspentOutput UnspentOutputs = 1 [json_name = "unspent_outputs"];
+}
+message SendToAddressRequest {
+  string ToAddress = 1 [json_name = "to_address"];
+  double Amount = 2 [json_name = "amount"];
+}
+message SendToAddressResponse {
+  string TxHash = 1 [json_name = "tx_hash"];
+}
+message GetAddressUTXORequest {
+  string Address = 1 [json_name = "address"];
+}
+message GetAddressUTXOResponse {
+  bool Success = 1 [json_name = "success"];
+  uint32 Txouts = 2 [json_name = "txouts"];
+  uint32 Height = 3 [json_name = "height"];
+  string BestBlock = 4 [json_name = "best_block"];
+  repeated Unspent Unspents = 5;
+  double TotalAmount = 6 [json_name = "total_amount"];
+}

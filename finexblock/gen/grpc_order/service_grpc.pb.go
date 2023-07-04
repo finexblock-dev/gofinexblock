@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.3
-// source: proto/service.proto
+// source: proto/grpc_order/service.proto
 
 package grpc_order
 
@@ -105,7 +105,7 @@ var MarketOrder_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/service.proto",
+	Metadata: "proto/grpc_order/service.proto",
 }
 
 const (
@@ -195,7 +195,7 @@ var LimitOrder_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/service.proto",
+	Metadata: "proto/grpc_order/service.proto",
 }
 
 const (
@@ -285,7 +285,7 @@ var CancelOrder_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/service.proto",
+	Metadata: "proto/grpc_order/service.proto",
 }
 
 const (
@@ -708,7 +708,7 @@ var Event_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/service.proto",
+	Metadata: "proto/grpc_order/service.proto",
 }
 
 const (
@@ -835,5 +835,5 @@ var OrderBook_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/service.proto",
+	Metadata: "proto/grpc_order/service.proto",
 }

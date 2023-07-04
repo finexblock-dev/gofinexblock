@@ -1,0 +1,54 @@
+syntax = "proto3";
+package polygon;
+option go_package = "./polygon";
+
+
+message SendRawTransactionInput {
+  string To = 2 [json_name = "to"];
+  string Amount = 3 [json_name = "account"];
+}
+
+message SendRawTransactionOutput {
+  bool Success = 1 [json_name = "success"];
+  string TxHash = 2 [json_name = "tx_hash"];
+}
+
+message TransferInput {
+  string UserID = 1 [json_name = "user_id"];
+  string From = 2 [json_name = "from"];
+  string Amount = 3 [json_name = "success"];
+}
+
+message TransferOutput {
+  bool Success = 1 [json_name = "success"];
+  string TxHash = 2 [json_name = "tx_hash"];
+}
+
+message GetReceiptInput {
+  string TxHash = 1 [json_name = "tx_hash"];
+}
+
+message GetReceiptOutput {
+  string TxHash = 1 [json_name = "tx_hash"];
+  uint64 Status = 2 [json_name = "status"];
+  string BlockHash = 3 [json_name = "block_hash"];
+  string BlockNumber = 4 [json_name = "block_number"];
+  uint64 GasUsed = 5 [json_name = "gas_used"];
+  uint64 TransactionIndex = 6 [json_name = "transaction_index"];
+}
+
+message GetBlockNumberInput {
+}
+
+message GetBlockNumberOutput {
+  uint64 BlockNumber = 1 [json_name = "block_number"];
+}
+
+message GetBlocksInput {
+  uint64 Start = 1 [json_name = "start"];
+  uint64 End = 2 [json_name = "end"];
+}
+
+message GetBlocksOutput {
+  repeated bytes Result = 1 [json_name = "result"];
+}

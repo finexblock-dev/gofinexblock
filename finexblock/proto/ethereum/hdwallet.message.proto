@@ -1,0 +1,29 @@
+syntax = "proto3";
+package ethereum;
+option go_package = "./ethereum";
+
+
+message CreateWalletInput {
+  uint64 UserID = 1 [json_name = "user_id"];
+}
+
+message CreateWalletOutput {
+  string Address = 1 [json_name = "address"];
+}
+
+message GetBalanceInput {
+  string Address = 1 [json_name = "address"];
+}
+
+message GetBalanceOutput {
+  string Balance = 1 [json_name = "balance"];
+}
+
+message GetWalletInput {
+  uint64 UserID = 1 [json_name = "user_id"];
+}
+
+message GetWalletOutput {
+  string PublicKey = 1 [json_name = "public_key"];
+  string Address = 2 [json_name = "address"];
+}
