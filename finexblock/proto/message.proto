@@ -1,0 +1,261 @@
+syntax = "proto3";
+package grpc_order;
+option go_package = "./grpc_order";
+
+import "google/protobuf/timestamp.proto";
+
+enum OrderType {
+  ORDER_NIL = 0;
+  BID = 1; // 구매 매수
+  ASK = 2; // 판매 매도
+}
+
+enum SymbolType {
+  SYMBOL_NIL = 0;
+  BTCETH = 1;
+  BTCETC = 2;
+  BTCMATIC = 3;
+  BTCLPT = 4;
+  BTCMANA = 5;
+  BTCAXS = 6;
+  BTCAUDIO = 7;
+  BTCSAND = 8;
+  BTCCOMP = 9;
+  BTCLINK = 10;
+  BTCDYDX = 11;
+  BTCBNB = 12;
+  BTCOP = 13;
+  BTCAVAX = 14;
+  BTCARB = 15;
+}
+
+enum Currency {
+  CURRENCY_NIL = 0;
+  ETH = 1;
+  ETC = 2;
+  MATIC = 3;
+  LPT = 4;
+  MANA = 5;
+  AXS = 6;
+  AUDIO = 7;
+  SAND = 8;
+  COMP = 9;
+  LINK = 10;
+  DYDX = 11;
+  BNB = 12;
+  OP = 13;
+  AVAX = 14;
+  ARB = 15;
+  BTC = 16;
+}
+
+enum Reason {
+  ADVANCE_PAYMENT = 0;
+  DEPOSIT = 1;
+  WITHDRAWAL = 2;
+  MAKE = 3;
+  TAKE = 4;
+  REFUND = 5;
+}
+
+message Fee {
+  double Amount = 1;
+}
+
+message Ack {
+  bool Success = 1 [json_name = "success"];
+}
+
+message Order {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  double Quantity = 3 [json_name = "quantity"];
+  double UnitPrice = 4 [json_name = "unit_price"];
+  OrderType OrderType = 5 [json_name = "order_type"];
+  SymbolType Symbol = 6 [json_name = "symbol"];
+  google.protobuf.Timestamp MakeTime = 7 [json_name = "make_time"];
+}
+
+message LimitOrderBid {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  double Quantity = 3 [json_name = "quantity"];
+  double UnitPrice = 4 [json_name = "unit_price"];
+  OrderType OrderType = 5 [json_name = "order_type"];
+  SymbolType Symbol = 6 [json_name = "symbol"];
+  google.protobuf.Timestamp MakeTime = 7 [json_name = "make_time"];
+}
+
+message LimitOrderAsk {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  double Quantity = 3 [json_name = "quantity"];
+  double UnitPrice = 4 [json_name = "unit_price"];
+  OrderType OrderType = 5 [json_name = "order_type"];
+  SymbolType Symbol = 6 [json_name = "symbol"];
+  google.protobuf.Timestamp MakeTime = 7 [json_name = "make_time"];
+}
+
+message MarketOrderBid {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  double Quantity = 3 [json_name = "quantity"];
+  OrderType OrderType = 4 [json_name = "order_type"];
+  SymbolType Symbol = 5 [json_name = "symbol"];
+  google.protobuf.Timestamp MakeTime = 6 [json_name = "make_time"];
+}
+
+message MarketOrderAsk {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  double Quantity = 3 [json_name = "quantity"];
+  OrderType OrderType = 4 [json_name = "order_type"];
+  SymbolType Symbol = 5 [json_name = "symbol"];
+  google.protobuf.Timestamp MakeTime = 6 [json_name = "make_time"];
+}
+
+message OrderCancellation {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+}
+
+message OrderCancelled {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  double Quantity = 3 [json_name = "quantity"];
+  double UnitPrice = 4 [json_name = "unit_price"];
+  OrderType OrderType = 5 [json_name = "order_type"];
+  SymbolType Symbol = 6 [json_name = "symbol"];
+}
+
+message OrderCancellationFailed {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  string Msg = 3 [json_name = "msg"];
+}
+
+message OrderFulfillment {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  double FilledQuantity = 3 [json_name = "filled_quantity"];
+  double UnitPrice = 4 [json_name = "unit_price"];
+  SymbolType Symbol = 5 [json_name = "symbol"];
+  OrderType OrderType = 6 [json_name = "order_type"];
+  google.protobuf.Timestamp MakeTime = 7 [json_name = "make_time"];
+  google.protobuf.Timestamp TakeTime = 8 [json_name = "take_time"];
+  Fee Fee = 9 [json_name = "fee"];
+}
+
+message OrderInitialize {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  double Quantity = 3 [json_name = "quantity"];
+  double UnitPrice = 4 [json_name = "unit_price"];
+  SymbolType Symbol = 5 [json_name = "symbol"];
+  OrderType OrderType = 6 [json_name = "order_type"];
+  google.protobuf.Timestamp MakeTime = 7 [json_name = "make_time"];
+}
+
+message OrderMatching {
+  double UnitPrice = 1 [json_name = "unit_price"];
+  double Quantity = 2 [json_name = "quantity"];
+  google.protobuf.Timestamp Timestamp = 3 [json_name = "timestamp"];
+  OrderType OrderType = 4 [json_name = "order_type"];
+  SymbolType Symbol = 5 [json_name = "symbol"];
+}
+
+message OrderMatchingFailed {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  double Quantity = 3 [json_name = "quantity"]; // btceth => bid인 경우 btc : btc 소모해서 eth 구매, ask인 경우 eth : eth 소모해서 btc 구매
+  OrderType OrderType = 4 [json_name = "order_type"]; // bid or ask
+  SymbolType Symbol = 5 [json_name = "symbol"]; // btceth
+  google.protobuf.Timestamp MakeTime = 6 [json_name = "make_time"];
+  string Msg = 7 [json_name = "msg"];
+}
+
+message OrderPartialFill {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  double TotalQuantity = 3 [json_name = "total_quantity"];
+  double FilledQuantity = 4 [json_name = "filled_quantity"];
+  double UnitPrice = 5 [json_name = "unit_price"];
+  SymbolType Symbol = 6 [json_name = "symbol"];
+  OrderType OrderType = 7 [json_name = "order_type"];
+  google.protobuf.Timestamp MakeTime = 8 [json_name = "make_time"];
+  google.protobuf.Timestamp TakeTime = 9 [json_name = "take_time"];
+  Fee Fee = 10 [json_name = "fee"];
+}
+
+message OrderPlacement {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  double Quantity = 3 [json_name = "quantity"];
+  double UnitPrice = 4 [json_name = "unit_price"];
+  SymbolType Symbol = 5 [json_name = "symbol"];
+  OrderType OrderType = 6 [json_name = "order_type"];
+  google.protobuf.Timestamp MakeTime = 7 [json_name = "make_time"];
+}
+
+
+message OrderPlacementFailed {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  string Msg = 3 [json_name = "msg"];
+}
+
+message MarketOrderInput {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  double Quantity = 3 [json_name = "quantity"];
+  OrderType OrderType = 4 [json_name = "order_type"];
+  SymbolType Symbol = 5 [json_name = "symbol"];
+  google.protobuf.Timestamp MakeTime = 6 [json_name = "make_time"];
+}
+
+message MarketOrderOutput {
+  bool Success = 1;
+}
+
+message LimitOrderInput {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  double Quantity = 3 [json_name = "quantity"];
+  double UnitPrice = 4 [json_name = "unit_price"];
+  OrderType OrderType = 5 [json_name = "order_type"];
+  SymbolType Symbol = 6 [json_name = "symbol"];
+  google.protobuf.Timestamp MakeTime = 7 [json_name = "make_time"];
+}
+
+message LimitOrderOutput {
+  bool Success = 1 [json_name = "success"];
+}
+
+message BalanceUpdate {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  double Diff = 2 [json_name = "diff"];
+  Currency Currency = 3 [json_name = "currency"];
+  Reason Reason = 4 [json_name = "reason"];
+}
+
+message BidAsk {
+  Order bid = 1 [json_name = "bid"];
+  Order ask = 2 [json_name = "ask"];
+}
+
+message GetOrderBookInput {
+}
+
+message OrderBookData {
+  double Price = 1 [json_name = "price"];
+  double Volume = 2 [json_name = "quantity"];
+}
+
+message GetOrderBookOutput {
+  repeated OrderBookData bids = 1 [json_name = "bids"];
+  repeated OrderBookData asks = 2 [json_name = "asks"];
+}
+
+message PushOrderBookInput {
+  SymbolType symbol = 1 [json_name = "symbol"];
+}

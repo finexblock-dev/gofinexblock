@@ -28,3 +28,11 @@ type User struct {
 	UserEmailSignUp      UserEmailSignUp      `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE;"`
 	UserSingleSignOnInfo UserSingleSignOnInfo `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE;"`
 }
+
+func (u *User) TableName() string {
+	return "user"
+}
+
+func (u *User) Alias() string {
+	return "user u"
+}
