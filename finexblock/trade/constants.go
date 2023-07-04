@@ -1,4 +1,4 @@
-package account
+package trade
 
 import (
 	"encoding/json"

@@ -1,4 +1,4 @@
-package account
+package trade
 
 import (
 	"context"
@@ -6,23 +6,26 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-type FinexblockAccountService interface {
+type Service interface {
 	AcquireLock(ctx context.Context, uuid, currency string) (bool, error)
 	ReleaseLock(ctx context.Context, uuid, currency string) error
 	GetBalance(ctx context.Context, uuid, currency string) (decimal.Decimal, error)
 	SetBalance(ctx context.Context, uuid, currency string, amount decimal.Decimal) error
 	PlusBalance(ctx context.Context, uuid, currency string, amount decimal.Decimal) error
 	MinusBalance(ctx context.Context, uuid, currency string, amount decimal.Decimal) error
+	SetOrder(ctx context.Context, orderUUID string, side string) error
+	GetOrder(ctx context.Context, orderUUID string) (string, error)
+	DeleteOrder(ctx context.Context, orderUUID string) error
 }
 
 type accountService struct {
 	redisClient *redis.ClusterClient
 }
 
-func newAccountService(redisClient *redis.ClusterClient) FinexblockAccountService {
+func newAccountService(redisClient *redis.ClusterClient) *accountService {
 	return &accountService{redisClient: redisClient}
 }
 
-func NewFinexblockAccountService(redisClient *redis.ClusterClient) FinexblockAccountService {
+func NewService(redisClient *redis.ClusterClient) Service {
 	return newAccountService(redisClient)
 }
