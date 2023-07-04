@@ -5,13 +5,13 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func (a *accountService) GetBalance(ctx context.Context, uuid, currency string) (decimal.Decimal, error) {
+func (a *tradeService) GetBalance(ctx context.Context, uuid, currency string) (decimal.Decimal, error) {
 	var key string
 	var value string
 	var decimalValue decimal.Decimal
 	var err error
 
-	key = getKey(uuid, currency)
+	key = getBalanceKey(uuid, currency)
 	value, err = a.redisClient.Get(ctx, key).Result()
 	if err != nil {
 		return decimal.Zero, wrapErr(ErrKeyNotFound, err)
@@ -25,18 +25,18 @@ func (a *accountService) GetBalance(ctx context.Context, uuid, currency string) 
 	return decimalValue, nil
 }
 
-func (a *accountService) SetBalance(ctx context.Context, uuid, currency string, amount decimal.Decimal) error {
+func (a *tradeService) SetBalance(ctx context.Context, uuid, currency string, amount decimal.Decimal) error {
 	var key string
 
-	key = getKey(uuid, currency)
+	key = getBalanceKey(uuid, currency)
 	return a.redisClient.Set(ctx, key, amount.String(), 0).Err()
 }
 
-func (a *accountService) PlusBalance(ctx context.Context, uuid, currency string, amount decimal.Decimal) error {
+func (a *tradeService) PlusBalance(ctx context.Context, uuid, currency string, amount decimal.Decimal) error {
 	var key, value string
 	var decimalValue decimal.Decimal
 	var err error
-	key = getKey(uuid, currency)
+	key = getBalanceKey(uuid, currency)
 	value, err = a.redisClient.Get(ctx, key).Result()
 	if err != nil {
 		return wrapErr(ErrKeyNotFound, err)
@@ -50,12 +50,12 @@ func (a *accountService) PlusBalance(ctx context.Context, uuid, currency string,
 	return a.SetBalance(ctx, uuid, currency, decimalValue)
 }
 
-func (a *accountService) MinusBalance(ctx context.Context, uuid, currency string, amount decimal.Decimal) error {
+func (a *tradeService) MinusBalance(ctx context.Context, uuid, currency string, amount decimal.Decimal) error {
 	var key, value string
 	var decimalValue decimal.Decimal
 	var err error
 
-	key = getKey(uuid, currency)
+	key = getBalanceKey(uuid, currency)
 	value, err = a.redisClient.Get(ctx, key).Result()
 	if err != nil {
 		return wrapErr(ErrKeyNotFound, err)

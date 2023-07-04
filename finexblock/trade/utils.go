@@ -2,8 +2,8 @@ package trade
 
 import "fmt"
 
-func getKey(uuid, currency string) string {
-	return fmt.Sprintf("%v:%v", uuid, currency)
+func getBalanceKey(uuid, currency string) string {
+	return fmt.Sprintf("%v:%v:balance", uuid, currency)
 }
 
 func getAccountLockKey(uuid, currency string) string {

@@ -18,14 +18,14 @@ type Service interface {
 	DeleteOrder(ctx context.Context, orderUUID string) error
 }
 
-type accountService struct {
+type tradeService struct {
 	redisClient *redis.ClusterClient
 }
 
-func newAccountService(redisClient *redis.ClusterClient) *accountService {
-	return &accountService{redisClient: redisClient}
+func newTradeService(redisClient *redis.ClusterClient) *tradeService {
+	return &tradeService{redisClient: redisClient}
 }
 
 func NewService(redisClient *redis.ClusterClient) Service {
-	return newAccountService(redisClient)
+	return newTradeService(redisClient)
 }
