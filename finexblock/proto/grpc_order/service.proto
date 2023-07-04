@@ -32,7 +32,6 @@ service Event {
 
 service OrderBook {
   rpc GetOrderBook(GetOrderBookInput) returns(GetOrderBookOutput);
-  rpc PushOrderBook(PushOrderBookInput) returns (Ack);
 }
 
 service PlacementProcess {
