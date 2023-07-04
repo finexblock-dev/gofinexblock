@@ -232,6 +232,7 @@ message PushOrderBookInput {
 message ErrorInput {
   string process = 1 [json_name = "process"];
   string msg = 2 [json_name = "msg"];
-  Priority priority = 3 [json_name = "priority"];
-  google.protobuf.Struct metadata = 4 [json_name = "data"];
+  string err = 3 [json_name = "err"];
+  Priority priority = 4 [json_name = "priority"];
+  google.protobuf.Struct metadata = 5 [json_name = "data"];
 }
