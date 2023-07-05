@@ -1,7 +1,6 @@
 package wallet
 
 import (
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity/user"
 	"time"
 )
 
@@ -13,8 +12,6 @@ type Wallet struct {
 	CreatedAt time.Time `gorm:"not null;comment:'생성일자';default:CURRENT_TIMESTAMP;type:timestamp"`
 	UpdatedAt time.Time `gorm:"not null;comment:'수정일자';default:CURRENT_TIMESTAMP;type:timestamp"`
 
-	User         *user.User      `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE"`
-	Coin         *Coin           `gorm:"foreignKey:CoinID;constraint:OnUpdate:CASCADE"`
 	CoinTransfer []*CoinTransfer `gorm:"foreignKey:WalletID;constraint:OnUpdate:CASCADE"`
 }
 
