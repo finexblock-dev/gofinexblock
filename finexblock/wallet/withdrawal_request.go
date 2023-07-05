@@ -3,7 +3,6 @@ package wallet
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity/wallet"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 func (w *walletService) FindWithdrawalRequestByID(tx *gorm.DB, id uint) (*wallet.WithdrawalRequest, error) {
@@ -19,10 +18,10 @@ func (w *walletService) FindWithdrawalRequestByID(tx *gorm.DB, id uint) (*wallet
 
 func (w *walletService) ScanWithdrawalRequestByStatus(tx *gorm.DB, status wallet.WithdrawalStatus) ([]*wallet.WithdrawalRequest, error) {
 	var _withdrawalRequest []*wallet.WithdrawalRequest
-	var _table *wallet.WithdrawalRequest
+	var table *wallet.WithdrawalRequest
 	var err error
 
-	if err = tx.Table(_table.TableName()).Where("status = ?", status).Find(_withdrawalRequest).Error; err != nil {
+	if err = tx.Table(table.TableName()).Where("status = ?", status).Find(_withdrawalRequest).Error; err != nil {
 		return nil, err
 	}
 
@@ -30,15 +29,21 @@ func (w *walletService) ScanWithdrawalRequestByStatus(tx *gorm.DB, status wallet
 }
 
 func (w *walletService) ScanWithdrawalRequestByCond(tx *gorm.DB, coinID uint, status wallet.WithdrawalStatus) ([]*wallet.WithdrawalRequest, error) {
-	var _withdrawalRequest []*wallet.WithdrawalRequest
-	var _table *wallet.WithdrawalRequest
-	var err error
+	var withdrawalRequests []*wallet.WithdrawalRequest
+	var table *wallet.WithdrawalRequest
 
-	if err = tx.Table(_table.TableName()).Preload(clause.Associations).Where("status = ?", status).Find(_withdrawalRequest).Error; err != nil {
+	err := tx.Table(table.TableName()).
+		Select("withdrawal_request.*").
+		Joins("join coin_transfer on coin_transfer.id = withdrawal_request.coin_transfer_id").
+		Joins("join wallet on wallet.id = coin_transfer.wallet_id").
+		Where("wallet.coin_id = ?", coinID).
+		Find(&withdrawalRequests).Error
+
+	if err != nil {
 		return nil, err
 	}
 
-	return _withdrawalRequest, nil
+	return withdrawalRequests, nil
 }
 
 func (w *walletService) UpdateWithdrawalRequest(tx *gorm.DB, id uint, state wallet.WithdrawalStatus) (*wallet.WithdrawalRequest, error) {
