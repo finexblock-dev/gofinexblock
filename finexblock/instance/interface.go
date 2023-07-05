@@ -18,6 +18,10 @@ type instanceService struct {
 	db *gorm.DB
 }
 
+func (i *instanceService) Conn() *gorm.DB {
+	return i.db
+}
+
 func (i *instanceService) Tx(level sql.IsolationLevel) *gorm.DB {
 	return i.db.Begin(&sql.TxOptions{Isolation: level})
 }
