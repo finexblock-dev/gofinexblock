@@ -19,6 +19,7 @@ type Service interface {
 
 	FindBlockNumberByCoinID(tx *gorm.DB, coinID uint) (*wallet.BlockNumber, error)
 	FindBlockNumberByID(tx *gorm.DB, id uint) (*wallet.BlockNumber, error)
+	UpdateBlockNumber(tx *gorm.DB, coinID uint, fromBlockNumber, toBlockNumber decimal.Decimal) (*wallet.BlockNumber, error)
 
 	FindWalletByID(tx *gorm.DB, id uint) (*wallet.Wallet, error)
 	FindWalletByAddress(tx *gorm.DB, addr string) (*wallet.Wallet, error)
