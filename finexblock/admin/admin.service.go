@@ -10,157 +10,161 @@ import (
 	"time"
 )
 
-type AdminService struct {
+type adminService struct {
 	repo Repository
 }
 
-func (a *AdminService) Tx(level sql.IsolationLevel) *gorm.DB {
+func (a *adminService) Conn() *gorm.DB {
+	return a.repo.Conn()
+}
+
+func (a *adminService) Tx(level sql.IsolationLevel) *gorm.DB {
 	return a.repo.Tx(level)
 }
 
-func newAdminService(repo Repository) *AdminService {
-	return &AdminService{repo: repo}
+func newAdminService(repo Repository) *adminService {
+	return &adminService{repo: repo}
 }
 
-func (a *AdminService) FindAllAdmin(ctx *fiber.Ctx, limit, offset int) error {
+func (a *adminService) FindAllAdmin(ctx *fiber.Ctx, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindAdminByGrade(ctx *fiber.Ctx, grade admin.GradeType, limit, offset int) error {
+func (a *adminService) FindAdminByGrade(ctx *fiber.Ctx, grade admin.GradeType, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindLoginFailedLog(ctx *fiber.Ctx, adminID uint, limit, offset int) error {
+func (a *adminService) FindLoginFailedLog(ctx *fiber.Ctx, adminID uint, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindLoginHistory(ctx *fiber.Ctx, adminID uint, limit, offset int) error {
+func (a *adminService) FindLoginHistory(ctx *fiber.Ctx, adminID uint, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) SearchApiLog(ctx *fiber.Ctx, query *dto.SearchApiLogInput) error {
+func (a *adminService) SearchApiLog(ctx *fiber.Ctx, query *dto.SearchApiLogInput) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindAllApiLog(ctx *fiber.Ctx, limit, offset int) error {
+func (a *adminService) FindAllApiLog(ctx *fiber.Ctx, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindApiLogByAdmin(ctx *fiber.Ctx, adminID uint, limit, offset int) error {
+func (a *adminService) FindApiLogByAdmin(ctx *fiber.Ctx, adminID uint, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindApiLogByTimeCond(ctx *fiber.Ctx, start, end time.Time, limit, offset int) error {
+func (a *adminService) FindApiLogByTimeCond(ctx *fiber.Ctx, start, end time.Time, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindApiLogByMethodCond(ctx *fiber.Ctx, method admin.ApiMethod, limit, offset int) error {
+func (a *adminService) FindApiLogByMethodCond(ctx *fiber.Ctx, method admin.ApiMethod, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindApiLogByEndpoint(ctx *fiber.Ctx, endpoint string, limit, offset int) error {
+func (a *adminService) FindApiLogByEndpoint(ctx *fiber.Ctx, endpoint string, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindAllGradeUpdateLog(ctx *fiber.Ctx, limit, offset int) error {
+func (a *adminService) FindAllGradeUpdateLog(ctx *fiber.Ctx, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) SearchGradeUpdateLog(ctx *fiber.Ctx, query *dto.SearchGradeUpdateLogInput) error {
+func (a *adminService) SearchGradeUpdateLog(ctx *fiber.Ctx, query *dto.SearchGradeUpdateLogInput) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindGradeUpdateLogOfExecutor(ctx *fiber.Ctx, executor uint, limit, offset int) error {
+func (a *adminService) FindGradeUpdateLogOfExecutor(ctx *fiber.Ctx, executor uint, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindGradeUpdateLogOfTarget(ctx *fiber.Ctx, target uint, limit, offset int) error {
+func (a *adminService) FindGradeUpdateLogOfTarget(ctx *fiber.Ctx, target uint, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) SearchPasswordUpdateLog(ctx *fiber.Ctx, query *dto.SearchPasswordUpdateLogInput) error {
+func (a *adminService) SearchPasswordUpdateLog(ctx *fiber.Ctx, query *dto.SearchPasswordUpdateLogInput) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) SearchDeleteLog(ctx *fiber.Ctx, query *dto.SearchDeleteLogInput) error {
+func (a *adminService) SearchDeleteLog(ctx *fiber.Ctx, query *dto.SearchDeleteLogInput) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindAllDeleteLog(ctx *fiber.Ctx, limit, offset int) error {
+func (a *adminService) FindAllDeleteLog(ctx *fiber.Ctx, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindAllPasswordUpdateLog(ctx *fiber.Ctx, limit, offset int) error {
+func (a *adminService) FindAllPasswordUpdateLog(ctx *fiber.Ctx, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindPasswordUpdateLogOfExecutor(ctx *fiber.Ctx, executor uint, limit, offset int) error {
+func (a *adminService) FindPasswordUpdateLogOfExecutor(ctx *fiber.Ctx, executor uint, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindPasswordUpdateLogOfTarget(ctx *fiber.Ctx, target uint, limit, offset int) error {
+func (a *adminService) FindPasswordUpdateLogOfTarget(ctx *fiber.Ctx, target uint, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindDeleteLogOfExecutor(ctx *fiber.Ctx, executor uint, limit, offset int) error {
+func (a *adminService) FindDeleteLogOfExecutor(ctx *fiber.Ctx, executor uint, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) FindDeleteLogOfTarget(ctx *fiber.Ctx, target uint, limit, offset int) error {
+func (a *adminService) FindDeleteLogOfTarget(ctx *fiber.Ctx, target uint, limit, offset int) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) DeleteAdmin(ctx *fiber.Ctx, adminID uint) error {
+func (a *adminService) DeleteAdmin(ctx *fiber.Ctx, adminID uint) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) BlockAdmin(ctx *fiber.Ctx, adminID uint) error {
+func (a *adminService) BlockAdmin(ctx *fiber.Ctx, adminID uint) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) UpdatePassword(ctx *fiber.Ctx, adminID uint, prevPassword, currentPassword string) error {
+func (a *adminService) UpdatePassword(ctx *fiber.Ctx, adminID uint, prevPassword, currentPassword string) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) UpdateEmail(ctx *fiber.Ctx, adminID uint, newEmail string) error {
+func (a *adminService) UpdateEmail(ctx *fiber.Ctx, adminID uint, newEmail string) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) UpdateGrade(ctx *fiber.Ctx, adminID uint, grade admin.GradeType) error {
+func (a *adminService) UpdateGrade(ctx *fiber.Ctx, adminID uint, grade admin.GradeType) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminService) Ctx() context.Context {
+func (a *adminService) Ctx() context.Context {
 	return context.Background()
 }
 
-func (a *AdminService) CtxWithCancel(ctx context.Context) (context.Context, context.CancelFunc) {
+func (a *adminService) CtxWithCancel(ctx context.Context) (context.Context, context.CancelFunc) {
 	return context.WithCancel(ctx)
 }

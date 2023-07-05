@@ -42,6 +42,10 @@ type walletService struct {
 	db *gorm.DB
 }
 
+func (w *walletService) Conn() *gorm.DB {
+	return w.db
+}
+
 func (w *walletService) Ctx() context.Context {
 	return context.Background()
 }

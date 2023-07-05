@@ -12,6 +12,10 @@ type announcementService struct {
 	announcementRepository Repository
 }
 
+func (a *announcementService) Conn() *gorm.DB {
+	return a.announcementRepository.Conn()
+}
+
 func (a *announcementService) Tx(level sql.IsolationLevel) *gorm.DB {
 	return a.announcementRepository.Tx(level)
 }
