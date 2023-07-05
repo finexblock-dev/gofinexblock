@@ -26,6 +26,7 @@ type WithdrawalRequest struct {
 	Status         WithdrawalStatus `gorm:"not null;type:enum('SUBMITTED', 'APPROVED', 'CANCELED', 'REJECTED', 'PENDING', 'COMPLETED', 'FAILED');comment:'상태'"`
 	CreatedAt      time.Time        `gorm:"not null;comment:'생성일자';default:CURRENT_TIMESTAMP;type:timestamp"`
 	UpdatedAt      time.Time        `gorm:"not null;comment:'수정일자';default:CURRENT_TIMESTAMP;type:timestamp"`
+	CoinTransfer   *CoinTransfer    `gorm:"foreignKey:CoinTransferID;references:ID"`
 }
 
 func (w *WithdrawalRequest) Alias() string {

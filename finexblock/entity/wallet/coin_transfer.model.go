@@ -21,8 +21,9 @@ type CoinTransfer struct {
 	CreatedAt    time.Time       `gorm:"not null;comment:'생성일자';default:CURRENT_TIMESTAMP;type:timestamp"`
 	UpdatedAt    time.Time       `gorm:"not null;comment:'수정일자';default:CURRENT_TIMESTAMP;type:timestamp"`
 
-	CoinTransaction   []CoinTransaction   `gorm:"foreignKey:CoinTransferID;constraint:OnUpdate:CASCADE"`
-	WithdrawalRequest []WithdrawalRequest `gorm:"foreignKey:CoinTransferID;constraint:OnUpdate:CASCADE"`
+	CoinTransaction   []*CoinTransaction   `gorm:"foreignKey:CoinTransferID;constraint:OnUpdate:CASCADE"`
+	WithdrawalRequest []*WithdrawalRequest `gorm:"foreignKey:CoinTransferID;constraint:OnUpdate:CASCADE"`
+	Wallet            *Wallet              `gorm:"foreignKey:WalletID;references:ID"`
 }
 
 func (t *CoinTransfer) Alias() string {
