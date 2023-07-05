@@ -11,6 +11,10 @@ type announcementRepository struct {
 	db *gorm.DB
 }
 
+func (a *announcementRepository) Conn() *gorm.DB {
+	return a.db
+}
+
 func (a *announcementRepository) FindAdminByID(tx *gorm.DB, id uint) (*admin.Admin, error) {
 	//TODO implement me
 	panic("implement me")
