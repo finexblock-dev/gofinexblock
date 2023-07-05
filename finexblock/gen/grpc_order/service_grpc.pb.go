@@ -299,6 +299,7 @@ const (
 	Event_OrderFulfillmentEvent_FullMethodName        = "/grpc_order.Event/OrderFulfillmentEvent"
 	Event_OrderInitializeEvent_FullMethodName         = "/grpc_order.Event/OrderInitializeEvent"
 	Event_BalanceUpdateEvent_FullMethodName           = "/grpc_order.Event/BalanceUpdateEvent"
+	Event_MarketOrderMatchingEvent_FullMethodName     = "/grpc_order.Event/MarketOrderMatchingEvent"
 )
 
 // EventClient is the client API for Event service.
@@ -315,6 +316,7 @@ type EventClient interface {
 	OrderFulfillmentEvent(ctx context.Context, in *OrderFulfillment, opts ...grpc.CallOption) (*Ack, error)
 	OrderInitializeEvent(ctx context.Context, in *OrderInitialize, opts ...grpc.CallOption) (*Ack, error)
 	BalanceUpdateEvent(ctx context.Context, in *BalanceUpdate, opts ...grpc.CallOption) (*Ack, error)
+	MarketOrderMatchingEvent(ctx context.Context, in *MarketOrderMatching, opts ...grpc.CallOption) (*Ack, error)
 }
 
 type eventClient struct {
@@ -415,6 +417,15 @@ func (c *eventClient) BalanceUpdateEvent(ctx context.Context, in *BalanceUpdate,
 	return out, nil
 }
 
+func (c *eventClient) MarketOrderMatchingEvent(ctx context.Context, in *MarketOrderMatching, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, Event_MarketOrderMatchingEvent_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EventServer is the server API for Event service.
 // All implementations must embed UnimplementedEventServer
 // for forward compatibility
@@ -429,6 +440,7 @@ type EventServer interface {
 	OrderFulfillmentEvent(context.Context, *OrderFulfillment) (*Ack, error)
 	OrderInitializeEvent(context.Context, *OrderInitialize) (*Ack, error)
 	BalanceUpdateEvent(context.Context, *BalanceUpdate) (*Ack, error)
+	MarketOrderMatchingEvent(context.Context, *MarketOrderMatching) (*Ack, error)
 	mustEmbedUnimplementedEventServer()
 }
 
@@ -465,6 +477,9 @@ func (UnimplementedEventServer) OrderInitializeEvent(context.Context, *OrderInit
 }
 func (UnimplementedEventServer) BalanceUpdateEvent(context.Context, *BalanceUpdate) (*Ack, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BalanceUpdateEvent not implemented")
+}
+func (UnimplementedEventServer) MarketOrderMatchingEvent(context.Context, *MarketOrderMatching) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarketOrderMatchingEvent not implemented")
 }
 func (UnimplementedEventServer) mustEmbedUnimplementedEventServer() {}
 
@@ -659,6 +674,24 @@ func _Event_BalanceUpdateEvent_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Event_MarketOrderMatchingEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarketOrderMatching)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventServer).MarketOrderMatchingEvent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Event_MarketOrderMatchingEvent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventServer).MarketOrderMatchingEvent(ctx, req.(*MarketOrderMatching))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Event_ServiceDesc is the grpc.ServiceDesc for Event service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -705,6 +738,10 @@ var Event_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BalanceUpdateEvent",
 			Handler:    _Event_BalanceUpdateEvent_Handler,
+		},
+		{
+			MethodName: "MarketOrderMatchingEvent",
+			Handler:    _Event_MarketOrderMatchingEvent_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
