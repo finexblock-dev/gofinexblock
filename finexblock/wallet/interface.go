@@ -33,7 +33,7 @@ type Service interface {
 	InsertCoinTransfer(tx *gorm.DB, walletID uint, amount decimal.Decimal, transferType wallet.TransferType) (*wallet.CoinTransfer, error)
 
 	FindCoinTransactionByTxHash(tx *gorm.DB, txHash string) (*wallet.CoinTransaction, error)
-	ScanCoinTransactionByTransferID(tx *gorm.DB, txHash string) ([]*wallet.CoinTransaction, error)
+	ScanCoinTransactionByTransferID(tx *gorm.DB, transferID uint) ([]*wallet.CoinTransaction, error)
 	InsertCoinTransaction(tx *gorm.DB, transferID uint, txHash string) (*wallet.CoinTransaction, error)
 
 	ScanWithdrawalRequestByStatus(tx *gorm.DB, cond wallet.WithdrawalStatus) ([]*wallet.WithdrawalRequest, error)
