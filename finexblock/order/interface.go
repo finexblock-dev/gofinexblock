@@ -31,6 +31,10 @@ type orderService struct {
 	db *gorm.DB
 }
 
+func (o *orderService) Conn() *gorm.DB {
+	return o.db
+}
+
 func (o *orderService) Tx(level sql.IsolationLevel) *gorm.DB {
 	return o.db.Begin(&sql.TxOptions{Isolation: level})
 }
