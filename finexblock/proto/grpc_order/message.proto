@@ -236,3 +236,15 @@ message ErrorInput {
   Priority priority = 4 [json_name = "priority"];
   google.protobuf.Struct metadata = 5 [json_name = "data"];
 }
+
+message MarketOrderMatching {
+  string UserUUID = 1 [json_name = "user_uuid"];
+  string OrderUUID = 2 [json_name = "order_uuid"];
+  double Quantity = 3 [json_name = "quantity"];
+  double UnitPrice = 4 [json_name = "unit_price"];
+  SymbolType Symbol = 5 [json_name = "symbol"];
+  OrderType OrderType = 6 [json_name = "order_type"];
+  google.protobuf.Timestamp MakeTime = 7 [json_name = "make_time"];
+  google.protobuf.Timestamp TakeTime = 8 [json_name = "take_time"];
+  Fee Fee = 9 [json_name = "fee"];
+}
