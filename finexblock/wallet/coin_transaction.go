@@ -5,12 +5,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func (w *walletService) ScanCoinTransactionByTransferID(tx *gorm.DB, txHash string) ([]*wallet.CoinTransaction, error) {
+func (w *walletService) ScanCoinTransactionByTransferID(tx *gorm.DB, transferID uint) ([]*wallet.CoinTransaction, error) {
 	var coinTransaction []*wallet.CoinTransaction
 	var _table *wallet.CoinTransaction
 	var err error
 
-	if err = tx.Table(_table.TableName()).Where("tx_hash = ?", txHash).Find(&coinTransaction).Error; err != nil {
+	if err = tx.Table(_table.TableName()).Where("coin_transfer_id = ?", transferID).Find(&coinTransaction).Error; err != nil {
 		return nil, err
 	}
 
