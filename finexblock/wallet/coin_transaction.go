@@ -32,3 +32,14 @@ func (w *walletService) InsertCoinTransaction(tx *gorm.DB, transferID uint, txHa
 
 	return coinTransaction, nil
 }
+
+func (w *walletService) FindCoinTransactionByTxHash(tx *gorm.DB, txHash string) (*wallet.CoinTransaction, error) {
+	var coinTransaction *wallet.CoinTransaction
+	var err error
+
+	if err = tx.Table(coinTransaction.TableName()).Where("tx_hash = ?", txHash).First(&coinTransaction).Error; err != nil {
+		return nil, err
+	}
+
+	return coinTransaction, nil
+}
