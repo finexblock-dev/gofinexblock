@@ -43,3 +43,15 @@ func (w *walletService) FindCoinTransactionByTxHash(tx *gorm.DB, txHash string) 
 
 	return coinTransaction, nil
 }
+
+func (w *walletService) ScanCoinTransactionByCond(tx *gorm.DB, transferID uint, status wallet.TransactionStatus) ([]*wallet.CoinTransaction, error) {
+	var coinTransaction []*wallet.CoinTransaction
+	var table *wallet.CoinTransaction
+	var err error
+
+	if err = tx.Table(table.TableName()).Where("coin_transfer_id = ?", transferID).Where("status = ?", status).Find(&coinTransaction).Error; err != nil {
+		return nil, err
+	}
+
+	return coinTransaction, nil
+}
