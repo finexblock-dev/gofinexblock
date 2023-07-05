@@ -5,16 +5,17 @@ import (
 	"database/sql"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity/wallet"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
 type Service interface {
 	types.Service
-	FindBlockchainByName(name string) (*wallet.Blockchain, error)
-	FindBlockchainByID(id uint) (*wallet.Blockchain, error)
+	FindBlockchainByName(tx *gorm.DB, name string) (*wallet.Blockchain, error)
+	FindBlockchainByID(tx *gorm.DB, id uint) (*wallet.Blockchain, error)
 
-	FindCoinByID(id uint) (*wallet.Coin, error)
-	FindCoinByName(name string) (*wallet.Coin, error)
+	FindCoinByID(tx *gorm.DB, id uint) (*wallet.Coin, error)
+	FindCoinByName(tx *gorm.DB, name string) (*wallet.Coin, error)
 
 	FindBlockNumberByCoinID(tx *gorm.DB, coinID uint) (*wallet.BlockNumber, error)
 	FindBlockNumberByID(tx *gorm.DB, id uint) (*wallet.BlockNumber, error)
@@ -26,15 +27,15 @@ type Service interface {
 	ScanWalletByUserID(tx *gorm.DB, userID uint) ([]*wallet.Wallet, error)
 
 	InsertWallet(tx *gorm.DB, wallet *wallet.Wallet) (*wallet.Wallet, error)
-	UpdateWallet(tx *gorm.DB, wallet *wallet.Wallet) (*wallet.Wallet, error)
+	UpdateWallet(tx *gorm.DB, id uint, address string) (*wallet.Wallet, error)
 
-	InsertCoinTransfer(tx *gorm.DB, coinTransfer *wallet.CoinTransfer) (*wallet.CoinTransfer, error)
+	InsertCoinTransfer(tx *gorm.DB, walletID uint, amount decimal.Decimal, transferType wallet.TransferType) (*wallet.CoinTransfer, error)
 
-	FindRecentCoinTransactionByTxHash(tx *gorm.DB, txHash string) (*wallet.CoinTransaction, error)
-	InsertCoinTransaction(tx *gorm.DB, coinTransaction *wallet.CoinTransaction) (*wallet.CoinTransaction, error)
+	ScanCoinTransactionByTransferID(tx *gorm.DB, txHash string) ([]*wallet.CoinTransaction, error)
+	InsertCoinTransaction(tx *gorm.DB, transferID uint, txHash string) (*wallet.CoinTransaction, error)
 
-	ScanWithdrawalRequestByStatus(cond wallet.WithdrawalStatus) ([]*wallet.WithdrawalRequest, error)
-	UpdateWithdrawalRequest(tx *gorm.DB, id uint, state wallet.WithdrawalStatus) error
+	ScanWithdrawalRequestByStatus(tx *gorm.DB, cond wallet.WithdrawalStatus) ([]*wallet.WithdrawalRequest, error)
+	UpdateWithdrawalRequest(tx *gorm.DB, id uint, state wallet.WithdrawalStatus) (*wallet.WithdrawalRequest, error)
 }
 
 type walletService struct {
@@ -42,18 +43,15 @@ type walletService struct {
 }
 
 func (w *walletService) Ctx() context.Context {
-	//TODO implement me
-	panic("implement me")
+	return context.Background()
 }
 
 func (w *walletService) CtxWithCancel(ctx context.Context) (context.Context, context.CancelFunc) {
-	//TODO implement me
-	panic("implement me")
+	return context.WithCancel(ctx)
 }
 
 func (w *walletService) Tx(level sql.IsolationLevel) *gorm.DB {
-	//TODO implement me
-	panic("implement me")
+	return w.db.Begin(&sql.TxOptions{Isolation: level})
 }
 
 func newWalletService(db *gorm.DB) *walletService {
