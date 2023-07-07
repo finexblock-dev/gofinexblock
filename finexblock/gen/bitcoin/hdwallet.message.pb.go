@@ -131,21 +131,14 @@ func (x *UnspentOutput) GetSpendable() bool {
 	return false
 }
 
-type Unspent struct {
+type GetNewAddressInput struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
-
-	TxId         string  `protobuf:"bytes,1,opt,name=TxId,json=txid,proto3" json:"TxId,omitempty"`
-	Vout         uint32  `protobuf:"varint,2,opt,name=Vout,json=vout,proto3" json:"Vout,omitempty"`
-	ScriptPubKey string  `protobuf:"bytes,3,opt,name=ScriptPubKey,json=script_pub_key,proto3" json:"ScriptPubKey,omitempty"`
-	Desc         string  `protobuf:"bytes,4,opt,name=Desc,json=desc,proto3" json:"Desc,omitempty"`
-	Amount       float64 `protobuf:"fixed64,5,opt,name=Amount,json=amount,proto3" json:"Amount,omitempty"`
-	Height       uint32  `protobuf:"varint,6,opt,name=Height,json=height,proto3" json:"Height,omitempty"`
 }
 
-func (x *Unspent) Reset() {
-	*x = Unspent{}
+func (x *GetNewAddressInput) Reset() {
+	*x = GetNewAddressInput{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -153,13 +146,13 @@ func (x *Unspent) Reset() {
 	}
 }
 
-func (x *Unspent) String() string {
+func (x *GetNewAddressInput) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Unspent) ProtoMessage() {}
+func (*GetNewAddressInput) ProtoMessage() {}
 
-func (x *Unspent) ProtoReflect() protoreflect.Message {
+func (x *GetNewAddressInput) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -171,63 +164,21 @@ func (x *Unspent) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Unspent.ProtoReflect.Descriptor instead.
-func (*Unspent) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetNewAddressInput.ProtoReflect.Descriptor instead.
+func (*GetNewAddressInput) Descriptor() ([]byte, []int) {
 	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *Unspent) GetTxId() string {
-	if x != nil {
-		return x.TxId
-	}
-	return ""
-}
-
-func (x *Unspent) GetVout() uint32 {
-	if x != nil {
-		return x.Vout
-	}
-	return 0
-}
-
-func (x *Unspent) GetScriptPubKey() string {
-	if x != nil {
-		return x.ScriptPubKey
-	}
-	return ""
-}
-
-func (x *Unspent) GetDesc() string {
-	if x != nil {
-		return x.Desc
-	}
-	return ""
-}
-
-func (x *Unspent) GetAmount() float64 {
-	if x != nil {
-		return x.Amount
-	}
-	return 0
-}
-
-func (x *Unspent) GetHeight() uint32 {
-	if x != nil {
-		return x.Height
-	}
-	return 0
-}
-
-type GetPrivateKeyRequest struct {
+type GetNewAddressOutput struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UserId uint32 `protobuf:"varint,1,opt,name=UserId,json=user_id,proto3" json:"UserId,omitempty"`
+	Address string `protobuf:"bytes,1,opt,name=Address,json=address,proto3" json:"Address,omitempty"`
 }
 
-func (x *GetPrivateKeyRequest) Reset() {
-	*x = GetPrivateKeyRequest{}
+func (x *GetNewAddressOutput) Reset() {
+	*x = GetNewAddressOutput{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -235,13 +186,13 @@ func (x *GetPrivateKeyRequest) Reset() {
 	}
 }
 
-func (x *GetPrivateKeyRequest) String() string {
+func (x *GetNewAddressOutput) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetPrivateKeyRequest) ProtoMessage() {}
+func (*GetNewAddressOutput) ProtoMessage() {}
 
-func (x *GetPrivateKeyRequest) ProtoReflect() protoreflect.Message {
+func (x *GetNewAddressOutput) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -253,28 +204,30 @@ func (x *GetPrivateKeyRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetPrivateKeyRequest.ProtoReflect.Descriptor instead.
-func (*GetPrivateKeyRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetNewAddressOutput.ProtoReflect.Descriptor instead.
+func (*GetNewAddressOutput) Descriptor() ([]byte, []int) {
 	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetPrivateKeyRequest) GetUserId() uint32 {
+func (x *GetNewAddressOutput) GetAddress() string {
 	if x != nil {
-		return x.UserId
+		return x.Address
 	}
-	return 0
+	return ""
 }
 
-type GetPrivateKeyResponse struct {
+type ListUnspentInput struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	PrivateKey string `protobuf:"bytes,1,opt,name=PrivateKey,json=private_key,proto3" json:"PrivateKey,omitempty"`
+	MinConf uint64 `protobuf:"varint,1,opt,name=MinConf,json=minconf,proto3" json:"MinConf,omitempty"`
+	MaxConf uint64 `protobuf:"varint,2,opt,name=MaxConf,json=maxconf,proto3" json:"MaxConf,omitempty"`
+	Address string `protobuf:"bytes,3,opt,name=Address,json=addresses,proto3" json:"Address,omitempty"`
 }
 
-func (x *GetPrivateKeyResponse) Reset() {
-	*x = GetPrivateKeyResponse{}
+func (x *ListUnspentInput) Reset() {
+	*x = ListUnspentInput{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -282,13 +235,13 @@ func (x *GetPrivateKeyResponse) Reset() {
 	}
 }
 
-func (x *GetPrivateKeyResponse) String() string {
+func (x *ListUnspentInput) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetPrivateKeyResponse) ProtoMessage() {}
+func (*ListUnspentInput) ProtoMessage() {}
 
-func (x *GetPrivateKeyResponse) ProtoReflect() protoreflect.Message {
+func (x *ListUnspentInput) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -300,28 +253,42 @@ func (x *GetPrivateKeyResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetPrivateKeyResponse.ProtoReflect.Descriptor instead.
-func (*GetPrivateKeyResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListUnspentInput.ProtoReflect.Descriptor instead.
+func (*ListUnspentInput) Descriptor() ([]byte, []int) {
 	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetPrivateKeyResponse) GetPrivateKey() string {
+func (x *ListUnspentInput) GetMinConf() uint64 {
 	if x != nil {
-		return x.PrivateKey
+		return x.MinConf
+	}
+	return 0
+}
+
+func (x *ListUnspentInput) GetMaxConf() uint64 {
+	if x != nil {
+		return x.MaxConf
+	}
+	return 0
+}
+
+func (x *ListUnspentInput) GetAddress() string {
+	if x != nil {
+		return x.Address
 	}
 	return ""
 }
 
-type GetPubKeyHashRequest struct {
+type ListUnspentOutput struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UserId uint32 `protobuf:"varint,1,opt,name=UserId,json=user_id,proto3" json:"UserId,omitempty"`
+	UnspentOutputs []*UnspentOutput `protobuf:"bytes,1,rep,name=UnspentOutputs,json=unspent_outputs,proto3" json:"UnspentOutputs,omitempty"`
 }
 
-func (x *GetPubKeyHashRequest) Reset() {
-	*x = GetPubKeyHashRequest{}
+func (x *ListUnspentOutput) Reset() {
+	*x = ListUnspentOutput{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -329,13 +296,13 @@ func (x *GetPubKeyHashRequest) Reset() {
 	}
 }
 
-func (x *GetPubKeyHashRequest) String() string {
+func (x *ListUnspentOutput) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetPubKeyHashRequest) ProtoMessage() {}
+func (*ListUnspentOutput) ProtoMessage() {}
 
-func (x *GetPubKeyHashRequest) ProtoReflect() protoreflect.Message {
+func (x *ListUnspentOutput) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -347,28 +314,29 @@ func (x *GetPubKeyHashRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetPubKeyHashRequest.ProtoReflect.Descriptor instead.
-func (*GetPubKeyHashRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListUnspentOutput.ProtoReflect.Descriptor instead.
+func (*ListUnspentOutput) Descriptor() ([]byte, []int) {
 	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *GetPubKeyHashRequest) GetUserId() uint32 {
+func (x *ListUnspentOutput) GetUnspentOutputs() []*UnspentOutput {
 	if x != nil {
-		return x.UserId
+		return x.UnspentOutputs
 	}
-	return 0
+	return nil
 }
 
-type GetPubKeyHashResponse struct {
+type SendToAddressInput struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	PublicKey string `protobuf:"bytes,1,opt,name=PublicKey,json=public_key,proto3" json:"PublicKey,omitempty"`
+	ToAddress string  `protobuf:"bytes,1,opt,name=ToAddress,json=to_address,proto3" json:"ToAddress,omitempty"`
+	Amount    float64 `protobuf:"fixed64,2,opt,name=Amount,json=amount,proto3" json:"Amount,omitempty"`
 }
 
-func (x *GetPubKeyHashResponse) Reset() {
-	*x = GetPubKeyHashResponse{}
+func (x *SendToAddressInput) Reset() {
+	*x = SendToAddressInput{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -376,13 +344,13 @@ func (x *GetPubKeyHashResponse) Reset() {
 	}
 }
 
-func (x *GetPubKeyHashResponse) String() string {
+func (x *SendToAddressInput) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetPubKeyHashResponse) ProtoMessage() {}
+func (*SendToAddressInput) ProtoMessage() {}
 
-func (x *GetPubKeyHashResponse) ProtoReflect() protoreflect.Message {
+func (x *SendToAddressInput) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -394,28 +362,35 @@ func (x *GetPubKeyHashResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetPubKeyHashResponse.ProtoReflect.Descriptor instead.
-func (*GetPubKeyHashResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use SendToAddressInput.ProtoReflect.Descriptor instead.
+func (*SendToAddressInput) Descriptor() ([]byte, []int) {
 	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *GetPubKeyHashResponse) GetPublicKey() string {
+func (x *SendToAddressInput) GetToAddress() string {
 	if x != nil {
-		return x.PublicKey
+		return x.ToAddress
 	}
 	return ""
 }
 
-type CreateWalletRequest struct {
+func (x *SendToAddressInput) GetAmount() float64 {
+	if x != nil {
+		return x.Amount
+	}
+	return 0
+}
+
+type SendToAddressOutput struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UserId uint32 `protobuf:"varint,1,opt,name=UserId,json=user_id,proto3" json:"UserId,omitempty"`
+	TxHash string `protobuf:"bytes,1,opt,name=TxHash,json=tx_hash,proto3" json:"TxHash,omitempty"`
 }
 
-func (x *CreateWalletRequest) Reset() {
-	*x = CreateWalletRequest{}
+func (x *SendToAddressOutput) Reset() {
+	*x = SendToAddressOutput{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -423,13 +398,13 @@ func (x *CreateWalletRequest) Reset() {
 	}
 }
 
-func (x *CreateWalletRequest) String() string {
+func (x *SendToAddressOutput) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateWalletRequest) ProtoMessage() {}
+func (*SendToAddressOutput) ProtoMessage() {}
 
-func (x *CreateWalletRequest) ProtoReflect() protoreflect.Message {
+func (x *SendToAddressOutput) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -441,494 +416,16 @@ func (x *CreateWalletRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateWalletRequest.ProtoReflect.Descriptor instead.
-func (*CreateWalletRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use SendToAddressOutput.ProtoReflect.Descriptor instead.
+func (*SendToAddressOutput) Descriptor() ([]byte, []int) {
 	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *CreateWalletRequest) GetUserId() uint32 {
-	if x != nil {
-		return x.UserId
-	}
-	return 0
-}
-
-type CreateWalletResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Address string `protobuf:"bytes,1,opt,name=Address,json=address,proto3" json:"Address,omitempty"`
-}
-
-func (x *CreateWalletResponse) Reset() {
-	*x = CreateWalletResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *CreateWalletResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateWalletResponse) ProtoMessage() {}
-
-func (x *CreateWalletResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateWalletResponse.ProtoReflect.Descriptor instead.
-func (*CreateWalletResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *CreateWalletResponse) GetAddress() string {
-	if x != nil {
-		return x.Address
-	}
-	return ""
-}
-
-type GetNewAddressRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *GetNewAddressRequest) Reset() {
-	*x = GetNewAddressRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[8]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *GetNewAddressRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetNewAddressRequest) ProtoMessage() {}
-
-func (x *GetNewAddressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[8]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetNewAddressRequest.ProtoReflect.Descriptor instead.
-func (*GetNewAddressRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{8}
-}
-
-type GetNewAddressResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Address string `protobuf:"bytes,1,opt,name=Address,json=address,proto3" json:"Address,omitempty"`
-}
-
-func (x *GetNewAddressResponse) Reset() {
-	*x = GetNewAddressResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[9]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *GetNewAddressResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetNewAddressResponse) ProtoMessage() {}
-
-func (x *GetNewAddressResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[9]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetNewAddressResponse.ProtoReflect.Descriptor instead.
-func (*GetNewAddressResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *GetNewAddressResponse) GetAddress() string {
-	if x != nil {
-		return x.Address
-	}
-	return ""
-}
-
-type ListUnspentRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Minconf uint64 `protobuf:"varint,1,opt,name=Minconf,json=minconf,proto3" json:"Minconf,omitempty"`
-	Maxconf uint64 `protobuf:"varint,2,opt,name=Maxconf,json=maxconf,proto3" json:"Maxconf,omitempty"`
-	Address string `protobuf:"bytes,3,opt,name=Address,json=addresses,proto3" json:"Address,omitempty"`
-}
-
-func (x *ListUnspentRequest) Reset() {
-	*x = ListUnspentRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[10]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ListUnspentRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListUnspentRequest) ProtoMessage() {}
-
-func (x *ListUnspentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[10]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListUnspentRequest.ProtoReflect.Descriptor instead.
-func (*ListUnspentRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *ListUnspentRequest) GetMinconf() uint64 {
-	if x != nil {
-		return x.Minconf
-	}
-	return 0
-}
-
-func (x *ListUnspentRequest) GetMaxconf() uint64 {
-	if x != nil {
-		return x.Maxconf
-	}
-	return 0
-}
-
-func (x *ListUnspentRequest) GetAddress() string {
-	if x != nil {
-		return x.Address
-	}
-	return ""
-}
-
-type ListUnspentResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	UnspentOutputs []*UnspentOutput `protobuf:"bytes,1,rep,name=UnspentOutputs,json=unspent_outputs,proto3" json:"UnspentOutputs,omitempty"`
-}
-
-func (x *ListUnspentResponse) Reset() {
-	*x = ListUnspentResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[11]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ListUnspentResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListUnspentResponse) ProtoMessage() {}
-
-func (x *ListUnspentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[11]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListUnspentResponse.ProtoReflect.Descriptor instead.
-func (*ListUnspentResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *ListUnspentResponse) GetUnspentOutputs() []*UnspentOutput {
-	if x != nil {
-		return x.UnspentOutputs
-	}
-	return nil
-}
-
-type SendToAddressRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ToAddress string  `protobuf:"bytes,1,opt,name=ToAddress,json=to_address,proto3" json:"ToAddress,omitempty"`
-	Amount    float64 `protobuf:"fixed64,2,opt,name=Amount,json=amount,proto3" json:"Amount,omitempty"`
-}
-
-func (x *SendToAddressRequest) Reset() {
-	*x = SendToAddressRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[12]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *SendToAddressRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SendToAddressRequest) ProtoMessage() {}
-
-func (x *SendToAddressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[12]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SendToAddressRequest.ProtoReflect.Descriptor instead.
-func (*SendToAddressRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{12}
-}
-
-func (x *SendToAddressRequest) GetToAddress() string {
-	if x != nil {
-		return x.ToAddress
-	}
-	return ""
-}
-
-func (x *SendToAddressRequest) GetAmount() float64 {
-	if x != nil {
-		return x.Amount
-	}
-	return 0
-}
-
-type SendToAddressResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	TxHash string `protobuf:"bytes,1,opt,name=TxHash,json=tx_hash,proto3" json:"TxHash,omitempty"`
-}
-
-func (x *SendToAddressResponse) Reset() {
-	*x = SendToAddressResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[13]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *SendToAddressResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SendToAddressResponse) ProtoMessage() {}
-
-func (x *SendToAddressResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[13]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SendToAddressResponse.ProtoReflect.Descriptor instead.
-func (*SendToAddressResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{13}
-}
-
-func (x *SendToAddressResponse) GetTxHash() string {
+func (x *SendToAddressOutput) GetTxHash() string {
 	if x != nil {
 		return x.TxHash
 	}
 	return ""
-}
-
-type GetAddressUTXORequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Address string `protobuf:"bytes,1,opt,name=Address,json=address,proto3" json:"Address,omitempty"`
-}
-
-func (x *GetAddressUTXORequest) Reset() {
-	*x = GetAddressUTXORequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[14]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *GetAddressUTXORequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetAddressUTXORequest) ProtoMessage() {}
-
-func (x *GetAddressUTXORequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[14]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetAddressUTXORequest.ProtoReflect.Descriptor instead.
-func (*GetAddressUTXORequest) Descriptor() ([]byte, []int) {
-	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{14}
-}
-
-func (x *GetAddressUTXORequest) GetAddress() string {
-	if x != nil {
-		return x.Address
-	}
-	return ""
-}
-
-type GetAddressUTXOResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Success     bool       `protobuf:"varint,1,opt,name=Success,json=success,proto3" json:"Success,omitempty"`
-	Txouts      uint32     `protobuf:"varint,2,opt,name=Txouts,json=txouts,proto3" json:"Txouts,omitempty"`
-	Height      uint32     `protobuf:"varint,3,opt,name=Height,json=height,proto3" json:"Height,omitempty"`
-	BestBlock   string     `protobuf:"bytes,4,opt,name=BestBlock,json=best_block,proto3" json:"BestBlock,omitempty"`
-	Unspents    []*Unspent `protobuf:"bytes,5,rep,name=Unspents,proto3" json:"Unspents,omitempty"`
-	TotalAmount float64    `protobuf:"fixed64,6,opt,name=TotalAmount,json=total_amount,proto3" json:"TotalAmount,omitempty"`
-}
-
-func (x *GetAddressUTXOResponse) Reset() {
-	*x = GetAddressUTXOResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[15]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *GetAddressUTXOResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetAddressUTXOResponse) ProtoMessage() {}
-
-func (x *GetAddressUTXOResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bitcoin_hdwallet_message_proto_msgTypes[15]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetAddressUTXOResponse.ProtoReflect.Descriptor instead.
-func (*GetAddressUTXOResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP(), []int{15}
-}
-
-func (x *GetAddressUTXOResponse) GetSuccess() bool {
-	if x != nil {
-		return x.Success
-	}
-	return false
-}
-
-func (x *GetAddressUTXOResponse) GetTxouts() uint32 {
-	if x != nil {
-		return x.Txouts
-	}
-	return 0
-}
-
-func (x *GetAddressUTXOResponse) GetHeight() uint32 {
-	if x != nil {
-		return x.Height
-	}
-	return 0
-}
-
-func (x *GetAddressUTXOResponse) GetBestBlock() string {
-	if x != nil {
-		return x.BestBlock
-	}
-	return ""
-}
-
-func (x *GetAddressUTXOResponse) GetUnspents() []*Unspent {
-	if x != nil {
-		return x.Unspents
-	}
-	return nil
-}
-
-func (x *GetAddressUTXOResponse) GetTotalAmount() float64 {
-	if x != nil {
-		return x.TotalAmount
-	}
-	return 0
 }
 
 var File_proto_bitcoin_hdwallet_message_proto protoreflect.FileDescriptor
@@ -954,79 +451,32 @@ var file_proto_bitcoin_hdwallet_message_proto_rawDesc = []byte{
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x08, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0d, 0x63, 0x6f,
 	0x6e, 0x66, 0x69, 0x72, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x53,
 	0x70, 0x65, 0x6e, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x09, 0x20, 0x01, 0x28, 0x08, 0x52, 0x09,
-	0x73, 0x70, 0x65, 0x6e, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x22, 0x9b, 0x01, 0x0a, 0x07, 0x55, 0x6e,
-	0x73, 0x70, 0x65, 0x6e, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x54, 0x78, 0x49, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x78, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x56, 0x6f, 0x75,
-	0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x04, 0x76, 0x6f, 0x75, 0x74, 0x12, 0x24, 0x0a,
-	0x0c, 0x53, 0x63, 0x72, 0x69, 0x70, 0x74, 0x50, 0x75, 0x62, 0x4b, 0x65, 0x79, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x0e, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x5f, 0x70, 0x75, 0x62, 0x5f,
-	0x6b, 0x65, 0x79, 0x12, 0x12, 0x0a, 0x04, 0x44, 0x65, 0x73, 0x63, 0x18, 0x04, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x04, 0x64, 0x65, 0x73, 0x63, 0x12, 0x16, 0x0a, 0x06, 0x41, 0x6d, 0x6f, 0x75, 0x6e,
-	0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x01, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12,
-	0x16, 0x0a, 0x06, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0d, 0x52,
-	0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x22, 0x2f, 0x0a, 0x14, 0x47, 0x65, 0x74, 0x50, 0x72,
-	0x69, 0x76, 0x61, 0x74, 0x65, 0x4b, 0x65, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
-	0x17, 0x0a, 0x06, 0x55, 0x73, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52,
-	0x07, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x22, 0x38, 0x0a, 0x15, 0x47, 0x65, 0x74, 0x50,
-	0x72, 0x69, 0x76, 0x61, 0x74, 0x65, 0x4b, 0x65, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x1f, 0x0a, 0x0a, 0x50, 0x72, 0x69, 0x76, 0x61, 0x74, 0x65, 0x4b, 0x65, 0x79, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x70, 0x72, 0x69, 0x76, 0x61, 0x74, 0x65, 0x5f, 0x6b,
-	0x65, 0x79, 0x22, 0x2f, 0x0a, 0x14, 0x47, 0x65, 0x74, 0x50, 0x75, 0x62, 0x4b, 0x65, 0x79, 0x48,
-	0x61, 0x73, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x17, 0x0a, 0x06, 0x55, 0x73,
-	0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x07, 0x75, 0x73, 0x65, 0x72,
-	0x5f, 0x69, 0x64, 0x22, 0x36, 0x0a, 0x15, 0x47, 0x65, 0x74, 0x50, 0x75, 0x62, 0x4b, 0x65, 0x79,
-	0x48, 0x61, 0x73, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1d, 0x0a, 0x09,
-	0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x4b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x0a, 0x70, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x5f, 0x6b, 0x65, 0x79, 0x22, 0x2e, 0x0a, 0x13, 0x43,
-	0x72, 0x65, 0x61, 0x74, 0x65, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x12, 0x17, 0x0a, 0x06, 0x55, 0x73, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0d, 0x52, 0x07, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x22, 0x30, 0x0a, 0x14, 0x43,
-	0x72, 0x65, 0x61, 0x74, 0x65, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x22, 0x16, 0x0a,
-	0x14, 0x47, 0x65, 0x74, 0x4e, 0x65, 0x77, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x31, 0x0a, 0x15, 0x47, 0x65, 0x74, 0x4e, 0x65, 0x77, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x18,
-	0x0a, 0x07, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x22, 0x64, 0x0a, 0x12, 0x4c, 0x69, 0x73, 0x74,
-	0x55, 0x6e, 0x73, 0x70, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18,
-	0x0a, 0x07, 0x4d, 0x69, 0x6e, 0x63, 0x6f, 0x6e, 0x66, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x07, 0x6d, 0x69, 0x6e, 0x63, 0x6f, 0x6e, 0x66, 0x12, 0x18, 0x0a, 0x07, 0x4d, 0x61, 0x78, 0x63,
-	0x6f, 0x6e, 0x66, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x6d, 0x61, 0x78, 0x63, 0x6f,
-	0x6e, 0x66, 0x12, 0x1a, 0x0a, 0x07, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x09, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x65, 0x73, 0x22, 0x56,
-	0x0a, 0x13, 0x4c, 0x69, 0x73, 0x74, 0x55, 0x6e, 0x73, 0x70, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3f, 0x0a, 0x0e, 0x55, 0x6e, 0x73, 0x70, 0x65, 0x6e, 0x74,
-	0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e,
-	0x62, 0x69, 0x74, 0x63, 0x6f, 0x69, 0x6e, 0x2e, 0x55, 0x6e, 0x73, 0x70, 0x65, 0x6e, 0x74, 0x4f,
-	0x75, 0x74, 0x70, 0x75, 0x74, 0x52, 0x0f, 0x75, 0x6e, 0x73, 0x70, 0x65, 0x6e, 0x74, 0x5f, 0x6f,
-	0x75, 0x74, 0x70, 0x75, 0x74, 0x73, 0x22, 0x4d, 0x0a, 0x14, 0x53, 0x65, 0x6e, 0x64, 0x54, 0x6f,
-	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1d,
-	0x0a, 0x09, 0x54, 0x6f, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x0a, 0x74, 0x6f, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a,
-	0x06, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x01, 0x52, 0x06, 0x61,
-	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x30, 0x0a, 0x15, 0x53, 0x65, 0x6e, 0x64, 0x54, 0x6f, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x17,
+	0x73, 0x70, 0x65, 0x6e, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x22, 0x14, 0x0a, 0x12, 0x47, 0x65, 0x74,
+	0x4e, 0x65, 0x77, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x22,
+	0x2f, 0x0a, 0x13, 0x47, 0x65, 0x74, 0x4e, 0x65, 0x77, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
+	0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x22, 0x62, 0x0a, 0x10, 0x4c, 0x69, 0x73, 0x74, 0x55, 0x6e, 0x73, 0x70, 0x65, 0x6e, 0x74, 0x49,
+	0x6e, 0x70, 0x75, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x4d, 0x69, 0x6e, 0x43, 0x6f, 0x6e, 0x66, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x6d, 0x69, 0x6e, 0x63, 0x6f, 0x6e, 0x66, 0x12, 0x18,
+	0x0a, 0x07, 0x4d, 0x61, 0x78, 0x43, 0x6f, 0x6e, 0x66, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x07, 0x6d, 0x61, 0x78, 0x63, 0x6f, 0x6e, 0x66, 0x12, 0x1a, 0x0a, 0x07, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x61, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x65, 0x73, 0x22, 0x54, 0x0a, 0x11, 0x4c, 0x69, 0x73, 0x74, 0x55, 0x6e, 0x73, 0x70,
+	0x65, 0x6e, 0x74, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x12, 0x3f, 0x0a, 0x0e, 0x55, 0x6e, 0x73,
+	0x70, 0x65, 0x6e, 0x74, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x16, 0x2e, 0x62, 0x69, 0x74, 0x63, 0x6f, 0x69, 0x6e, 0x2e, 0x55, 0x6e, 0x73, 0x70,
+	0x65, 0x6e, 0x74, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x52, 0x0f, 0x75, 0x6e, 0x73, 0x70, 0x65,
+	0x6e, 0x74, 0x5f, 0x6f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x73, 0x22, 0x4b, 0x0a, 0x12, 0x53, 0x65,
+	0x6e, 0x64, 0x54, 0x6f, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x49, 0x6e, 0x70, 0x75, 0x74,
+	0x12, 0x1d, 0x0a, 0x09, 0x54, 0x6f, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0a, 0x74, 0x6f, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12,
+	0x16, 0x0a, 0x06, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x01, 0x52,
+	0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x2e, 0x0a, 0x13, 0x53, 0x65, 0x6e, 0x64, 0x54,
+	0x6f, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x12, 0x17,
 	0x0a, 0x06, 0x54, 0x78, 0x48, 0x61, 0x73, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x74, 0x78, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x22, 0x31, 0x0a, 0x15, 0x47, 0x65, 0x74, 0x41, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x55, 0x54, 0x58, 0x4f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x12, 0x18, 0x0a, 0x07, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x22, 0xd2, 0x01, 0x0a, 0x16, 0x47,
-	0x65, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x55, 0x54, 0x58, 0x4f, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12,
-	0x16, 0x0a, 0x06, 0x54, 0x78, 0x6f, 0x75, 0x74, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52,
-	0x06, 0x74, 0x78, 0x6f, 0x75, 0x74, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x48, 0x65, 0x69, 0x67, 0x68,
-	0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x06, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12,
-	0x1d, 0x0a, 0x09, 0x42, 0x65, 0x73, 0x74, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x18, 0x04, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x0a, 0x62, 0x65, 0x73, 0x74, 0x5f, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x12, 0x2c,
-	0x0a, 0x08, 0x55, 0x6e, 0x73, 0x70, 0x65, 0x6e, 0x74, 0x73, 0x18, 0x05, 0x20, 0x03, 0x28, 0x0b,
-	0x32, 0x10, 0x2e, 0x62, 0x69, 0x74, 0x63, 0x6f, 0x69, 0x6e, 0x2e, 0x55, 0x6e, 0x73, 0x70, 0x65,
-	0x6e, 0x74, 0x52, 0x08, 0x55, 0x6e, 0x73, 0x70, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x21, 0x0a, 0x0b,
-	0x54, 0x6f, 0x74, 0x61, 0x6c, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28,
-	0x01, 0x52, 0x0c, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x42,
-	0x0b, 0x5a, 0x09, 0x2e, 0x2f, 0x62, 0x69, 0x74, 0x63, 0x6f, 0x69, 0x6e, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x78, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x42, 0x0b, 0x5a, 0x09, 0x2e, 0x2f, 0x62, 0x69, 0x74,
+	0x63, 0x6f, 0x69, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1041,33 +491,23 @@ func file_proto_bitcoin_hdwallet_message_proto_rawDescGZIP() []byte {
 	return file_proto_bitcoin_hdwallet_message_proto_rawDescData
 }
 
-var file_proto_bitcoin_hdwallet_message_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_proto_bitcoin_hdwallet_message_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_proto_bitcoin_hdwallet_message_proto_goTypes = []interface{}{
-	(*UnspentOutput)(nil),          // 0: bitcoin.UnspentOutput
-	(*Unspent)(nil),                // 1: bitcoin.Unspent
-	(*GetPrivateKeyRequest)(nil),   // 2: bitcoin.GetPrivateKeyRequest
-	(*GetPrivateKeyResponse)(nil),  // 3: bitcoin.GetPrivateKeyResponse
-	(*GetPubKeyHashRequest)(nil),   // 4: bitcoin.GetPubKeyHashRequest
-	(*GetPubKeyHashResponse)(nil),  // 5: bitcoin.GetPubKeyHashResponse
-	(*CreateWalletRequest)(nil),    // 6: bitcoin.CreateWalletRequest
-	(*CreateWalletResponse)(nil),   // 7: bitcoin.CreateWalletResponse
-	(*GetNewAddressRequest)(nil),   // 8: bitcoin.GetNewAddressRequest
-	(*GetNewAddressResponse)(nil),  // 9: bitcoin.GetNewAddressResponse
-	(*ListUnspentRequest)(nil),     // 10: bitcoin.ListUnspentRequest
-	(*ListUnspentResponse)(nil),    // 11: bitcoin.ListUnspentResponse
-	(*SendToAddressRequest)(nil),   // 12: bitcoin.SendToAddressRequest
-	(*SendToAddressResponse)(nil),  // 13: bitcoin.SendToAddressResponse
-	(*GetAddressUTXORequest)(nil),  // 14: bitcoin.GetAddressUTXORequest
-	(*GetAddressUTXOResponse)(nil), // 15: bitcoin.GetAddressUTXOResponse
+	(*UnspentOutput)(nil),       // 0: bitcoin.UnspentOutput
+	(*GetNewAddressInput)(nil),  // 1: bitcoin.GetNewAddressInput
+	(*GetNewAddressOutput)(nil), // 2: bitcoin.GetNewAddressOutput
+	(*ListUnspentInput)(nil),    // 3: bitcoin.ListUnspentInput
+	(*ListUnspentOutput)(nil),   // 4: bitcoin.ListUnspentOutput
+	(*SendToAddressInput)(nil),  // 5: bitcoin.SendToAddressInput
+	(*SendToAddressOutput)(nil), // 6: bitcoin.SendToAddressOutput
 }
 var file_proto_bitcoin_hdwallet_message_proto_depIdxs = []int32{
-	0, // 0: bitcoin.ListUnspentResponse.UnspentOutputs:type_name -> bitcoin.UnspentOutput
-	1, // 1: bitcoin.GetAddressUTXOResponse.Unspents:type_name -> bitcoin.Unspent
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	0, // 0: bitcoin.ListUnspentOutput.UnspentOutputs:type_name -> bitcoin.UnspentOutput
+	1, // [1:1] is the sub-list for method output_type
+	1, // [1:1] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_proto_bitcoin_hdwallet_message_proto_init() }
@@ -1089,7 +529,7 @@ func file_proto_bitcoin_hdwallet_message_proto_init() {
 			}
 		}
 		file_proto_bitcoin_hdwallet_message_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Unspent); i {
+			switch v := v.(*GetNewAddressInput); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1101,7 +541,7 @@ func file_proto_bitcoin_hdwallet_message_proto_init() {
 			}
 		}
 		file_proto_bitcoin_hdwallet_message_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetPrivateKeyRequest); i {
+			switch v := v.(*GetNewAddressOutput); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1113,7 +553,7 @@ func file_proto_bitcoin_hdwallet_message_proto_init() {
 			}
 		}
 		file_proto_bitcoin_hdwallet_message_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetPrivateKeyResponse); i {
+			switch v := v.(*ListUnspentInput); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1125,7 +565,7 @@ func file_proto_bitcoin_hdwallet_message_proto_init() {
 			}
 		}
 		file_proto_bitcoin_hdwallet_message_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetPubKeyHashRequest); i {
+			switch v := v.(*ListUnspentOutput); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1137,7 +577,7 @@ func file_proto_bitcoin_hdwallet_message_proto_init() {
 			}
 		}
 		file_proto_bitcoin_hdwallet_message_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetPubKeyHashResponse); i {
+			switch v := v.(*SendToAddressInput); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1149,115 +589,7 @@ func file_proto_bitcoin_hdwallet_message_proto_init() {
 			}
 		}
 		file_proto_bitcoin_hdwallet_message_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateWalletRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_bitcoin_hdwallet_message_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateWalletResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_bitcoin_hdwallet_message_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetNewAddressRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_bitcoin_hdwallet_message_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetNewAddressResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_bitcoin_hdwallet_message_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListUnspentRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_bitcoin_hdwallet_message_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListUnspentResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_bitcoin_hdwallet_message_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SendToAddressRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_bitcoin_hdwallet_message_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SendToAddressResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_bitcoin_hdwallet_message_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetAddressUTXORequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_bitcoin_hdwallet_message_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetAddressUTXOResponse); i {
+			switch v := v.(*SendToAddressOutput); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1275,7 +607,7 @@ func file_proto_bitcoin_hdwallet_message_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_proto_bitcoin_hdwallet_message_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -2,6 +2,26 @@ syntax = "proto3";
 package bitcoin;
 option go_package = "./bitcoin";
 
+message GetRawTransactionInput {
+  string TxId = 1 [json_name = "tx_id"];
+}
+
+message GetRawTransactionOutput {
+  string Hex = 1 [json_name = "hex"];
+  string TxId = 2 [json_name = "tx_id"];
+  string Hash = 3 [json_name = "hash"];
+  int32 Size = 4 [json_name = "size"];
+  int32 Vsize = 5 [json_name = "vsize"];
+  int32 Weight = 6 [json_name = "weight"];
+  uint32 Version = 7 [json_name = "version"];
+  uint32 LockTime = 8 [json_name = "lockTime"];
+  repeated Vin Vin = 9 [json_name = "vin"];
+  repeated Vout Vout = 10 [json_name = "vout"];
+  string BlockHash = 11 [json_name = "blockHash"];
+  uint64 Confirmations = 12 [json_name = "confirmations"];
+  int64 Time = 13 [json_name = "time"];
+  int64 BlockTime = 14 [json_name = "block_time"];
+}
 
 message Vout {
   double Value = 1 [json_name = "value"];
@@ -21,80 +41,4 @@ message Vin {
   string ScriptSigHex = 5 [json_name = "script_sig_hex"];
   uint32 Sequence = 6 [json_name = "sequence"];
   repeated string Witness = 7 [json_name = "witness"];
-}
-
-message TransactionInput {
-  string TxId = 1 [json_name = "tx_id"];
-  int32 Vout = 2 [json_name = "vout"];
-}
-
-message TransactionOutput {
-  string Address = 1 [json_name = "address"];
-  double Value = 2 [json_name = "value"];
-}
-
-message OutPoint {
-  string Hash = 1 [json_name = "hash"];
-  uint32 Index = 2 [json_name = "index"];
-}
-
-message TxIn {
-  OutPoint PreviousOutPoint = 1 [json_name = "previous_out_point"];
-  string SignatureScript = 2 [json_name = "signature_script"];
-  uint32 Sequence = 3 [json_name = "sequence"];
-}
-
-message TxOut {
-  int64 Value = 1 [json_name = "value"];
-  string ScriptPubKey = 2 [json_name = "script_pub_key"];
-}
-
-message GetRawTransactionRequest {
-  string TxId = 1 [json_name = "tx_id"];
-}
-
-message GetRawTransactionResponse {
-  string Hex = 1 [json_name = "hex"];
-  string TxId = 2 [json_name = "tx_id"];
-  string Hash = 3 [json_name = "hash"];
-  int32 Size = 4 [json_name = "size"];
-  int32 Vsize = 5 [json_name = "vsize"];
-  int32 Weight = 6 [json_name = "weight"];
-  uint32 Version = 7 [json_name = "version"];
-  uint32 LockTime = 8 [json_name = "lockTime"];
-  repeated Vin Vin = 9 [json_name = "vin"];
-  repeated Vout Vout = 10 [json_name = "vout"];
-  string BlockHash = 11 [json_name = "blockHash"];
-  uint64 Confirmations = 12 [json_name = "confirmations"];
-  int64 Time = 13 [json_name = "time"];
-  int64 BlockTime = 14 [json_name = "block_time"];
-}
-
-message CreateRawTransactionRequest {
-  repeated TransactionInput Inputs = 1 [json_name = "inputs"];
-  repeated TransactionOutput Outputs = 2 [json_name = "outputs"];
-}
-
-message CreateRawTransactionResponse {
-  string RawHex = 1 [json_name = "raw_hex"];
-  string SignedTx = 2 [json_name = "signed_tx"];
-}
-
-message SendRawTransactionRequest {
-  string SignedTx = 1 [json_name = "signed_tx"];
-}
-
-message SendRawTransactionResponse {
-  string TxHash = 1 [json_name = "tx_hash"];
-}
-
-message SignRawTransactionRequest {
-  string RawTx = 1 [json_name = "raw_tx"];
-  repeated string PrivateKeys = 2 [json_name = "private_keys"];
-  string RedeemScript = 3 [json_name = "redeem_script"];
-}
-
-message SignRawTransactionResponse {
-  string SignedTx = 1 [json_name = "signed_tx"];
-  bool Complete = 2 [json_name = "complete"];
 }

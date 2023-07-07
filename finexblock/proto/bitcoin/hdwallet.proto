@@ -5,11 +5,7 @@ option go_package = "./bitcoin";
 import "proto/bitcoin/hdwallet.message.proto";
 
 service HDWallet {
-  rpc CreateWalletAddress(CreateWalletRequest) returns (CreateWalletResponse);
-  rpc GetNewAddress(GetNewAddressRequest) returns (GetNewAddressResponse);
-  rpc GetPrivateKey(GetPrivateKeyRequest) returns (GetPrivateKeyResponse);
-  rpc GetPubKeyHash(GetPubKeyHashRequest) returns (GetPubKeyHashResponse);
-  rpc GetAddressUTXO(GetAddressUTXORequest) returns (GetAddressUTXOResponse);
-  rpc ListUnspent(ListUnspentRequest) returns (ListUnspentResponse);
-  rpc SendToAddress(SendToAddressRequest) returns (SendToAddressResponse);
+  rpc GetNewAddress(GetNewAddressInput) returns (GetNewAddressOutput);
+  rpc ListUnspent(ListUnspentInput) returns (ListUnspentOutput);
+  rpc SendToAddress(SendToAddressInput) returns (SendToAddressOutput);
 }

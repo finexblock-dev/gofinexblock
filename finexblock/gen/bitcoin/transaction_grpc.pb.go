@@ -19,20 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Transaction_GetRawTransaction_FullMethodName    = "/bitcoin.Transaction/GetRawTransaction"
-	Transaction_CreateRawTransaction_FullMethodName = "/bitcoin.Transaction/CreateRawTransaction"
-	Transaction_SignRawTransaction_FullMethodName   = "/bitcoin.Transaction/SignRawTransaction"
-	Transaction_SendRawTransaction_FullMethodName   = "/bitcoin.Transaction/SendRawTransaction"
+	Transaction_GetRawTransaction_FullMethodName = "/bitcoin.Transaction/GetRawTransaction"
 )
 
 // TransactionClient is the client API for Transaction service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TransactionClient interface {
-	GetRawTransaction(ctx context.Context, in *GetRawTransactionRequest, opts ...grpc.CallOption) (*GetRawTransactionResponse, error)
-	CreateRawTransaction(ctx context.Context, in *CreateRawTransactionRequest, opts ...grpc.CallOption) (*CreateRawTransactionResponse, error)
-	SignRawTransaction(ctx context.Context, in *SignRawTransactionRequest, opts ...grpc.CallOption) (*SignRawTransactionResponse, error)
-	SendRawTransaction(ctx context.Context, in *SendRawTransactionRequest, opts ...grpc.CallOption) (*SendRawTransactionResponse, error)
+	GetRawTransaction(ctx context.Context, in *GetRawTransactionInput, opts ...grpc.CallOption) (*GetRawTransactionOutput, error)
 }
 
 type transactionClient struct {
@@ -43,36 +37,9 @@ func NewTransactionClient(cc grpc.ClientConnInterface) TransactionClient {
 	return &transactionClient{cc}
 }
 
-func (c *transactionClient) GetRawTransaction(ctx context.Context, in *GetRawTransactionRequest, opts ...grpc.CallOption) (*GetRawTransactionResponse, error) {
-	out := new(GetRawTransactionResponse)
+func (c *transactionClient) GetRawTransaction(ctx context.Context, in *GetRawTransactionInput, opts ...grpc.CallOption) (*GetRawTransactionOutput, error) {
+	out := new(GetRawTransactionOutput)
 	err := c.cc.Invoke(ctx, Transaction_GetRawTransaction_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *transactionClient) CreateRawTransaction(ctx context.Context, in *CreateRawTransactionRequest, opts ...grpc.CallOption) (*CreateRawTransactionResponse, error) {
-	out := new(CreateRawTransactionResponse)
-	err := c.cc.Invoke(ctx, Transaction_CreateRawTransaction_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *transactionClient) SignRawTransaction(ctx context.Context, in *SignRawTransactionRequest, opts ...grpc.CallOption) (*SignRawTransactionResponse, error) {
-	out := new(SignRawTransactionResponse)
-	err := c.cc.Invoke(ctx, Transaction_SignRawTransaction_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *transactionClient) SendRawTransaction(ctx context.Context, in *SendRawTransactionRequest, opts ...grpc.CallOption) (*SendRawTransactionResponse, error) {
-	out := new(SendRawTransactionResponse)
-	err := c.cc.Invoke(ctx, Transaction_SendRawTransaction_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -83,10 +50,7 @@ func (c *transactionClient) SendRawTransaction(ctx context.Context, in *SendRawT
 // All implementations must embed UnimplementedTransactionServer
 // for forward compatibility
 type TransactionServer interface {
-	GetRawTransaction(context.Context, *GetRawTransactionRequest) (*GetRawTransactionResponse, error)
-	CreateRawTransaction(context.Context, *CreateRawTransactionRequest) (*CreateRawTransactionResponse, error)
-	SignRawTransaction(context.Context, *SignRawTransactionRequest) (*SignRawTransactionResponse, error)
-	SendRawTransaction(context.Context, *SendRawTransactionRequest) (*SendRawTransactionResponse, error)
+	GetRawTransaction(context.Context, *GetRawTransactionInput) (*GetRawTransactionOutput, error)
 	mustEmbedUnimplementedTransactionServer()
 }
 
@@ -94,17 +58,8 @@ type TransactionServer interface {
 type UnimplementedTransactionServer struct {
 }
 
-func (UnimplementedTransactionServer) GetRawTransaction(context.Context, *GetRawTransactionRequest) (*GetRawTransactionResponse, error) {
+func (UnimplementedTransactionServer) GetRawTransaction(context.Context, *GetRawTransactionInput) (*GetRawTransactionOutput, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRawTransaction not implemented")
-}
-func (UnimplementedTransactionServer) CreateRawTransaction(context.Context, *CreateRawTransactionRequest) (*CreateRawTransactionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateRawTransaction not implemented")
-}
-func (UnimplementedTransactionServer) SignRawTransaction(context.Context, *SignRawTransactionRequest) (*SignRawTransactionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SignRawTransaction not implemented")
-}
-func (UnimplementedTransactionServer) SendRawTransaction(context.Context, *SendRawTransactionRequest) (*SendRawTransactionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendRawTransaction not implemented")
 }
 func (UnimplementedTransactionServer) mustEmbedUnimplementedTransactionServer() {}
 
@@ -120,7 +75,7 @@ func RegisterTransactionServer(s grpc.ServiceRegistrar, srv TransactionServer) {
 }
 
 func _Transaction_GetRawTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRawTransactionRequest)
+	in := new(GetRawTransactionInput)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -132,61 +87,7 @@ func _Transaction_GetRawTransaction_Handler(srv interface{}, ctx context.Context
 		FullMethod: Transaction_GetRawTransaction_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TransactionServer).GetRawTransaction(ctx, req.(*GetRawTransactionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Transaction_CreateRawTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRawTransactionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TransactionServer).CreateRawTransaction(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Transaction_CreateRawTransaction_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TransactionServer).CreateRawTransaction(ctx, req.(*CreateRawTransactionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Transaction_SignRawTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignRawTransactionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TransactionServer).SignRawTransaction(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Transaction_SignRawTransaction_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TransactionServer).SignRawTransaction(ctx, req.(*SignRawTransactionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Transaction_SendRawTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendRawTransactionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TransactionServer).SendRawTransaction(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Transaction_SendRawTransaction_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TransactionServer).SendRawTransaction(ctx, req.(*SendRawTransactionRequest))
+		return srv.(TransactionServer).GetRawTransaction(ctx, req.(*GetRawTransactionInput))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -201,18 +102,6 @@ var Transaction_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetRawTransaction",
 			Handler:    _Transaction_GetRawTransaction_Handler,
-		},
-		{
-			MethodName: "CreateRawTransaction",
-			Handler:    _Transaction_CreateRawTransaction_Handler,
-		},
-		{
-			MethodName: "SignRawTransaction",
-			Handler:    _Transaction_SignRawTransaction_Handler,
-		},
-		{
-			MethodName: "SendRawTransaction",
-			Handler:    _Transaction_SendRawTransaction_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

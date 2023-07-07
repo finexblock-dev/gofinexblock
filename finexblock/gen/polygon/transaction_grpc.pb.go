@@ -19,11 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Transaction_GetReceipt_FullMethodName         = "/polygon.Transaction/GetReceipt"
-	Transaction_SendRawTransaction_FullMethodName = "/polygon.Transaction/SendRawTransaction"
-	Transaction_Transfer_FullMethodName           = "/polygon.Transaction/Transfer"
-	Transaction_GetBlockNumber_FullMethodName     = "/polygon.Transaction/GetBlockNumber"
-	Transaction_GetBlocks_FullMethodName          = "/polygon.Transaction/GetBlocks"
+	Transaction_GetReceipt_FullMethodName           = "/polygon.Transaction/GetReceipt"
+	Transaction_SendRawTransaction_FullMethodName   = "/polygon.Transaction/SendRawTransaction"
+	Transaction_CreateRawTransaction_FullMethodName = "/polygon.Transaction/CreateRawTransaction"
+	Transaction_GetBlockNumber_FullMethodName       = "/polygon.Transaction/GetBlockNumber"
+	Transaction_GetBlocks_FullMethodName            = "/polygon.Transaction/GetBlocks"
 )
 
 // TransactionClient is the client API for Transaction service.
@@ -32,7 +32,7 @@ const (
 type TransactionClient interface {
 	GetReceipt(ctx context.Context, in *GetReceiptInput, opts ...grpc.CallOption) (*GetReceiptOutput, error)
 	SendRawTransaction(ctx context.Context, in *SendRawTransactionInput, opts ...grpc.CallOption) (*SendRawTransactionOutput, error)
-	Transfer(ctx context.Context, in *TransferInput, opts ...grpc.CallOption) (*TransferOutput, error)
+	CreateRawTransaction(ctx context.Context, in *CreateRawTransactionInput, opts ...grpc.CallOption) (*CreateRawTransactionOutput, error)
 	GetBlockNumber(ctx context.Context, in *GetBlockNumberInput, opts ...grpc.CallOption) (*GetBlockNumberOutput, error)
 	GetBlocks(ctx context.Context, in *GetBlocksInput, opts ...grpc.CallOption) (*GetBlocksOutput, error)
 }
@@ -63,9 +63,9 @@ func (c *transactionClient) SendRawTransaction(ctx context.Context, in *SendRawT
 	return out, nil
 }
 
-func (c *transactionClient) Transfer(ctx context.Context, in *TransferInput, opts ...grpc.CallOption) (*TransferOutput, error) {
-	out := new(TransferOutput)
-	err := c.cc.Invoke(ctx, Transaction_Transfer_FullMethodName, in, out, opts...)
+func (c *transactionClient) CreateRawTransaction(ctx context.Context, in *CreateRawTransactionInput, opts ...grpc.CallOption) (*CreateRawTransactionOutput, error) {
+	out := new(CreateRawTransactionOutput)
+	err := c.cc.Invoke(ctx, Transaction_CreateRawTransaction_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ func (c *transactionClient) GetBlocks(ctx context.Context, in *GetBlocksInput, o
 type TransactionServer interface {
 	GetReceipt(context.Context, *GetReceiptInput) (*GetReceiptOutput, error)
 	SendRawTransaction(context.Context, *SendRawTransactionInput) (*SendRawTransactionOutput, error)
-	Transfer(context.Context, *TransferInput) (*TransferOutput, error)
+	CreateRawTransaction(context.Context, *CreateRawTransactionInput) (*CreateRawTransactionOutput, error)
 	GetBlockNumber(context.Context, *GetBlockNumberInput) (*GetBlockNumberOutput, error)
 	GetBlocks(context.Context, *GetBlocksInput) (*GetBlocksOutput, error)
 	mustEmbedUnimplementedTransactionServer()
@@ -112,8 +112,8 @@ func (UnimplementedTransactionServer) GetReceipt(context.Context, *GetReceiptInp
 func (UnimplementedTransactionServer) SendRawTransaction(context.Context, *SendRawTransactionInput) (*SendRawTransactionOutput, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendRawTransaction not implemented")
 }
-func (UnimplementedTransactionServer) Transfer(context.Context, *TransferInput) (*TransferOutput, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Transfer not implemented")
+func (UnimplementedTransactionServer) CreateRawTransaction(context.Context, *CreateRawTransactionInput) (*CreateRawTransactionOutput, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRawTransaction not implemented")
 }
 func (UnimplementedTransactionServer) GetBlockNumber(context.Context, *GetBlockNumberInput) (*GetBlockNumberOutput, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBlockNumber not implemented")
@@ -170,20 +170,20 @@ func _Transaction_SendRawTransaction_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Transaction_Transfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TransferInput)
+func _Transaction_CreateRawTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRawTransactionInput)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TransactionServer).Transfer(ctx, in)
+		return srv.(TransactionServer).CreateRawTransaction(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Transaction_Transfer_FullMethodName,
+		FullMethod: Transaction_CreateRawTransaction_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TransactionServer).Transfer(ctx, req.(*TransferInput))
+		return srv.(TransactionServer).CreateRawTransaction(ctx, req.(*CreateRawTransactionInput))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -240,8 +240,8 @@ var Transaction_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Transaction_SendRawTransaction_Handler,
 		},
 		{
-			MethodName: "Transfer",
-			Handler:    _Transaction_Transfer_Handler,
+			MethodName: "CreateRawTransaction",
+			Handler:    _Transaction_CreateRawTransaction_Handler,
 		},
 		{
 			MethodName: "GetBlockNumber",

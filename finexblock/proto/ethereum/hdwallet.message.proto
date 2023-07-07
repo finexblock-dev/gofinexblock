@@ -18,12 +18,3 @@ message GetBalanceInput {
 message GetBalanceOutput {
   string Balance = 1 [json_name = "balance"];
 }
-
-message GetWalletInput {
-  uint64 UserID = 1 [json_name = "user_id"];
-}
-
-message GetWalletOutput {
-  string PublicKey = 1 [json_name = "public_key"];
-  string Address = 2 [json_name = "address"];
-}

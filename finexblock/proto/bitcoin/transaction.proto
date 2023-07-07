@@ -5,8 +5,5 @@ option go_package = "./bitcoin";
 import "proto/bitcoin/transaction.message.proto";
 
 service Transaction {
-  rpc GetRawTransaction(GetRawTransactionRequest) returns (GetRawTransactionResponse);
-  rpc CreateRawTransaction(CreateRawTransactionRequest) returns (CreateRawTransactionResponse);
-  rpc SignRawTransaction (SignRawTransactionRequest) returns (SignRawTransactionResponse);
-  rpc SendRawTransaction(SendRawTransactionRequest) returns (SendRawTransactionResponse);
+  rpc GetRawTransaction(GetRawTransactionInput) returns (GetRawTransactionOutput);
 }

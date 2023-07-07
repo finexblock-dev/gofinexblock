@@ -2,6 +2,16 @@ syntax = "proto3";
 package polygon;
 option go_package = "./polygon";
 
+message CreateRawTransactionInput {
+  string From = 1 [json_name = "from"];
+  string To = 2 [json_name = "to"];
+  string Amount = 3 [json_name = "amount"];
+}
+
+message CreateRawTransactionOutput {
+  string TxHash = 1 [json_name = "tx_hash"];
+}
+
 
 message SendRawTransactionInput {
   string To = 2 [json_name = "to"];
@@ -9,17 +19,6 @@ message SendRawTransactionInput {
 }
 
 message SendRawTransactionOutput {
-  bool Success = 1 [json_name = "success"];
-  string TxHash = 2 [json_name = "tx_hash"];
-}
-
-message TransferInput {
-  string UserID = 1 [json_name = "user_id"];
-  string From = 2 [json_name = "from"];
-  string Amount = 3 [json_name = "success"];
-}
-
-message TransferOutput {
   bool Success = 1 [json_name = "success"];
   string TxHash = 2 [json_name = "tx_hash"];
 }
@@ -49,6 +48,12 @@ message GetBlocksInput {
   uint64 End = 2 [json_name = "end"];
 }
 
+message BlockData {
+  string To = 1 [json_name = "to"];
+  string Hash = 2 [json_name = "hash"];
+  string Value = 3 [json_name = "value"];
+}
+
 message GetBlocksOutput {
-  repeated bytes Result = 1 [json_name = "result"];
+  repeated BlockData Result = 1 [json_name = "result"];
 }
