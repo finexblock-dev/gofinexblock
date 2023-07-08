@@ -1,6 +1,6 @@
 syntax = "proto3";
 package polygon;
-option go_package = "./polygon";
+option go_package = "/polygon";
 
 message CreateRawTransactionInput {
   string From = 1 [json_name = "from"];

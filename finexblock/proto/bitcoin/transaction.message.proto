@@ -1,6 +1,6 @@
 syntax = "proto3";
 package bitcoin;
-option go_package = "./bitcoin";
+option go_package = "/bitcoin";
 
 message GetRawTransactionInput {
   string TxId = 1 [json_name = "tx_id"];

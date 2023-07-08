@@ -1,7 +1,6 @@
 syntax = "proto3";
 package polygon;
-option go_package = "./polygon";
-
+option go_package = "/polygon";
 
 import "proto/polygon/transaction.message.proto";
 
