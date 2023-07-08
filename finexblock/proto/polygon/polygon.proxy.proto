@@ -1,0 +1,16 @@
+syntax = "proto3";
+package polygon;
+option go_package = "/polygon";
+
+import "proto/polygon/hdwallet.message.proto";
+import "proto/polygon/transaction.message.proto";
+
+service PolygonProxy {
+  rpc CreateWallet(polygon.CreateWalletInput) returns (polygon.CreateWalletOutput);
+  rpc GetBalance(polygon.GetBalanceInput) returns (polygon.GetBalanceOutput);
+  rpc GetReceipt(polygon.GetReceiptInput) returns (polygon.GetReceiptOutput);
+  rpc SendRawTransaction(polygon.SendRawTransactionInput) returns (polygon.SendRawTransactionOutput);
+  rpc CreateRawTransaction(polygon.CreateRawTransactionInput) returns (polygon.CreateRawTransactionOutput);
+  rpc GetBlockNumber(polygon.GetBlockNumberInput) returns (polygon.GetBlockNumberOutput);
+  rpc GetBlocks(polygon.GetBlocksInput) returns (polygon.GetBlocksOutput);
+}
