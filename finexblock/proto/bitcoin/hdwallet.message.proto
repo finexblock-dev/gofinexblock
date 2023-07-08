@@ -4,14 +4,11 @@ option go_package = "/bitcoin";
 
 message UnspentOutput {
   string TxHash = 1 [json_name = "tx_hash"];
-  uint32 Vout = 2 [json_name = "vout"];
-  string Address = 3 [json_name = "address"];
-  string Account = 4 [json_name = "account"];
-  string ScriptPubKey = 5 [json_name = "script_pub_key"];
-  string RedeemScript = 6 [json_name = "redeem_script"];
-  double Amount = 7 [json_name = "amount"];
-  int64 Confirmations = 8 [json_name = "confirmations"];
-  bool Spendable = 9 [json_name = "spendable"];
+  string Address = 2 [json_name = "address"];
+  string Account = 3 [json_name = "account"];
+  double Amount = 4 [json_name = "amount"];
+  int64 Confirmations = 5 [json_name = "confirmations"];
+  bool Spendable = 6 [json_name = "spendable"];
 }
 
 message GetNewAddressInput {
