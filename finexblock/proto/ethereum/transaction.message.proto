@@ -55,5 +55,5 @@ message BlockData {
 }
 
 message GetBlocksOutput {
-  repeated BlockData Result = 1 [json_name = "result"];
+  repeated GetReceiptOutput Result = 1 [json_name = "result"];
 }
