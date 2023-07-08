@@ -13,7 +13,7 @@ import (
 
 type Service interface {
 	MasterWallet() *accounts.Account
-	GetReceipt(ctx context.Context, txHash string) (*GetReceiptOutput, error)
+	GetReceipt(ctx context.Context, txHash string) (*types.Receipt, error)
 	Transfer(ctx context.Context, userID, from, amount string) (string, error)
 	CreateWallet(ctx context.Context, userID uint64) (string, error)
 	GetBalance(ctx context.Context, address string) (string, error)

@@ -21,20 +21,13 @@ func (g *gethClient) MasterWallet() *accounts.Account {
 }
 
 // GetReceipt from transaction hash
-func (g *gethClient) GetReceipt(ctx context.Context, txHash string) (*GetReceiptOutput, error) {
+func (g *gethClient) GetReceipt(ctx context.Context, txHash string) (*types.Receipt, error) {
 	hash := common.HexToHash(txHash)
 	receipt, err := g.conn.TransactionReceipt(ctx, hash)
 	if err != nil {
 		return nil, err
 	}
-	return &GetReceiptOutput{
-		TxHash:           receipt.TxHash.String(),
-		Status:           receipt.Status,
-		BlockHash:        receipt.BlockHash.String(),
-		BlockNumber:      receipt.BlockNumber.String(),
-		GasUsed:          receipt.GasUsed,
-		TransactionIndex: uint64(receipt.TransactionIndex),
-	}, nil
+	return receipt, nil
 }
 
 // Transfer When depositing, transfer from user account to hot wallet account
