@@ -2,91 +2,36 @@ package ethereum
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/finexblock-dev/gofinexblock/finexblock/ethereum/hdwallet"
 	"github.com/shopspring/decimal"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"log"
 	"math/big"
 	"strconv"
 )
 
-type Interface interface {
-	MasterWallet() *accounts.Account
-	GetReceipt(ctx context.Context, txHash string) (*GetReceiptOutput, error)
-	Transfer(ctx context.Context, userID, from, amount string) (string, error)
-	CreateWallet(ctx context.Context, userID uint64) (string, error)
-	GetBalance(ctx context.Context, address string) (string, error)
-	GetBlockNumber(ctx context.Context) (uint64, error)
-	GetBlocks(ctx context.Context, start, end uint64) ([][]byte, error)
-	BlockNumber(c context.Context) (uint64, error)
-	Nonce(c context.Context, account common.Address) (uint64, error)
-	ChainID(c context.Context) (*big.Int, error)
-	GasCap(c context.Context) (*big.Int, *big.Int, error)
-	GasPrice(c context.Context) (*big.Int, error)
-	BalanceAt(c context.Context, address common.Address) (*big.Int, error)
-	SendRawTransaction(c context.Context, signedTx *types.Transaction) error
-}
-
-type GethClient struct {
-	conn    *ethclient.Client
-	master  *hdwallet.Wallet
-	account *accounts.Account
-}
-
-func NewGethClient(rpcEndpoint, master string) (Interface, error) {
-	var conn *ethclient.Client
-	var err error
-	// Dial rpc endpoint
-	if conn, err = ethclient.Dial(rpcEndpoint); err != nil {
-		return nil, err
-	}
-
-	wallet, err := HDWallet(master)
-	if err != nil {
-		log.Fatalf("failed to create hd wallet : %v", err)
-	}
-
-	path := DerivationPath("0", hdwallet.DefaultBaseDerivationPath.String())
-	account, err := DerivedAccount(wallet, path)
-	if err != nil {
-		log.Fatalf("failed to derive account : %v", err)
-	}
-
-	return &GethClient{conn: conn, master: wallet, account: account}, nil
-}
-
 // MasterWallet returns master wallet
-func (g *GethClient) MasterWallet() *accounts.Account {
+func (g *gethClient) MasterWallet() *accounts.Account {
 	return g.account
 }
 
 // GetReceipt from transaction hash
-func (g *GethClient) GetReceipt(ctx context.Context, txHash string) (*GetReceiptOutput, error) {
+func (g *gethClient) GetReceipt(ctx context.Context, txHash string) (*types.Receipt, error) {
 	hash := common.HexToHash(txHash)
 	receipt, err := g.conn.TransactionReceipt(ctx, hash)
 	if err != nil {
 		return nil, err
 	}
-	return &GetReceiptOutput{
-		TxHash:           receipt.TxHash.String(),
-		Status:           receipt.Status,
-		BlockHash:        receipt.BlockHash.String(),
-		BlockNumber:      receipt.BlockNumber.String(),
-		GasUsed:          receipt.GasUsed,
-		TransactionIndex: uint64(receipt.TransactionIndex),
-	}, nil
+	return receipt, nil
 }
 
 // Transfer When depositing, transfer from user account to hot wallet account
-func (g *GethClient) Transfer(ctx context.Context, userID, from, amount string) (string, error) {
+func (g *gethClient) Transfer(ctx context.Context, userID, from, amount string) (string, error) {
 
 	// Master wallet address
 	toAddress := g.MasterWallet().Address
@@ -124,15 +69,6 @@ func (g *GethClient) Transfer(ctx context.Context, userID, from, amount string) 
 		return "", fmt.Errorf("failed to get chain id : %v", err)
 	}
 
-	log.Println("Gas Tip Cap : ", gasTipCap.String())
-	log.Println("Gas Fee Cap : ", gasFeeCap.String())
-	log.Println("Gas Limit : ", gasLimit)
-	log.Println("Chain ID : ", chainID.String())
-	log.Println("Nonce : ", nonce)
-	log.Println("To Address : ", toAddress.String())
-	log.Println("From Address : ", fromAddress.String())
-	log.Println("Value : ", value.String())
-
 	// Create transaction
 	tx := NewTransaction(chainID, gasTipCap, gasFeeCap, value, nonce, gasLimit, toAddress)
 
@@ -142,9 +78,6 @@ func (g *GethClient) Transfer(ctx context.Context, userID, from, amount string) 
 	if err != nil {
 		return "", fmt.Errorf("failed to get user private key : %v", err)
 	}
-
-	log.Println("Signer Private key", stringPrivateKey)
-	log.Println("Signer Public key", privateKey.Public())
 
 	// Sign transaction
 	signedTx, err := types.SignTx(tx, types.NewLondonSigner(chainID), privateKey)
@@ -161,7 +94,7 @@ func (g *GethClient) Transfer(ctx context.Context, userID, from, amount string) 
 }
 
 // CreateWallet for user
-func (g *GethClient) CreateWallet(ctx context.Context, userID uint64) (string, error) {
+func (g *gethClient) CreateWallet(ctx context.Context, userID uint64) (string, error) {
 	path := DerivationPath(strconv.FormatUint(userID, 10), hdwallet.DefaultBaseDerivationPath.String())
 	account, err := DerivedAccount(g.master, path)
 	if err != nil {
@@ -171,7 +104,7 @@ func (g *GethClient) CreateWallet(ctx context.Context, userID uint64) (string, e
 }
 
 // GetBalance of user
-func (g *GethClient) GetBalance(ctx context.Context, address string) (string, error) {
+func (g *gethClient) GetBalance(ctx context.Context, address string) (string, error) {
 	balance, err := g.conn.BalanceAt(ctx, common.HexToAddress(address), nil)
 	if err != nil {
 		return "", err
@@ -180,7 +113,7 @@ func (g *GethClient) GetBalance(ctx context.Context, address string) (string, er
 }
 
 // GetBlockNumber of blockchain
-func (g *GethClient) GetBlockNumber(ctx context.Context) (uint64, error) {
+func (g *gethClient) GetBlockNumber(ctx context.Context) (uint64, error) {
 	blockNumber, err := g.conn.BlockNumber(ctx)
 	if err != nil {
 		return 0, err
@@ -188,13 +121,13 @@ func (g *GethClient) GetBlockNumber(ctx context.Context) (uint64, error) {
 	return blockNumber, nil
 }
 
-// GetBlocks from blockchain
-func (g *GethClient) GetBlocks(ctx context.Context, start, end uint64) ([][]byte, error) {
+// GetBlockTransactions from blockchain
+func (g *gethClient) GetBlockTransactions(ctx context.Context, start, end uint64) ([]types.Transactions, error) {
 	if start > end {
 		return nil, fmt.Errorf("invalid block range: start should be less than or equal to end")
 	}
 
-	var blockDataList [][]byte
+	var blockDataList []types.Transactions
 
 	for i := start; i <= end; i++ {
 		block, err := g.conn.BlockByNumber(ctx, big.NewInt(int64(i)))
@@ -202,34 +135,33 @@ func (g *GethClient) GetBlocks(ctx context.Context, start, end uint64) ([][]byte
 			return nil, err
 		}
 
-		blockData, err := json.MarshalIndent(block.Transactions(), "", "  ")
-		if err != nil {
-			return nil, err
-		}
-
-		blockDataList = append(blockDataList, blockData)
+		blockDataList = append(blockDataList, g.Transactions(block))
 	}
 
 	return blockDataList, nil
 }
 
+func (g *gethClient) Transactions(block *types.Block) types.Transactions {
+	return block.Transactions()
+}
+
 // BlockNumber returns the current block number of the blockchain
-func (g *GethClient) BlockNumber(c context.Context) (uint64, error) {
+func (g *gethClient) BlockNumber(c context.Context) (uint64, error) {
 	return g.conn.BlockNumber(c)
 }
 
 // Nonce returns the nonce (transaction count) for an account
-func (g *GethClient) Nonce(c context.Context, account common.Address) (uint64, error) {
+func (g *gethClient) Nonce(c context.Context, account common.Address) (uint64, error) {
 	return g.conn.PendingNonceAt(c, account)
 }
 
 // ChainID returns the chain ID of the connected blockchain
-func (g *GethClient) ChainID(c context.Context) (*big.Int, error) {
+func (g *gethClient) ChainID(c context.Context) (*big.Int, error) {
 	return g.conn.NetworkID(c)
 }
 
 // GasCap returns the suggested gas tip cap and fee cap
-func (g *GethClient) GasCap(c context.Context) (*big.Int, *big.Int, error) {
+func (g *gethClient) GasCap(c context.Context) (*big.Int, *big.Int, error) {
 	tipCap, err := g.conn.SuggestGasTipCap(c)
 	if err != nil {
 		return nil, nil, err
@@ -241,14 +173,14 @@ func (g *GethClient) GasCap(c context.Context) (*big.Int, *big.Int, error) {
 	return tipCap, feeCap, err
 }
 
-func (g *GethClient) GasPrice(c context.Context) (*big.Int, error) {
+func (g *gethClient) GasPrice(c context.Context) (*big.Int, error) {
 	return g.conn.SuggestGasPrice(c)
 }
 
-func (g *GethClient) BalanceAt(c context.Context, address common.Address) (*big.Int, error) {
+func (g *gethClient) BalanceAt(c context.Context, address common.Address) (*big.Int, error) {
 	return g.conn.BalanceAt(c, address, nil)
 }
 
-func (g *GethClient) SendRawTransaction(c context.Context, signedTx *types.Transaction) error {
+func (g *gethClient) SendRawTransaction(c context.Context, signedTx *types.Transaction) error {
 	return g.conn.SendTransaction(c, signedTx)
 }

@@ -1,6 +1,6 @@
 syntax = "proto3";
 package ethereum;
-option go_package = "./ethereum";
+option go_package = "/ethereum";
 
 
 import "proto/ethereum/hdwallet.message.proto";

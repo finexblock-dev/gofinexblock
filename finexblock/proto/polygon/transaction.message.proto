@@ -1,25 +1,25 @@
 syntax = "proto3";
 package polygon;
-option go_package = "./polygon";
+option go_package = "/polygon";
+
+message CreateRawTransactionInput {
+  string From = 1 [json_name = "from"];
+  string To = 2 [json_name = "to"];
+  string Amount = 3 [json_name = "amount"];
+}
+
+message CreateRawTransactionOutput {
+  string TxHash = 1 [json_name = "tx_hash"];
+}
 
 
 message SendRawTransactionInput {
+  string From = 1 [json_name = "from"];
   string To = 2 [json_name = "to"];
   string Amount = 3 [json_name = "account"];
 }
 
 message SendRawTransactionOutput {
-  bool Success = 1 [json_name = "success"];
-  string TxHash = 2 [json_name = "tx_hash"];
-}
-
-message TransferInput {
-  string UserID = 1 [json_name = "user_id"];
-  string From = 2 [json_name = "from"];
-  string Amount = 3 [json_name = "success"];
-}
-
-message TransferOutput {
   bool Success = 1 [json_name = "success"];
   string TxHash = 2 [json_name = "tx_hash"];
 }
@@ -49,6 +49,17 @@ message GetBlocksInput {
   uint64 End = 2 [json_name = "end"];
 }
 
+message TxData {
+  string ToAddress = 1 [json_name = "to_address"];
+  string Amount = 2 [json_name = "amount"];
+  string TxHash = 3 [json_name = "tx_hash"];
+  uint64 Status = 4 [json_name = "status"];
+  string BlockHash = 5 [json_name = "block_hash"];
+  string BlockNumber = 6 [json_name = "block_number"];
+  uint64 GasUsed = 7 [json_name = "gas_used"];
+  uint64 TransactionIndex = 8 [json_name = "transaction_index"];
+}
+
 message GetBlocksOutput {
-  repeated bytes Result = 1 [json_name = "result"];
+  repeated TxData Result = 1 [json_name = "result"];
 }
