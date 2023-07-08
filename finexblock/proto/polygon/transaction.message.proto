@@ -14,6 +14,7 @@ message CreateRawTransactionOutput {
 
 
 message SendRawTransactionInput {
+  string From = 1 [json_name = "from"];
   string To = 2 [json_name = "to"];
   string Amount = 3 [json_name = "account"];
 }
