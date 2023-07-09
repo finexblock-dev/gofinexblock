@@ -9,7 +9,7 @@ type fileWriter struct {
 	logger *log.Logger
 }
 
-func (f *fileWriter) write(p []byte) (n int, err error) {
+func (f *fileWriter) Write(p []byte) (n int, err error) {
 	return f.logger.Writer().Write(p)
 }
 

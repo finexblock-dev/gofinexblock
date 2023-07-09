@@ -1,7 +1,7 @@
 package files
 
 type Writer interface {
-	write(p []byte) (n int, err error)
+	Write(p []byte) (n int, err error)
 }
 
 type Reader interface {
