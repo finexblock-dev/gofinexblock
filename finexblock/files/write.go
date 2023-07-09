@@ -9,6 +9,10 @@ type fileWriter struct {
 	logger *log.Logger
 }
 
+func (f *fileWriter) Println(v ...any) {
+	f.logger.Println(v)
+}
+
 func (f *fileWriter) Write(p []byte) (n int, err error) {
 	return f.logger.Writer().Write(p)
 }
