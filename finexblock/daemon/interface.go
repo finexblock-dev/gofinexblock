@@ -1,10 +1,14 @@
 package daemon
 
 type Daemon interface {
-	Run()
-	Sleep()
-	Stop()
-	Task() error
+	run()
+	sleep()
+	stop()
+	task() error
+	state() State
+	setState(State)
+	insertErrLog(err error) error
+	log(v ...any)
 }
 
 type State int
