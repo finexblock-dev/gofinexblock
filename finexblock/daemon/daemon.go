@@ -2,13 +2,13 @@ package daemon
 
 func Run(daemon Daemon) {
 	var err error
-	daemon.run()
+	daemon.Run()
 
 	for {
-		if daemon.state() == Running {
+		if daemon.State() == Running {
 			if err = Task(daemon); err != nil {
-				if nextErr := daemon.insertErrLog(err); nextErr != nil {
-					daemon.log(nextErr)
+				if nextErr := daemon.InsertErrLog(err); nextErr != nil {
+					daemon.Log(nextErr)
 					Stop(daemon)
 				}
 			}
@@ -18,13 +18,13 @@ func Run(daemon Daemon) {
 }
 
 func Stop(daemon Daemon) {
-	daemon.stop()
+	daemon.Stop()
 }
 
 func Sleep(daemon Daemon) {
-	daemon.sleep()
+	daemon.Sleep()
 }
 
 func Task(daemon Daemon) error {
-	return daemon.task()
+	return daemon.Task()
 }
