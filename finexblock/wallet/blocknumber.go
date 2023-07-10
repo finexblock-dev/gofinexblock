@@ -32,9 +32,9 @@ func (w *walletService) UpdateBlockNumber(tx *gorm.DB, coinID uint, fromBlockNum
 	var err error
 	var table *wallet.BlockNumber
 
-	if err = tx.Table(table.TableName()).Update("from_block", fromBlockNumber).Update("to_block", toBlockNumber).Error; err != nil {
+	if err = tx.Table(table.TableName()).Where("coin_id = ?", coinID).Update("from_block", fromBlockNumber).Update("to_block", toBlockNumber).Error; err != nil {
 		return nil, err
 	}
 
-	return table, nil
+	return w.FindBlockNumberByCoinID(tx, coinID)
 }

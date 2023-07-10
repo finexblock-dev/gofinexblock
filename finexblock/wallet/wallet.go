@@ -9,7 +9,7 @@ func (w *walletService) FindWalletByID(tx *gorm.DB, id uint) (*wallet.Wallet, er
 	var _wallet *wallet.Wallet
 	var err error
 
-	if err = tx.Table(_wallet.TableName()).Where("id = ?", id).First(_wallet).Error; err != nil {
+	if err = tx.Table(_wallet.TableName()).Where("id = ?", id).First(&_wallet).Error; err != nil {
 		return nil, err
 	}
 
@@ -20,7 +20,7 @@ func (w *walletService) FindWalletByAddress(tx *gorm.DB, addr string) (*wallet.W
 	var _wallet *wallet.Wallet
 	var err error
 
-	if err = tx.Table(_wallet.TableName()).Where("address = ?", addr).First(_wallet).Error; err != nil {
+	if err = tx.Table(_wallet.TableName()).Where("address = ?", addr).First(&_wallet).Error; err != nil {
 		return nil, err
 	}
 
@@ -32,7 +32,7 @@ func (w *walletService) FindAllWallet(tx *gorm.DB, coinID uint) ([]*wallet.Walle
 	var _table *wallet.Wallet
 	var err error
 
-	if err = tx.Table(_table.TableName()).Where("coin_id = ?", coinID).Find(_wallet).Error; err != nil {
+	if err = tx.Table(_table.TableName()).Where("coin_id = ?", coinID).Find(&_wallet).Error; err != nil {
 		return nil, err
 	}
 
@@ -44,7 +44,7 @@ func (w *walletService) ScanWalletByCoinID(tx *gorm.DB, coinID uint) ([]*wallet.
 	var _table *wallet.Wallet
 	var err error
 
-	if err = tx.Table(_table.TableName()).Where("coin_id = ?", coinID).Find(_wallet).Error; err != nil {
+	if err = tx.Table(_table.TableName()).Where("coin_id = ?", coinID).Find(&_wallet).Error; err != nil {
 		return nil, err
 	}
 
@@ -56,7 +56,7 @@ func (w *walletService) ScanWalletByUserID(tx *gorm.DB, userID uint) ([]*wallet.
 	var _table *wallet.Wallet
 	var err error
 
-	if err = tx.Table(_table.TableName()).Where("user_id = ?", userID).Find(_wallet).Error; err != nil {
+	if err = tx.Table(_table.TableName()).Where("user_id = ?", userID).Find(&_wallet).Error; err != nil {
 		return nil, err
 	}
 
@@ -77,7 +77,7 @@ func (w *walletService) UpdateWallet(tx *gorm.DB, id uint, address string) (*wal
 	var _table *wallet.Wallet
 	var err error
 
-	if err = tx.Table(_table.TableName()).Where("id = ?", id).UpdateColumn("address", address).Error; err != nil {
+	if err = tx.Table(_table.TableName()).Where("id = ?", id).Update("address", address).Error; err != nil {
 		return nil, err
 	}
 

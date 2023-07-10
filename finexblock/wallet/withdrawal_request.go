@@ -9,7 +9,7 @@ func (w *walletService) FindWithdrawalRequestByID(tx *gorm.DB, id uint) (*wallet
 	var _withdrawalRequest *wallet.WithdrawalRequest
 	var err error
 
-	if err = tx.Table(_withdrawalRequest.TableName()).Where("id = ?", id).First(_withdrawalRequest).Error; err != nil {
+	if err = tx.Table(_withdrawalRequest.TableName()).Where("id = ?", id).First(&_withdrawalRequest).Error; err != nil {
 		return nil, err
 	}
 
@@ -21,7 +21,7 @@ func (w *walletService) ScanWithdrawalRequestByStatus(tx *gorm.DB, status wallet
 	var table *wallet.WithdrawalRequest
 	var err error
 
-	if err = tx.Table(table.TableName()).Where("status = ?", status).Find(_withdrawalRequest).Error; err != nil {
+	if err = tx.Table(table.TableName()).Where("status = ?", status).Find(&_withdrawalRequest).Error; err != nil {
 		return nil, err
 	}
 
@@ -37,6 +37,7 @@ func (w *walletService) ScanWithdrawalRequestByCond(tx *gorm.DB, coinID uint, st
 		Joins("join coin_transfer on coin_transfer.id = withdrawal_request.coin_transfer_id").
 		Joins("join wallet on wallet.id = coin_transfer.wallet_id").
 		Where("wallet.coin_id = ?", coinID).
+		Where("withdrawal_request.status = ?", status).
 		Find(&withdrawalRequests).Error
 
 	if err != nil {
