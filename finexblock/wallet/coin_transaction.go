@@ -45,6 +45,17 @@ func (w *walletService) FindCoinTransactionByTxHash(tx *gorm.DB, txHash string) 
 	return coinTransaction, nil
 }
 
+func (w *walletService) FindCoinTransactionByID(tx *gorm.DB, id uint) (*wallet.CoinTransaction, error) {
+	var coinTransaction *wallet.CoinTransaction
+	var err error
+
+	if err = tx.Table(coinTransaction.TableName()).Where("id = ?", id).First(&coinTransaction).Error; err != nil {
+		return nil, err
+	}
+
+	return coinTransaction, nil
+}
+
 func (w *walletService) ScanCoinTransactionByCond(tx *gorm.DB, transferID uint, status wallet.TransactionStatus) ([]*wallet.CoinTransaction, error) {
 	var coinTransaction []*wallet.CoinTransaction
 	var table *wallet.CoinTransaction
@@ -57,7 +68,7 @@ func (w *walletService) ScanCoinTransactionByCond(tx *gorm.DB, transferID uint, 
 	return coinTransaction, nil
 }
 
-func (w *walletService) UpdateCoinTransaction(tx *gorm.DB, id uint, hash string) (*wallet.CoinTransaction, error) {
+func (w *walletService) UpdateCoinTransactionHash(tx *gorm.DB, id uint, hash string) (*wallet.CoinTransaction, error) {
 	var table *wallet.CoinTransaction
 	var err error
 
@@ -66,4 +77,15 @@ func (w *walletService) UpdateCoinTransaction(tx *gorm.DB, id uint, hash string)
 	}
 
 	return w.FindCoinTransactionByTxHash(tx, hash)
+}
+
+func (w *walletService) UpdateCoinTransactionStatus(tx *gorm.DB, id uint, txStatus wallet.TransactionStatus) (*wallet.CoinTransaction, error) {
+	var table *wallet.CoinTransaction
+	var err error
+
+	if err = tx.Table(table.TableName()).Where("id = ?", id).Update("status", txStatus).Error; err != nil {
+		return nil, err
+	}
+
+	return w.FindCoinTransactionByID(tx, id)
 }
