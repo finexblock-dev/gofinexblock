@@ -5,6 +5,10 @@ type Daemon interface {
 	Sleep()
 	Stop()
 	Task() error
+	State() State
+	SetState(State)
+	InsertErrLog(err error) error
+	Log(v ...any)
 }
 
 type State int

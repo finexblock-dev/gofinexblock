@@ -56,3 +56,14 @@ func (w *walletService) ScanCoinTransactionByCond(tx *gorm.DB, transferID uint, 
 
 	return coinTransaction, nil
 }
+
+func (w *walletService) UpdateCoinTransaction(tx *gorm.DB, id uint, hash string) (*wallet.CoinTransaction, error) {
+	var table *wallet.CoinTransaction
+	var err error
+
+	if err = tx.Table(table.TableName()).Where("id = ?", id).Update("tx_hash", hash).Error; err != nil {
+		return nil, err
+	}
+
+	return w.FindCoinTransactionByTxHash(tx, hash)
+}
