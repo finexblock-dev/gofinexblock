@@ -17,13 +17,14 @@ func (w *walletService) ScanCoinTransactionByTransferID(tx *gorm.DB, transferID 
 	return coinTransaction, nil
 }
 
-func (w *walletService) InsertCoinTransaction(tx *gorm.DB, transferID uint, txHash string) (*wallet.CoinTransaction, error) {
+func (w *walletService) InsertCoinTransaction(tx *gorm.DB, transferID uint, txHash string, txStatus wallet.TransactionStatus) (*wallet.CoinTransaction, error) {
 	var err error
 	var coinTransaction *wallet.CoinTransaction
 
 	coinTransaction = &wallet.CoinTransaction{
 		CoinTransferID: transferID,
 		TxHash:         txHash,
+		Status:         txStatus,
 	}
 
 	if err = tx.Table(coinTransaction.TableName()).Create(coinTransaction).Error; err != nil {
