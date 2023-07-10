@@ -35,7 +35,7 @@ type Service interface {
 	FindCoinTransactionByTxHash(tx *gorm.DB, txHash string) (*wallet.CoinTransaction, error)
 	ScanCoinTransactionByTransferID(tx *gorm.DB, transferID uint) ([]*wallet.CoinTransaction, error)
 	ScanCoinTransactionByCond(tx *gorm.DB, transferID uint, status wallet.TransactionStatus) ([]*wallet.CoinTransaction, error)
-	InsertCoinTransaction(tx *gorm.DB, transferID uint, txHash string) (*wallet.CoinTransaction, error)
+	InsertCoinTransaction(tx *gorm.DB, transferID uint, txHash string, txStatus wallet.TransactionStatus) (*wallet.CoinTransaction, error)
 	UpdateCoinTransaction(tx *gorm.DB, id uint, hash string) (*wallet.CoinTransaction, error)
 
 	ScanWithdrawalRequestByStatus(tx *gorm.DB, status wallet.WithdrawalStatus) ([]*wallet.WithdrawalRequest, error)
