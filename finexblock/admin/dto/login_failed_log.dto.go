@@ -1,6 +1,8 @@
 package dto
 
-import "github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
+import (
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
+)
 
 type (
 	FindLoginFailedLogInput struct {
@@ -10,7 +12,7 @@ type (
 	}
 
 	FindLoginFailedLogOutput struct {
-		Result []*admin.AdminLoginFailedLog `json:"result,required"`
+		Result []*entity.AdminLoginFailedLog `json:"result,required"`
 	}
 
 	FindLoginFailedLogSuccessResponse struct {

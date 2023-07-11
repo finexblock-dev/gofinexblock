@@ -2,8 +2,7 @@ package order
 
 import (
 	"fmt"
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity/order"
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity/user"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/shopspring/decimal"
@@ -13,18 +12,18 @@ import (
 
 func (o *orderService) HandleOrderMatchingEventInBatch(tx *gorm.DB, event []*grpc_order.OrderMatching) error {
 	var symbolNames []string
-	var symbols []*order.OrderSymbol
-	var input []*order.OrderMatchingEvent
-	var _symbol *order.OrderSymbol
-	var _matchingEvent *order.OrderMatchingEvent
-	var interval *order.OrderInterval
+	var symbols []*entity.OrderSymbol
+	var input []*entity.OrderMatchingEvent
+	var _symbol *entity.OrderSymbol
+	var _matchingEvent *entity.OrderMatchingEvent
+	var interval *entity.OrderInterval
 
-	symbolMap := make(map[string]*order.OrderSymbol, len(event))
+	symbolMap := make(map[string]*entity.OrderSymbol, len(event))
 
 	for _, v := range event {
 		if _, ok := symbolMap[v.Symbol.String()]; !ok {
 			symbolNames = append(symbolNames, v.Symbol.String())
-			symbolMap[v.Symbol.String()] = new(order.OrderSymbol)
+			symbolMap[v.Symbol.String()] = new(entity.OrderSymbol)
 		}
 	}
 
@@ -47,7 +46,7 @@ func (o *orderService) HandleOrderMatchingEventInBatch(tx *gorm.DB, event []*grp
 			continue
 		}
 
-		input = append(input, &order.OrderMatchingEvent{
+		input = append(input, &entity.OrderMatchingEvent{
 			ID:              0,
 			OrderSymbolID:   _symbol.ID,
 			OrderIntervalID: interval.ID,
@@ -69,48 +68,48 @@ func (o *orderService) HandleOrderFulfillmentInBatch(tx *gorm.DB, event []*grpc_
 	var symbolNames []string
 	var orderUUIDs []string
 
-	var users []*user.User
-	var _user *user.User
+	var users []*entity.User
+	var _user *entity.User
 
-	var symbols []*order.OrderSymbol
-	var _symbol *order.OrderSymbol
+	var symbols []*entity.OrderSymbol
+	var _symbol *entity.OrderSymbol
 
-	var orders []*order.OrderBook
-	var _order *order.OrderBook
+	var orders []*entity.OrderBook
+	var _order *entity.OrderBook
 
-	var diffList []*order.OrderBookDifference
-	var _diff *order.OrderBookDifference
+	var diffList []*entity.OrderBookDifference
+	var _diff *entity.OrderBookDifference
 
-	var matchingHistories []*order.OrderMatchingHistory
-	var _matchingHistory *order.OrderMatchingHistory
+	var matchingHistories []*entity.OrderMatchingHistory
+	var _matchingHistory *entity.OrderMatchingHistory
 
 	// Not initialized, or something other reason
 	var remain []*grpc_order.OrderFulfillment
 
 	// Mapping for cache user
-	userMap := make(map[string]*user.User, len(event))
+	userMap := make(map[string]*entity.User, len(event))
 	// Mapping for cache symbol
-	symbolMap := make(map[string]*order.OrderSymbol, len(event))
+	symbolMap := make(map[string]*entity.OrderSymbol, len(event))
 	// Mapping for cache order
-	orderMap := make(map[string]*order.OrderBook, len(event))
+	orderMap := make(map[string]*entity.OrderBook, len(event))
 
 	for _, v := range event {
 		// Memoize user uuid
 		if _, exists := userMap[v.UserUUID]; !exists {
 			userUUIDs = append(userUUIDs, v.UserUUID)
-			userMap[v.UserUUID] = &user.User{}
+			userMap[v.UserUUID] = &entity.User{}
 		}
 
 		// Memoize symbol name
 		if _, exists := symbolMap[v.Symbol.String()]; !exists {
 			symbolNames = append(symbolNames, v.Symbol.String())
-			symbolMap[v.Symbol.String()] = new(order.OrderSymbol)
+			symbolMap[v.Symbol.String()] = new(entity.OrderSymbol)
 		}
 
 		// Memoize order uuid
 		if _, exists := orderMap[v.OrderUUID]; !exists {
 			orderUUIDs = append(orderUUIDs, v.OrderUUID)
-			orderMap[v.OrderUUID] = new(order.OrderBook)
+			orderMap[v.OrderUUID] = new(entity.OrderBook)
 		}
 	}
 
@@ -161,14 +160,14 @@ func (o *orderService) HandleOrderFulfillmentInBatch(tx *gorm.DB, event []*grpc_
 		}
 
 		// order_book_difference (order_book_id, diff, reason)
-		diffList = append(diffList, &order.OrderBookDifference{
+		diffList = append(diffList, &entity.OrderBookDifference{
 			OrderBookID: orderData.ID,
 			Diff:        decimal.NewFromFloat(v.FilledQuantity),
 			Reason:      "FILL",
 		})
 
 		// order_matching_history (user_id, order_symbol_id, order_uuid, filled_quantity, unit_price, fee, order_type)
-		matchingHistories = append(matchingHistories, &order.OrderMatchingHistory{
+		matchingHistories = append(matchingHistories, &entity.OrderMatchingHistory{
 			UserID:         uint(userID),
 			OrderSymbolID:  symbolID,
 			OrderUUID:      v.OrderUUID,
@@ -197,42 +196,42 @@ func (o *orderService) HandleOrderPartialFillInBatch(tx *gorm.DB, event []*grpc_
 	var symbolNames []string
 	var orderUUIDs []string
 
-	var users []*user.User
-	var _user *user.User
+	var users []*entity.User
+	var _user *entity.User
 
-	var symbols []*order.OrderSymbol
-	var _symbol *order.OrderSymbol
+	var symbols []*entity.OrderSymbol
+	var _symbol *entity.OrderSymbol
 
-	var orders []*order.OrderBook
-	var _book *order.OrderBook
+	var orders []*entity.OrderBook
+	var _book *entity.OrderBook
 
-	var diffList []*order.OrderBookDifference
-	var _diff *order.OrderBookDifference
+	var diffList []*entity.OrderBookDifference
+	var _diff *entity.OrderBookDifference
 
-	var matchingHistories []*order.OrderMatchingHistory
-	var _matchingHistory *order.OrderMatchingHistory
+	var matchingHistories []*entity.OrderMatchingHistory
+	var _matchingHistory *entity.OrderMatchingHistory
 
 	// Not initialized, or something other reason
 	var remain []*grpc_order.OrderPartialFill
 
 	// Mapping for user, symbol, order
-	userMap := make(map[string]*user.User, len(event))
-	symbolMap := make(map[string]*order.OrderSymbol, len(event))
-	orderMap := make(map[string]*order.OrderBook, len(event))
+	userMap := make(map[string]*entity.User, len(event))
+	symbolMap := make(map[string]*entity.OrderSymbol, len(event))
+	orderMap := make(map[string]*entity.OrderBook, len(event))
 
 	// Memoize user uuid, symbol name, order uuid
 	for _, v := range event {
 		if _, exists := userMap[v.UserUUID]; !exists {
 			userUUIDs = append(userUUIDs, v.UserUUID)
-			userMap[v.UserUUID] = new(user.User)
+			userMap[v.UserUUID] = new(entity.User)
 		}
 		if _, exists := symbolMap[v.Symbol.String()]; !exists {
 			symbolNames = append(symbolNames, v.Symbol.String())
-			symbolMap[v.Symbol.String()] = new(order.OrderSymbol)
+			symbolMap[v.Symbol.String()] = new(entity.OrderSymbol)
 		}
 		if _, exists := orderMap[v.OrderUUID]; !exists {
 			orderUUIDs = append(orderUUIDs, v.OrderUUID)
-			orderMap[v.OrderUUID] = new(order.OrderBook)
+			orderMap[v.OrderUUID] = new(entity.OrderBook)
 		}
 	}
 
@@ -280,14 +279,14 @@ func (o *orderService) HandleOrderPartialFillInBatch(tx *gorm.DB, event []*grpc_
 		}
 
 		// order_book_difference (order_book_id, diff, reason)
-		diffList = append(diffList, &order.OrderBookDifference{
+		diffList = append(diffList, &entity.OrderBookDifference{
 			OrderBookID: orderData.ID,
 			Diff:        decimal.NewFromFloat(v.FilledQuantity),
 			Reason:      "FILL",
 		})
 
 		// order_matching_history (user_id, order_symbol_id, order_uuid, filled_quantity, unit_price, fee, order_type)
-		matchingHistories = append(matchingHistories, &order.OrderMatchingHistory{
+		matchingHistories = append(matchingHistories, &entity.OrderMatchingHistory{
 			UserID:         uint(u.ID),
 			OrderSymbolID:  _s.ID,
 			OrderUUID:      v.OrderUUID,
@@ -314,27 +313,27 @@ func (o *orderService) HandleOrderPartialFillInBatch(tx *gorm.DB, event []*grpc_
 func (o *orderService) HandleOrderInitializeInBatch(tx *gorm.DB, event []*grpc_order.OrderInitialize) error {
 	var userUUIDs []string
 	var symbolNames []string
-	var orderBooks []*order.OrderBook
-	var _orderBook *order.OrderBook
+	var orderBooks []*entity.OrderBook
+	var _orderBook *entity.OrderBook
 
-	var users []*user.User
-	var _user *user.User
+	var users []*entity.User
+	var _user *entity.User
 
-	var symbols []*order.OrderSymbol
-	var _symbol *order.OrderSymbol
+	var symbols []*entity.OrderSymbol
+	var _symbol *entity.OrderSymbol
 
 	// Create user, symbol map
-	symbolMap := make(map[string]*order.OrderSymbol, len(event))
-	userMap := make(map[string]*user.User, len(event))
+	symbolMap := make(map[string]*entity.OrderSymbol, len(event))
+	userMap := make(map[string]*entity.User, len(event))
 
 	for _, v := range event {
 		if _, exists := userMap[v.UserUUID]; !exists {
 			userUUIDs = append(userUUIDs, v.UserUUID)
-			userMap[v.UserUUID] = new(user.User)
+			userMap[v.UserUUID] = new(entity.User)
 		}
 		if _, exists := symbolMap[v.Symbol.String()]; !exists {
 			symbolNames = append(symbolNames, v.Symbol.String())
-			symbolMap[v.Symbol.String()] = new(order.OrderSymbol)
+			symbolMap[v.Symbol.String()] = new(entity.OrderSymbol)
 		}
 	}
 
@@ -368,7 +367,7 @@ func (o *orderService) HandleOrderInitializeInBatch(tx *gorm.DB, event []*grpc_o
 		}
 
 		// order_book (order_symbol_id, user_id, order_uuid, unit_price, quantity, order_type, status)
-		orderBooks = append(orderBooks, &order.OrderBook{
+		orderBooks = append(orderBooks, &entity.OrderBook{
 			OrderSymbolID: _s.ID,
 			UserID:        uint(u.ID),
 			OrderUUID:     v.OrderUUID,
@@ -388,14 +387,14 @@ func (o *orderService) HandleOrderInitializeInBatch(tx *gorm.DB, event []*grpc_o
 }
 
 func (o *orderService) HandleOrderInterval(tx *gorm.DB, name string, duration time.Duration) error {
-	var _interval *order.OrderInterval
-	var newInterval *order.OrderInterval
+	var _interval *entity.OrderInterval
+	var newInterval *entity.OrderInterval
 
-	var recentPoles []*order.Chart
-	var _chart *order.Chart
+	var recentPoles []*entity.Chart
+	var _chart *entity.Chart
 
-	var recentInterval *order.OrderInterval
-	var newPoles []*order.Chart
+	var recentInterval *entity.OrderInterval
+	var newPoles []*entity.Chart
 
 	if err := tx.Table(_interval.TableName()).Where("duration = ?", name).Order("start_time desc").First(&recentInterval).Error; err != nil {
 		return fmt.Errorf("failed to get most recent interval which is corresponding to %v : %v", name, err)
@@ -405,7 +404,7 @@ func (o *orderService) HandleOrderInterval(tx *gorm.DB, name string, duration ti
 		return fmt.Errorf("failed to get recent poles corresponding to %v : %v", name, err)
 	}
 
-	newInterval = &order.OrderInterval{
+	newInterval = &entity.OrderInterval{
 		Duration:  name,
 		StartTime: recentInterval.StartTime.Add(duration),
 		EndTime:   recentInterval.EndTime.Add(duration),
@@ -416,7 +415,7 @@ func (o *orderService) HandleOrderInterval(tx *gorm.DB, name string, duration ti
 	}
 
 	for _, v := range recentPoles {
-		newPoles = append(newPoles, &order.Chart{
+		newPoles = append(newPoles, &entity.Chart{
 			OrderSymbolID:   v.OrderSymbolID,
 			OrderIntervalID: newInterval.ID,
 			OpenPrice:       v.ClosePrice,
@@ -440,22 +439,22 @@ func (o *orderService) HandleChartDraw(tx *gorm.DB, event []*grpc_order.OrderMat
 	var symbolIDs []uint
 	var poleIDList []uint
 
-	var _interval *order.OrderInterval
+	var _interval *entity.OrderInterval
 
-	var recentPoles []*order.Chart
-	var _chart *order.Chart
+	var recentPoles []*entity.Chart
+	var _chart *entity.Chart
 
-	var _symbol *order.OrderSymbol
-	var symbols []*order.OrderSymbol
+	var _symbol *entity.OrderSymbol
+	var symbols []*entity.OrderSymbol
 
-	var symbolNameMap = make(map[string]*order.OrderSymbol)
-	var symbolIDMap = make(map[uint]*order.OrderSymbol)
+	var symbolNameMap = make(map[string]*entity.OrderSymbol)
+	var symbolIDMap = make(map[uint]*entity.OrderSymbol)
 	var priceMap = make(map[string]*types.PoleData)
 
 	for _, v := range event {
 		if _, exist := symbolNameMap[v.Symbol.String()]; !exist {
 			symbolNames = append(symbolNames, v.Symbol.String())
-			symbolNameMap[v.Symbol.String()] = new(order.OrderSymbol)
+			symbolNameMap[v.Symbol.String()] = new(entity.OrderSymbol)
 		}
 		if _, exist := priceMap[v.Symbol.String()]; !exist {
 			priceMap[v.Symbol.String()] = types.NewPriceSet()
@@ -548,9 +547,9 @@ func (o *orderService) HandleChartDraw(tx *gorm.DB, event []*grpc_order.OrderMat
 
 func (o *orderService) HandleOrderCancellationInBatch(tx *gorm.DB, event []*grpc_order.OrderCancelled) ([]*grpc_order.OrderCancelled, error) {
 	var orderUUIDs []string
-	var _orderBook *order.OrderBook
+	var _orderBook *entity.OrderBook
 
-	var orderBookList []*order.OrderBook
+	var orderBookList []*entity.OrderBook
 	var remain []*grpc_order.OrderCancelled
 
 	for _, cancellation := range event {

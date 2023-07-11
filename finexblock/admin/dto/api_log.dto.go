@@ -1,6 +1,8 @@
 package dto
 
-import "github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
+import (
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
+)
 
 type (
 	SearchApiLogInput struct {
@@ -14,7 +16,7 @@ type (
 	}
 
 	SearchApiLogOutput struct {
-		Result []*admin.AdminApiLog
+		Result []*entity.AdminApiLog
 	}
 
 	SearchApiLogSuccessResponse struct {
@@ -30,7 +32,7 @@ type (
 	}
 
 	FindAllApiLogOutput struct {
-		Result []*admin.AdminApiLog
+		Result []*entity.AdminApiLog
 	}
 
 	FindAllApiLogSuccessResponse struct {
@@ -47,7 +49,7 @@ type (
 	}
 
 	FindApiLogByAdminOutput struct {
-		Result []*admin.AdminApiLog
+		Result []*entity.AdminApiLog
 	}
 
 	FindApiLogByAdminSuccessResponse struct {
@@ -65,7 +67,7 @@ type (
 	}
 
 	FindApiLogByTimeCondOutput struct {
-		Result []*admin.AdminApiLog
+		Result []*entity.AdminApiLog
 	}
 
 	FindApiLogByTimeCondSuccessResponse struct {
@@ -82,7 +84,7 @@ type (
 	}
 
 	FindApiLogByMethodCondOutput struct {
-		Result []*admin.AdminApiLog
+		Result []*entity.AdminApiLog
 	}
 
 	FindApiLogByMethodCondSuccessResponse struct {
@@ -99,7 +101,7 @@ type (
 	}
 
 	FindApiLogByEndpointOutput struct {
-		Result []*admin.AdminApiLog `json:"result,required"`
+		Result []*entity.AdminApiLog `json:"result,required"`
 	}
 
 	FindApiLogByEndpointSuccessResponse struct {

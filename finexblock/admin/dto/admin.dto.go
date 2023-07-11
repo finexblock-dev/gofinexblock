@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 )
 
@@ -23,13 +23,13 @@ type (
 
 type (
 	FindAdminByGradeInput struct {
-		Limit  int             `json:"limit,required" query:"limit,required" default:"20"`
-		Offset int             `json:"offset,required" query:"offset,required" default:"0"`
-		Grade  admin.GradeType `json:"grade,required" query:"grade,required"`
+		Limit  int              `json:"limit,required" query:"limit,required" default:"20"`
+		Offset int              `json:"offset,required" query:"offset,required" default:"0"`
+		Grade  entity.GradeType `json:"grade,required" query:"grade,required"`
 	}
 
 	FindAdminByGradeOutput struct {
-		Result []*admin.Admin `json:"result,required"`
+		Result []*entity.Admin `json:"result,required"`
 	}
 
 	FindAdminByGradeSwaggerOutput struct {
@@ -92,8 +92,8 @@ type (
 
 type (
 	UpdateGradeInput struct {
-		AdminID uint            `json:"admin_id,required"`
-		Grade   admin.GradeType `json:"grade,required"`
+		AdminID uint             `json:"admin_id,required"`
+		Grade   entity.GradeType `json:"grade,required"`
 	}
 
 	UpdateGradeOutput struct {

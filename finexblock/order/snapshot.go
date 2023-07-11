@@ -3,7 +3,7 @@ package order
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity/order"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"gorm.io/gorm"
 )
@@ -20,7 +20,7 @@ func (o *orderService) Snapshot(tx *gorm.DB, symbolID uint, bids []*grpc_order.O
 		return fmt.Errorf("failed to marshal order list: [%v]", err)
 	}
 
-	var _snapShotOrderBook = &order.SnapshotOrderBook{
+	var _snapShotOrderBook = &entity.SnapshotOrderBook{
 		OrderSymbolID: symbolID,
 		BidOrderList:  string(bidOrderList),
 		AskOrderList:  string(askOrderList),

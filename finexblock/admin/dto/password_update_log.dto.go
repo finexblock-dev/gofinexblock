@@ -1,6 +1,8 @@
 package dto
 
-import "github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
+import (
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
+)
 
 type (
 	SearchPasswordUpdateLogInput struct {
@@ -13,7 +15,7 @@ type (
 	}
 
 	SearchPasswordUpdateLogOutput struct {
-		Result []*admin.AdminPasswordLog `json:"result,required"`
+		Result []*entity.AdminPasswordLog `json:"result,required"`
 	}
 
 	SearchPasswordUpdateLogSuccessResponse struct {
@@ -29,7 +31,7 @@ type (
 	}
 
 	FindAllPasswordUpdateLogOutput struct {
-		Result []*admin.AdminPasswordLog `json:"result,required"`
+		Result []*entity.AdminPasswordLog `json:"result,required"`
 	}
 
 	FindAllPasswordUpdateLogSuccessResponse struct {
@@ -46,7 +48,7 @@ type (
 	}
 
 	FindPasswordUpdateLogOfExecutorOutput struct {
-		Result []*admin.AdminPasswordLog `json:"result,required"`
+		Result []*entity.AdminPasswordLog `json:"result,required"`
 	}
 
 	FindPasswordUpdateLogOfExecutorSuccessResponse struct {
@@ -63,7 +65,7 @@ type (
 	}
 
 	FindPasswordUpdateLogOfTargetOutput struct {
-		Result []*admin.AdminPasswordLog `json:"result,required"`
+		Result []*entity.AdminPasswordLog `json:"result,required"`
 	}
 
 	FindPasswordUpdateLogOfTargetSuccessResponse struct {

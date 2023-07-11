@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"database/sql"
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity/user"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/finexblock-dev/gofinexblock/finexblock/user/dto"
 	"gorm.io/gorm"
@@ -33,7 +33,7 @@ func (u *userService) Conn() *gorm.DB {
 	return u.repo.Conn()
 }
 
-func (u *userService) FindUserByUUID(uuid string) (result *user.User, err error) {
+func (u *userService) FindUserByUUID(uuid string) (result *entity.User, err error) {
 	if err = u.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = u.repo.FindUserByUUID(tx, uuid)
 		return err
@@ -44,7 +44,7 @@ func (u *userService) FindUserByUUID(uuid string) (result *user.User, err error)
 	return result, nil
 }
 
-func (u *userService) FindUserByUUIDs(uuids []string) (result []*user.User, err error) {
+func (u *userService) FindUserByUUIDs(uuids []string) (result []*entity.User, err error) {
 	if err = u.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = u.repo.FindUserByUUIDs(tx, uuids)
 		return err
@@ -54,7 +54,7 @@ func (u *userService) FindUserByUUIDs(uuids []string) (result []*user.User, err 
 	return result, nil
 }
 
-func (u *userService) FindUserByID(id uint) (result *user.User, err error) {
+func (u *userService) FindUserByID(id uint) (result *entity.User, err error) {
 	if err = u.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = u.repo.FindUserByID(tx, id)
 		return err

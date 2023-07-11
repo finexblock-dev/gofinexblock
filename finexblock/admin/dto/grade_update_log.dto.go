@@ -1,6 +1,8 @@
 package dto
 
-import "github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
+import (
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
+)
 
 type (
 	FindAllGradeUpdateLogInput struct {
@@ -9,7 +11,7 @@ type (
 	}
 
 	FindAllGradeUpdateLogOutput struct {
-		Result []*admin.AdminGradeUpdateLog `json:"result,required"`
+		Result []*entity.AdminGradeUpdateLog `json:"result,required"`
 	}
 
 	FindAllGradeUpdateLogSuccessResponse struct {
@@ -26,7 +28,7 @@ type (
 	}
 
 	FindGradeUpdateLogOfExecutorOutput struct {
-		Result []*admin.AdminGradeUpdateLog `json:"result,required"`
+		Result []*entity.AdminGradeUpdateLog `json:"result,required"`
 	}
 
 	FindGradeUpdateLogOfExecutorSuccessResponse struct {
@@ -43,7 +45,7 @@ type (
 	}
 
 	FindGradeUpdateLogOfTargetOutput struct {
-		Result []*admin.AdminGradeUpdateLog `json:"result,required"`
+		Result []*entity.AdminGradeUpdateLog `json:"result,required"`
 	}
 
 	FindGradeUpdateLogOfTargetSuccessResponse struct {
@@ -63,7 +65,7 @@ type (
 	}
 
 	SearchGradeUpdateLogOutput struct {
-		Result []*admin.AdminGradeUpdateLog `json:"result,required"`
+		Result []*entity.AdminGradeUpdateLog `json:"result,required"`
 	}
 
 	SearchGradeUpdateLogSuccessResponse struct {

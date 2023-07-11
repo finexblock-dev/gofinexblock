@@ -3,7 +3,7 @@ package user
 import (
 	"database/sql"
 	"errors"
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity/user"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/finexblock-dev/gofinexblock/finexblock/user/dto"
 	"github.com/shopspring/decimal"
@@ -15,22 +15,14 @@ type userRepository struct {
 	db *gorm.DB
 }
 
-func (u *userRepository) FindUserDormantByUserID(tx *gorm.DB, userID uint) (result *user.UserDormant, err error) {
+func (u *userRepository) FindUserDormantByUserID(tx *gorm.DB, userID uint) (result *entity.UserDormant, err error) {
 	if err = tx.Table(result.TableName()).Where("user_id = ?", userID).First(&result).Error; err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (u *userRepository) FindUserMemoByUserID(tx *gorm.DB, userID uint) (result *user.UserMemo, err error) {
-	if err = tx.Table(result.TableName()).Where("user_id = ?", userID).First(&result).Error; err != nil {
-		return nil, err
-	}
-
-	return result, nil
-}
-
-func (u *userRepository) FindUserEmailSignUpByUserID(tx *gorm.DB, userID uint) (result *user.UserEmailSignUp, err error) {
+func (u *userRepository) FindUserMemoByUserID(tx *gorm.DB, userID uint) (result *entity.UserMemo, err error) {
 	if err = tx.Table(result.TableName()).Where("user_id = ?", userID).First(&result).Error; err != nil {
 		return nil, err
 	}
@@ -38,7 +30,15 @@ func (u *userRepository) FindUserEmailSignUpByUserID(tx *gorm.DB, userID uint) (
 	return result, nil
 }
 
-func (u *userRepository) FindUserSingleSignOnInfoByCond(tx *gorm.DB, userID uint, ssoType user.SSOType) (result *user.UserSingleSignOnInfo, err error) {
+func (u *userRepository) FindUserEmailSignUpByUserID(tx *gorm.DB, userID uint) (result *entity.UserEmailSignUp, err error) {
+	if err = tx.Table(result.TableName()).Where("user_id = ?", userID).First(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (u *userRepository) FindUserSingleSignOnInfoByCond(tx *gorm.DB, userID uint, ssoType entity.SSOType) (result *entity.UserSingleSignOnInfo, err error) {
 	if err = tx.Table(result.TableName()).Where("user_id = ? and sso_type = ?", userID, ssoType).First(&result, "user_id = ?", userID).Error; err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (u *userRepository) FindUserSingleSignOnInfoByCond(tx *gorm.DB, userID uint
 	return result, nil
 }
 
-func (u *userRepository) FindUserProfileByUserID(tx *gorm.DB, userID uint) (result *user.UserProfile, err error) {
+func (u *userRepository) FindUserProfileByUserID(tx *gorm.DB, userID uint) (result *entity.UserProfile, err error) {
 	if err = tx.Table(result.TableName()).First(&result, "user_id = ?", userID).Error; err != nil {
 		return nil, err
 	}
@@ -55,13 +55,13 @@ func (u *userRepository) FindUserProfileByUserID(tx *gorm.DB, userID uint) (resu
 }
 
 func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *types.Metadata, err error) {
-	var _user *user.User
-	var _profile *user.UserProfile
-	var metaverseSSO *user.UserSingleSignOnInfo
-	var appleSSO *user.UserSingleSignOnInfo
-	var googleSSO *user.UserSingleSignOnInfo
-	var dormant *user.UserDormant
-	var memo *user.UserMemo
+	var _user *entity.User
+	var _profile *entity.UserProfile
+	var metaverseSSO *entity.UserSingleSignOnInfo
+	var appleSSO *entity.UserSingleSignOnInfo
+	var googleSSO *entity.UserSingleSignOnInfo
+	var dormant *entity.UserDormant
+	var memo *entity.UserMemo
 
 	var btc []decimal.Decimal
 	var btcTotal decimal.Decimal
@@ -76,17 +76,17 @@ func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *types.M
 		return nil, err
 	}
 
-	metaverseSSO, err = u.FindUserSingleSignOnInfoByCond(tx, id, user.Metaverse)
+	metaverseSSO, err = u.FindUserSingleSignOnInfoByCond(tx, id, entity.Metaverse)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 
-	appleSSO, err = u.FindUserSingleSignOnInfoByCond(tx, id, user.Apple)
+	appleSSO, err = u.FindUserSingleSignOnInfoByCond(tx, id, entity.Apple)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 
-	googleSSO, err = u.FindUserSingleSignOnInfoByCond(tx, id, user.Google)
+	googleSSO, err = u.FindUserSingleSignOnInfoByCond(tx, id, entity.Google)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
@@ -135,10 +135,10 @@ func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *types.M
 		BTC:               btcTotal,
 		IsBlock:           _user.IsBlock,
 		IsDormant:         dormant.ID != 0,
-		IsMetaverseUser:   metaverseSSO.SSOType == user.Metaverse,
-		IsAppleUser:       appleSSO.SSOType == user.Apple,
-		IsGoogleUser:      googleSSO.SSOType == user.Google,
-		IsEmailSignUpUser: metaverseSSO.SSOType != user.Metaverse && appleSSO.SSOType != user.Apple && googleSSO.SSOType != user.Google,
+		IsMetaverseUser:   metaverseSSO.SSOType == entity.Metaverse,
+		IsAppleUser:       appleSSO.SSOType == entity.Apple,
+		IsGoogleUser:      googleSSO.SSOType == entity.Google,
+		IsEmailSignUpUser: metaverseSSO.SSOType != entity.Metaverse && appleSSO.SSOType != entity.Apple && googleSSO.SSOType != entity.Google,
 		CreatedAt:         _user.CreatedAt,
 		UpdatedAt:         _user.UpdatedAt,
 		UserMemo:          memo,
@@ -148,8 +148,8 @@ func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *types.M
 }
 
 func (u *userRepository) SearchUser(tx *gorm.DB, input *dto.SearchUserInput) (result []*types.Metadata, err error) {
-	var _user *user.User
-	var users []*user.User
+	var _user *entity.User
+	var users []*entity.User
 	var metadata *types.Metadata
 
 	query := tx.Table(_user.TableName())
@@ -194,7 +194,7 @@ func (u *userRepository) SearchUser(tx *gorm.DB, input *dto.SearchUserInput) (re
 
 	if input.IsMetaverseUser {
 		query = query.Joins("JOIN user_sso_info on user_sso_info.user_id = user.id").
-			Where("user_sso_info.sso_type = ?", user.Metaverse)
+			Where("user_sso_info.sso_type = ?", entity.Metaverse)
 	}
 
 	if input.IsDormant {
@@ -238,7 +238,7 @@ func (u *userRepository) SearchUser(tx *gorm.DB, input *dto.SearchUserInput) (re
 }
 
 func (u *userRepository) CreateMemo(tx *gorm.DB, id uint, desc string) (err error) {
-	var _memo = &user.UserMemo{UserID: id, Description: desc}
+	var _memo = &entity.UserMemo{UserID: id, Description: desc}
 
 	if err = tx.Table(_memo.TableName()).Create(_memo).Error; err != nil {
 		return err
@@ -247,8 +247,8 @@ func (u *userRepository) CreateMemo(tx *gorm.DB, id uint, desc string) (err erro
 	return nil
 }
 
-func (u *userRepository) FindUserByUUID(tx *gorm.DB, uuid string) (*user.User, error) {
-	var _user *user.User
+func (u *userRepository) FindUserByUUID(tx *gorm.DB, uuid string) (*entity.User, error) {
+	var _user *entity.User
 	var err error
 
 	if err = tx.Table(_user.TableName()).Where("uuid = ?", uuid).First(&_user).Error; err != nil {
@@ -258,9 +258,9 @@ func (u *userRepository) FindUserByUUID(tx *gorm.DB, uuid string) (*user.User, e
 	return _user, nil
 }
 
-func (u *userRepository) FindUserByUUIDs(tx *gorm.DB, uuids []string) ([]*user.User, error) {
-	var users []*user.User
-	var table *user.User
+func (u *userRepository) FindUserByUUIDs(tx *gorm.DB, uuids []string) ([]*entity.User, error) {
+	var users []*entity.User
+	var table *entity.User
 	var err error
 
 	if err = tx.Table(table.TableName()).Where("uuid IN (?)", uuids).Find(&users).Error; err != nil {
@@ -270,8 +270,8 @@ func (u *userRepository) FindUserByUUIDs(tx *gorm.DB, uuids []string) ([]*user.U
 	return users, nil
 }
 
-func (u *userRepository) FindUserByID(tx *gorm.DB, id uint) (*user.User, error) {
-	var _user *user.User
+func (u *userRepository) FindUserByID(tx *gorm.DB, id uint) (*entity.User, error) {
+	var _user *entity.User
 	var err error
 
 	if err = tx.Table(_user.TableName()).Where("id = ?", id).First(&_user).Error; err != nil {
@@ -282,7 +282,7 @@ func (u *userRepository) FindUserByID(tx *gorm.DB, id uint) (*user.User, error) 
 }
 
 func (u *userRepository) BlockUser(tx *gorm.DB, id uint) error {
-	var table *user.User
+	var table *entity.User
 	var err error
 
 	if err = tx.Table(table.TableName()).Where("id = ?", id).Update("is_block", true).Error; err != nil {
@@ -293,7 +293,7 @@ func (u *userRepository) BlockUser(tx *gorm.DB, id uint) error {
 }
 
 func (u *userRepository) UnBlockUser(tx *gorm.DB, id uint) error {
-	var table *user.User
+	var table *entity.User
 	var err error
 
 	if err = tx.Table(table.TableName()).Where("id = ?", id).Update("is_block", false).Error; err != nil {

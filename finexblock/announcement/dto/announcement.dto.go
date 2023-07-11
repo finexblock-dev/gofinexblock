@@ -1,6 +1,8 @@
 package dto
 
-import "github.com/finexblock-dev/gofinexblock/finexblock/entity/announcement"
+import (
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
+)
 
 type (
 	FindAllAnnouncementInput struct {
@@ -9,7 +11,7 @@ type (
 	}
 
 	FindAllAnnouncementOutput struct {
-		Result []*announcement.Announcement `json:"result,required"`
+		Result []*entity.Announcement `json:"result,required"`
 	}
 
 	FindAllAnnouncementSuccessResponse struct {
@@ -24,7 +26,7 @@ type (
 	}
 
 	FindAnnouncementByIDOutput struct {
-		Result *announcement.Announcement `json:"result,required"`
+		Result *entity.Announcement `json:"result,required"`
 	}
 
 	FindAnnouncementByIDSuccessResponse struct {
@@ -45,7 +47,7 @@ type (
 	}
 
 	SearchAnnouncementOutput struct {
-		Result []*announcement.Announcement `json:"result,required"`
+		Result []*entity.Announcement `json:"result,required"`
 	}
 
 	SearchAnnouncementSuccessResponse struct {
@@ -135,7 +137,7 @@ type (
 
 type (
 	FindAllCategoryOutput struct {
-		Result []*announcement.AnnouncementCategory `json:"result,required"`
+		Result []*entity.AnnouncementCategory `json:"result,required"`
 	}
 
 	FindAllCategorySuccessResponse struct {

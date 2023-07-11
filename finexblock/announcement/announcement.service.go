@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"github.com/finexblock-dev/gofinexblock/finexblock/announcement/dto"
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity/announcement"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"gorm.io/gorm"
 )
 
@@ -12,7 +12,7 @@ type announcementService struct {
 	repo Repository
 }
 
-func (a *announcementService) FindAnnouncementByID(id uint) (result *announcement.Announcement, err error) {
+func (a *announcementService) FindAnnouncementByID(id uint) (result *entity.Announcement, err error) {
 	err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindAnnouncementByID(tx, id)
 		return err
@@ -25,7 +25,7 @@ func (a *announcementService) FindAnnouncementByID(id uint) (result *announcemen
 	return result, nil
 }
 
-func (a *announcementService) FindAllAnnouncement(limit, offset int) (result []*announcement.Announcement, err error) {
+func (a *announcementService) FindAllAnnouncement(limit, offset int) (result []*entity.Announcement, err error) {
 	err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindAllAnnouncement(tx, limit, offset)
 		return err
@@ -38,7 +38,7 @@ func (a *announcementService) FindAllAnnouncement(limit, offset int) (result []*
 	return result, nil
 }
 
-func (a *announcementService) SearchAnnouncement(input dto.SearchAnnouncementInput) (result []*announcement.Announcement, err error) {
+func (a *announcementService) SearchAnnouncement(input dto.SearchAnnouncementInput) (result []*entity.Announcement, err error) {
 	err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.SearchAnnouncement(tx, input)
 		return err
@@ -51,7 +51,7 @@ func (a *announcementService) SearchAnnouncement(input dto.SearchAnnouncementInp
 	return result, nil
 }
 
-func (a *announcementService) InsertAnnouncement(_announcement *announcement.Announcement) (result *announcement.Announcement, err error) {
+func (a *announcementService) InsertAnnouncement(_announcement *entity.Announcement) (result *entity.Announcement, err error) {
 	err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.InsertAnnouncement(tx, _announcement)
 		return err
@@ -64,7 +64,7 @@ func (a *announcementService) InsertAnnouncement(_announcement *announcement.Ann
 	return result, nil
 }
 
-func (a *announcementService) UpdateAnnouncement(id uint, _announcement *announcement.Announcement) (result *announcement.Announcement, err error) {
+func (a *announcementService) UpdateAnnouncement(id uint, _announcement *entity.Announcement) (result *entity.Announcement, err error) {
 	err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.UpdateAnnouncement(tx, id, _announcement)
 		return err
@@ -83,7 +83,7 @@ func (a *announcementService) DeleteAnnouncement(id uint) (err error) {
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
 
-func (a *announcementService) InsertCategory(ko, en, cn string) (result *announcement.AnnouncementCategory, err error) {
+func (a *announcementService) InsertCategory(ko, en, cn string) (result *entity.AnnouncementCategory, err error) {
 	err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.InsertCategory(tx, ko, en, cn)
 		return err
@@ -96,7 +96,7 @@ func (a *announcementService) InsertCategory(ko, en, cn string) (result *announc
 	return result, nil
 }
 
-func (a *announcementService) FindAllCategory(limit, offset int) (result []*announcement.AnnouncementCategory, err error) {
+func (a *announcementService) FindAllCategory(limit, offset int) (result []*entity.AnnouncementCategory, err error) {
 	err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindAllCategory(tx)
 		return err

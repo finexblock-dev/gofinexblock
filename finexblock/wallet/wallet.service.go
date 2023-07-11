@@ -3,7 +3,7 @@ package wallet
 import (
 	"context"
 	"database/sql"
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity/wallet"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
@@ -12,7 +12,7 @@ type walletService struct {
 	repo Repository
 }
 
-func (w *walletService) FindBlockchainByName(name string) (result *wallet.Blockchain, err error) {
+func (w *walletService) FindBlockchainByName(name string) (result *entity.Blockchain, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.FindBlockchainByName(tx, name)
 		return err
@@ -23,7 +23,7 @@ func (w *walletService) FindBlockchainByName(name string) (result *wallet.Blockc
 	return result, err
 }
 
-func (w *walletService) FindBlockchainByID(id uint) (result *wallet.Blockchain, err error) {
+func (w *walletService) FindBlockchainByID(id uint) (result *entity.Blockchain, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.FindBlockchainByID(tx, id)
 		return err
@@ -34,7 +34,7 @@ func (w *walletService) FindBlockchainByID(id uint) (result *wallet.Blockchain, 
 	return result, err
 }
 
-func (w *walletService) FindCoinByID(id uint) (result *wallet.Coin, err error) {
+func (w *walletService) FindCoinByID(id uint) (result *entity.Coin, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.FindCoinByID(tx, id)
 		return err
@@ -44,7 +44,7 @@ func (w *walletService) FindCoinByID(id uint) (result *wallet.Coin, err error) {
 	return result, err
 }
 
-func (w *walletService) FindCoinByName(name string) (result *wallet.Coin, err error) {
+func (w *walletService) FindCoinByName(name string) (result *entity.Coin, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.FindCoinByName(tx, name)
 		return err
@@ -54,7 +54,7 @@ func (w *walletService) FindCoinByName(name string) (result *wallet.Coin, err er
 	return result, err
 }
 
-func (w *walletService) FindBlockNumberByCoinID(coinID uint) (result *wallet.BlockNumber, err error) {
+func (w *walletService) FindBlockNumberByCoinID(coinID uint) (result *entity.BlockNumber, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.FindBlockNumberByCoinID(tx, coinID)
 		return err
@@ -64,7 +64,7 @@ func (w *walletService) FindBlockNumberByCoinID(coinID uint) (result *wallet.Blo
 	return result, err
 }
 
-func (w *walletService) FindBlockNumberByID(id uint) (result *wallet.BlockNumber, err error) {
+func (w *walletService) FindBlockNumberByID(id uint) (result *entity.BlockNumber, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.FindBlockNumberByID(tx, id)
 		return err
@@ -74,7 +74,7 @@ func (w *walletService) FindBlockNumberByID(id uint) (result *wallet.BlockNumber
 	return result, err
 }
 
-func (w *walletService) UpdateBlockNumber(coinID uint, fromBlockNumber, toBlockNumber decimal.Decimal) (result *wallet.BlockNumber, err error) {
+func (w *walletService) UpdateBlockNumber(coinID uint, fromBlockNumber, toBlockNumber decimal.Decimal) (result *entity.BlockNumber, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.UpdateBlockNumber(tx, coinID, fromBlockNumber, toBlockNumber)
 		return err
@@ -84,7 +84,7 @@ func (w *walletService) UpdateBlockNumber(coinID uint, fromBlockNumber, toBlockN
 	return result, err
 }
 
-func (w *walletService) FindWalletByID(id uint) (result *wallet.Wallet, err error) {
+func (w *walletService) FindWalletByID(id uint) (result *entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.FindWalletByID(tx, id)
 		return err
@@ -94,7 +94,7 @@ func (w *walletService) FindWalletByID(id uint) (result *wallet.Wallet, err erro
 	return result, err
 }
 
-func (w *walletService) FindWalletByAddress(addr string) (result *wallet.Wallet, err error) {
+func (w *walletService) FindWalletByAddress(addr string) (result *entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.FindWalletByAddress(tx, addr)
 		return err
@@ -104,7 +104,7 @@ func (w *walletService) FindWalletByAddress(addr string) (result *wallet.Wallet,
 	return result, err
 }
 
-func (w *walletService) FindAllWallet(coinID uint) (result []*wallet.Wallet, err error) {
+func (w *walletService) FindAllWallet(coinID uint) (result []*entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.FindAllWallet(tx, coinID)
 		return err
@@ -114,7 +114,7 @@ func (w *walletService) FindAllWallet(coinID uint) (result []*wallet.Wallet, err
 	return result, err
 }
 
-func (w *walletService) ScanWalletByCoinID(coinID uint) (result []*wallet.Wallet, err error) {
+func (w *walletService) ScanWalletByCoinID(coinID uint) (result []*entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.ScanWalletByCoinID(tx, coinID)
 		return err
@@ -124,7 +124,7 @@ func (w *walletService) ScanWalletByCoinID(coinID uint) (result []*wallet.Wallet
 	return result, err
 }
 
-func (w *walletService) ScanWalletByUserID(userID uint) (result []*wallet.Wallet, err error) {
+func (w *walletService) ScanWalletByUserID(userID uint) (result []*entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.ScanWalletByUserID(tx, userID)
 		return err
@@ -134,7 +134,7 @@ func (w *walletService) ScanWalletByUserID(userID uint) (result []*wallet.Wallet
 	return result, err
 }
 
-func (w *walletService) InsertWallet(wallet *wallet.Wallet) (result *wallet.Wallet, err error) {
+func (w *walletService) InsertWallet(wallet *entity.Wallet) (result *entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.InsertWallet(tx, wallet)
 		return err
@@ -144,7 +144,7 @@ func (w *walletService) InsertWallet(wallet *wallet.Wallet) (result *wallet.Wall
 	return result, err
 }
 
-func (w *walletService) UpdateWallet(id uint, address string) (result *wallet.Wallet, err error) {
+func (w *walletService) UpdateWallet(id uint, address string) (result *entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.UpdateWallet(tx, id, address)
 		return err
@@ -154,7 +154,7 @@ func (w *walletService) UpdateWallet(id uint, address string) (result *wallet.Wa
 	return result, err
 }
 
-func (w *walletService) InsertCoinTransfer(walletID uint, amount decimal.Decimal, transferType wallet.TransferType) (result *wallet.CoinTransfer, err error) {
+func (w *walletService) InsertCoinTransfer(walletID uint, amount decimal.Decimal, transferType entity.TransferType) (result *entity.CoinTransfer, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.InsertCoinTransfer(tx, walletID, amount, transferType)
 		return err
@@ -164,7 +164,7 @@ func (w *walletService) InsertCoinTransfer(walletID uint, amount decimal.Decimal
 	return result, err
 }
 
-func (w *walletService) FindCoinTransactionByID(id uint) (result *wallet.CoinTransaction, err error) {
+func (w *walletService) FindCoinTransactionByID(id uint) (result *entity.CoinTransaction, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.FindCoinTransactionByID(tx, id)
 		return err
@@ -174,7 +174,7 @@ func (w *walletService) FindCoinTransactionByID(id uint) (result *wallet.CoinTra
 	return result, err
 }
 
-func (w *walletService) FindCoinTransactionByTxHash(txHash string) (result *wallet.CoinTransaction, err error) {
+func (w *walletService) FindCoinTransactionByTxHash(txHash string) (result *entity.CoinTransaction, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.FindCoinTransactionByTxHash(tx, txHash)
 		return err
@@ -184,7 +184,7 @@ func (w *walletService) FindCoinTransactionByTxHash(txHash string) (result *wall
 	return result, err
 }
 
-func (w *walletService) ScanCoinTransactionByTransferID(transferID uint) (result []*wallet.CoinTransaction, err error) {
+func (w *walletService) ScanCoinTransactionByTransferID(transferID uint) (result []*entity.CoinTransaction, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.ScanCoinTransactionByTransferID(tx, transferID)
 		return err
@@ -194,7 +194,7 @@ func (w *walletService) ScanCoinTransactionByTransferID(transferID uint) (result
 	return result, err
 }
 
-func (w *walletService) ScanCoinTransactionByCond(transferID uint, status wallet.TransactionStatus) (result []*wallet.CoinTransaction, err error) {
+func (w *walletService) ScanCoinTransactionByCond(transferID uint, status entity.TransactionStatus) (result []*entity.CoinTransaction, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.ScanCoinTransactionByCond(tx, transferID, status)
 		return err
@@ -204,7 +204,7 @@ func (w *walletService) ScanCoinTransactionByCond(transferID uint, status wallet
 	return result, err
 }
 
-func (w *walletService) InsertCoinTransaction(transferID uint, txHash string, txStatus wallet.TransactionStatus) (result *wallet.CoinTransaction, err error) {
+func (w *walletService) InsertCoinTransaction(transferID uint, txHash string, txStatus entity.TransactionStatus) (result *entity.CoinTransaction, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.InsertCoinTransaction(tx, transferID, txHash, txStatus)
 		return err
@@ -214,7 +214,7 @@ func (w *walletService) InsertCoinTransaction(transferID uint, txHash string, tx
 	return result, err
 }
 
-func (w *walletService) UpdateCoinTransactionHash(id uint, hash string) (result *wallet.CoinTransaction, err error) {
+func (w *walletService) UpdateCoinTransactionHash(id uint, hash string) (result *entity.CoinTransaction, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.UpdateCoinTransactionHash(tx, id, hash)
 		return err
@@ -224,7 +224,7 @@ func (w *walletService) UpdateCoinTransactionHash(id uint, hash string) (result 
 	return result, err
 }
 
-func (w *walletService) UpdateCoinTransactionStatus(id uint, txStatus wallet.TransactionStatus) (result *wallet.CoinTransaction, err error) {
+func (w *walletService) UpdateCoinTransactionStatus(id uint, txStatus entity.TransactionStatus) (result *entity.CoinTransaction, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.UpdateCoinTransactionStatus(tx, id, txStatus)
 		return err
@@ -234,7 +234,7 @@ func (w *walletService) UpdateCoinTransactionStatus(id uint, txStatus wallet.Tra
 	return result, err
 }
 
-func (w *walletService) ScanWithdrawalRequestByStatus(status wallet.WithdrawalStatus) (result []*wallet.WithdrawalRequest, err error) {
+func (w *walletService) ScanWithdrawalRequestByStatus(status entity.WithdrawalStatus) (result []*entity.WithdrawalRequest, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.ScanWithdrawalRequestByStatus(tx, status)
 		return err
@@ -244,7 +244,7 @@ func (w *walletService) ScanWithdrawalRequestByStatus(status wallet.WithdrawalSt
 	return result, err
 }
 
-func (w *walletService) ScanWithdrawalRequestByCond(coinID uint, status wallet.WithdrawalStatus) (result []*wallet.WithdrawalRequest, err error) {
+func (w *walletService) ScanWithdrawalRequestByCond(coinID uint, status entity.WithdrawalStatus) (result []*entity.WithdrawalRequest, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.ScanWithdrawalRequestByCond(tx, coinID, status)
 		return err
@@ -254,7 +254,7 @@ func (w *walletService) ScanWithdrawalRequestByCond(coinID uint, status wallet.W
 	return result, err
 }
 
-func (w *walletService) UpdateWithdrawalRequest(id uint, state wallet.WithdrawalStatus) (result *wallet.WithdrawalRequest, err error) {
+func (w *walletService) UpdateWithdrawalRequest(id uint, state entity.WithdrawalStatus) (result *entity.WithdrawalRequest, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.UpdateWithdrawalRequest(tx, id, state)
 		return err

@@ -3,15 +3,15 @@ package instance
 import (
 	context "context"
 	"database/sql"
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity/instance"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"gorm.io/gorm"
 )
 
 type Service interface {
 	types.Service
-	FindServerByName(tx *gorm.DB, name string) (*instance.FinexblockServer, error)
-	InsertErrorLog(tx *gorm.DB, errorLog *instance.FinexblockErrorLog) (*instance.FinexblockErrorLog, error)
+	FindServerByName(tx *gorm.DB, name string) (*entity.FinexblockServer, error)
+	InsertErrorLog(tx *gorm.DB, errorLog *entity.FinexblockErrorLog) (*entity.FinexblockErrorLog, error)
 }
 
 type instanceService struct {

@@ -1,6 +1,8 @@
 package dto
 
-import "github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
+import (
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
+)
 
 type (
 	FindAllDeleteLogInput struct {
@@ -9,7 +11,7 @@ type (
 	}
 
 	FindAllDeleteLogOutput struct {
-		Result []*admin.AdminDeleteLog `json:"result,required"`
+		Result []*entity.AdminDeleteLog `json:"result,required"`
 	}
 
 	FindAllDeleteLogSuccessResponse struct {
@@ -29,7 +31,7 @@ type (
 	}
 
 	SearchDeleteLogOutput struct {
-		Result []*admin.AdminDeleteLog `json:"result,required"`
+		Result []*entity.AdminDeleteLog `json:"result,required"`
 	}
 
 	SearchDeleteLogSuccessResponse struct {
@@ -46,7 +48,7 @@ type (
 	}
 
 	FindDeleteLogOfExecutorOutput struct {
-		Result []*admin.AdminDeleteLog `json:"result,required"`
+		Result []*entity.AdminDeleteLog `json:"result,required"`
 	}
 
 	FindDeleteLogOfExecutorSuccessResponse struct {
@@ -61,7 +63,7 @@ type (
 	}
 
 	FindDeleteLogOfTargetOutput struct {
-		Result *admin.AdminDeleteLog `json:"result,required"`
+		Result *entity.AdminDeleteLog `json:"result,required"`
 	}
 
 	FindDeleteLogOfTargetSuccessResponse struct {

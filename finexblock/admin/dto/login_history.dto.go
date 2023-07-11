@@ -1,6 +1,8 @@
 package dto
 
-import "github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
+import (
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
+)
 
 type (
 	FindLoginHistoryOfAdminInput struct {
@@ -10,7 +12,7 @@ type (
 	}
 
 	FindLoginHistoryOfAdminOutput struct {
-		Result []*admin.AdminLoginHistory `json:"result,required"`
+		Result []*entity.AdminLoginHistory `json:"result,required"`
 	}
 
 	FindLoginHistoryOfAdminSuccessResponse struct {

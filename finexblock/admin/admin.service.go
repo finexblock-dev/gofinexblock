@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/finexblock-dev/gofinexblock/finexblock/admin/dto"
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/utils"
 	"gorm.io/gorm"
 	"time"
@@ -15,7 +15,7 @@ type adminService struct {
 	repo Repository
 }
 
-func (a *adminService) FindLoginFailedLogOfAdmin(adminID uint, limit, offset int) (result []*admin.AdminLoginFailedLog, err error) {
+func (a *adminService) FindLoginFailedLogOfAdmin(adminID uint, limit, offset int) (result []*entity.AdminLoginFailedLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindLoginFailedLogByAdminID(tx, adminID, limit, offset)
 		return err
@@ -26,7 +26,7 @@ func (a *adminService) FindLoginFailedLogOfAdmin(adminID uint, limit, offset int
 	return result, err
 }
 
-func (a *adminService) FindLoginHistoryOfAdmin(adminID uint, limit, offset int) (result []*admin.AdminLoginHistory, err error) {
+func (a *adminService) FindLoginHistoryOfAdmin(adminID uint, limit, offset int) (result []*entity.AdminLoginHistory, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindLoginHistoryByAdminID(tx, adminID, limit, offset)
 		return err
@@ -37,7 +37,7 @@ func (a *adminService) FindLoginHistoryOfAdmin(adminID uint, limit, offset int) 
 	return result, err
 }
 
-func (a *adminService) SearchApiLog(query *dto.SearchApiLogInput) (result []*admin.AdminApiLog, err error) {
+func (a *adminService) SearchApiLog(query *dto.SearchApiLogInput) (result []*entity.AdminApiLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.SearchApiLog(tx, query)
 		return err
@@ -48,7 +48,7 @@ func (a *adminService) SearchApiLog(query *dto.SearchApiLogInput) (result []*adm
 	return result, err
 }
 
-func (a *adminService) FindAllApiLog(limit, offset int) (result []*admin.AdminApiLog, err error) {
+func (a *adminService) FindAllApiLog(limit, offset int) (result []*entity.AdminApiLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindAllApiLog(tx, limit, offset)
 		return err
@@ -59,7 +59,7 @@ func (a *adminService) FindAllApiLog(limit, offset int) (result []*admin.AdminAp
 	return result, err
 }
 
-func (a *adminService) FindApiLogByAdmin(adminID uint, limit, offset int) (result []*admin.AdminApiLog, err error) {
+func (a *adminService) FindApiLogByAdmin(adminID uint, limit, offset int) (result []*entity.AdminApiLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindApiLogByAdminID(tx, adminID, limit, offset)
 		return err
@@ -70,7 +70,7 @@ func (a *adminService) FindApiLogByAdmin(adminID uint, limit, offset int) (resul
 	return result, err
 }
 
-func (a *adminService) FindApiLogByTimeCond(start, end time.Time, limit, offset int) (result []*admin.AdminApiLog, err error) {
+func (a *adminService) FindApiLogByTimeCond(start, end time.Time, limit, offset int) (result []*entity.AdminApiLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindApiLogByTimeCond(tx, start, end, limit, offset)
 		return err
@@ -81,7 +81,7 @@ func (a *adminService) FindApiLogByTimeCond(start, end time.Time, limit, offset 
 	return result, err
 }
 
-func (a *adminService) FindApiLogByMethodCond(method admin.ApiMethod, limit, offset int) (result []*admin.AdminApiLog, err error) {
+func (a *adminService) FindApiLogByMethodCond(method entity.ApiMethod, limit, offset int) (result []*entity.AdminApiLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindApiLogByMethodCond(tx, method, limit, offset)
 		return err
@@ -92,7 +92,7 @@ func (a *adminService) FindApiLogByMethodCond(method admin.ApiMethod, limit, off
 	return result, err
 }
 
-func (a *adminService) FindApiLogByEndpoint(endpoint string, limit, offset int) (result []*admin.AdminApiLog, err error) {
+func (a *adminService) FindApiLogByEndpoint(endpoint string, limit, offset int) (result []*entity.AdminApiLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindApiLogByEndpoint(tx, endpoint, limit, offset)
 		return err
@@ -103,7 +103,7 @@ func (a *adminService) FindApiLogByEndpoint(endpoint string, limit, offset int) 
 	return result, err
 }
 
-func (a *adminService) FindAllGradeUpdateLog(limit, offset int) (result []*admin.AdminGradeUpdateLog, err error) {
+func (a *adminService) FindAllGradeUpdateLog(limit, offset int) (result []*entity.AdminGradeUpdateLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindAllGradeUpdateLog(tx, limit, offset)
 		return err
@@ -114,7 +114,7 @@ func (a *adminService) FindAllGradeUpdateLog(limit, offset int) (result []*admin
 	return result, err
 }
 
-func (a *adminService) SearchGradeUpdateLog(query *dto.SearchGradeUpdateLogInput) (result []*admin.AdminGradeUpdateLog, err error) {
+func (a *adminService) SearchGradeUpdateLog(query *dto.SearchGradeUpdateLogInput) (result []*entity.AdminGradeUpdateLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.SearchGradeUpdateLog(tx, query)
 		return err
@@ -125,7 +125,7 @@ func (a *adminService) SearchGradeUpdateLog(query *dto.SearchGradeUpdateLogInput
 	return result, err
 }
 
-func (a *adminService) FindGradeUpdateLogOfExecutor(executor uint, limit, offset int) (result []*admin.AdminGradeUpdateLog, err error) {
+func (a *adminService) FindGradeUpdateLogOfExecutor(executor uint, limit, offset int) (result []*entity.AdminGradeUpdateLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindGradeUpdateLogOfExecutor(tx, executor, limit, offset)
 		return err
@@ -136,7 +136,7 @@ func (a *adminService) FindGradeUpdateLogOfExecutor(executor uint, limit, offset
 	return result, err
 }
 
-func (a *adminService) FindGradeUpdateLogOfTarget(target uint, limit, offset int) (result []*admin.AdminGradeUpdateLog, err error) {
+func (a *adminService) FindGradeUpdateLogOfTarget(target uint, limit, offset int) (result []*entity.AdminGradeUpdateLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindGradeUpdateLogOfTarget(tx, target, limit, offset)
 		return err
@@ -147,7 +147,7 @@ func (a *adminService) FindGradeUpdateLogOfTarget(target uint, limit, offset int
 	return result, err
 }
 
-func (a *adminService) SearchPasswordUpdateLog(query *dto.SearchPasswordUpdateLogInput) (result []*admin.AdminPasswordLog, err error) {
+func (a *adminService) SearchPasswordUpdateLog(query *dto.SearchPasswordUpdateLogInput) (result []*entity.AdminPasswordLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.SearchPasswordUpdateLog(tx, query)
 		return err
@@ -158,7 +158,7 @@ func (a *adminService) SearchPasswordUpdateLog(query *dto.SearchPasswordUpdateLo
 	return result, err
 }
 
-func (a *adminService) FindAllPasswordUpdateLog(limit, offset int) (result []*admin.AdminPasswordLog, err error) {
+func (a *adminService) FindAllPasswordUpdateLog(limit, offset int) (result []*entity.AdminPasswordLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindAllPasswordUpdateLog(tx, limit, offset)
 		return err
@@ -169,7 +169,7 @@ func (a *adminService) FindAllPasswordUpdateLog(limit, offset int) (result []*ad
 	return result, err
 }
 
-func (a *adminService) FindPasswordUpdateLogOfExecutor(executor uint, limit, offset int) (result []*admin.AdminPasswordLog, err error) {
+func (a *adminService) FindPasswordUpdateLogOfExecutor(executor uint, limit, offset int) (result []*entity.AdminPasswordLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindPasswordUpdateLogOfExecutor(tx, executor, limit, offset)
 		return err
@@ -180,7 +180,7 @@ func (a *adminService) FindPasswordUpdateLogOfExecutor(executor uint, limit, off
 	return result, err
 }
 
-func (a *adminService) FindPasswordUpdateLogOfTarget(target uint, limit, offset int) (result []*admin.AdminPasswordLog, err error) {
+func (a *adminService) FindPasswordUpdateLogOfTarget(target uint, limit, offset int) (result []*entity.AdminPasswordLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindPasswordUpdateLogOfTarget(tx, target, limit, offset)
 		return err
@@ -191,7 +191,7 @@ func (a *adminService) FindPasswordUpdateLogOfTarget(target uint, limit, offset 
 	return result, err
 }
 
-func (a *adminService) SearchDeleteLog(query *dto.SearchDeleteLogInput) (result []*admin.AdminDeleteLog, err error) {
+func (a *adminService) SearchDeleteLog(query *dto.SearchDeleteLogInput) (result []*entity.AdminDeleteLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.SearchDeleteLog(tx, query)
 		return err
@@ -202,7 +202,7 @@ func (a *adminService) SearchDeleteLog(query *dto.SearchDeleteLogInput) (result 
 	return result, err
 }
 
-func (a *adminService) FindAllDeleteLog(limit, offset int) (result []*admin.AdminDeleteLog, err error) {
+func (a *adminService) FindAllDeleteLog(limit, offset int) (result []*entity.AdminDeleteLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindAllDeleteLog(tx, limit, offset)
 		return err
@@ -213,7 +213,7 @@ func (a *adminService) FindAllDeleteLog(limit, offset int) (result []*admin.Admi
 	return result, err
 }
 
-func (a *adminService) FindDeleteLogOfExecutor(executor uint, limit, offset int) (result []*admin.AdminDeleteLog, err error) {
+func (a *adminService) FindDeleteLogOfExecutor(executor uint, limit, offset int) (result []*entity.AdminDeleteLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindDeleteLogOfExecutor(tx, executor, limit, offset)
 		return err
@@ -224,7 +224,7 @@ func (a *adminService) FindDeleteLogOfExecutor(executor uint, limit, offset int)
 	return result, err
 }
 
-func (a *adminService) FindDeleteLogOfTarget(target uint, limit, offset int) (result *admin.AdminDeleteLog, err error) {
+func (a *adminService) FindDeleteLogOfTarget(target uint, limit, offset int) (result *entity.AdminDeleteLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindDeleteLogOfTarget(tx, target)
 		return err
@@ -243,24 +243,24 @@ func (a *adminService) DeleteAdmin(adminID uint) (err error) {
 
 func (a *adminService) BlockAdmin(adminID uint) (err error) {
 	return a.Conn().Transaction(func(tx *gorm.DB) error {
-		var _admin *admin.Admin
+		var _admin *entity.Admin
 
 		_admin, err = a.repo.FindAdminByID(tx, adminID)
 		if err != nil {
 			return err
 		}
 
-		if _admin.Grade == admin.SUPERUSER {
+		if _admin.Grade == entity.SUPERUSER {
 			return errors.New("super admin can't be blocked")
 		}
 
-		return a.repo.UpdateAdminByID(tx, adminID, &admin.Admin{IsBlocked: true})
+		return a.repo.UpdateAdminByID(tx, adminID, &entity.Admin{IsBlocked: true})
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
 
 func (a *adminService) UpdatePassword(adminID uint, prevPassword, currentPassword string) (err error) {
 	return a.Conn().Transaction(func(tx *gorm.DB) error {
-		var _adminCredentials *admin.Admin
+		var _adminCredentials *entity.Admin
 
 		if utils.PasswordRegex(currentPassword) {
 			return errors.New("regex error: password is not valid")
@@ -275,27 +275,27 @@ func (a *adminService) UpdatePassword(adminID uint, prevPassword, currentPasswor
 			return errors.New("invalid credentials: password is not valid")
 		}
 
-		return a.repo.UpdateAdminByID(tx, adminID, &admin.Admin{Password: currentPassword})
+		return a.repo.UpdateAdminByID(tx, adminID, &entity.Admin{Password: currentPassword})
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
 
 func (a *adminService) UpdateEmail(adminID uint, newEmail string) (err error) {
 	return a.Conn().Transaction(func(tx *gorm.DB) error {
-		var _admin = &admin.Admin{Email: newEmail}
+		var _admin = &entity.Admin{Email: newEmail}
 
 		return a.repo.UpdateAdminByID(tx, adminID, _admin)
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
 
-func (a *adminService) UpdateGrade(adminID uint, grade admin.GradeType) (err error) {
+func (a *adminService) UpdateGrade(adminID uint, grade entity.GradeType) (err error) {
 	return a.Conn().Transaction(func(tx *gorm.DB) error {
-		var _admin = &admin.Admin{Grade: grade}
+		var _admin = &entity.Admin{Grade: grade}
 
 		return a.repo.UpdateAdminByID(tx, adminID, _admin)
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
 
-func (a *adminService) FindAdminByGrade(grade admin.GradeType, limit, offset int) (result []*admin.Admin, err error) {
+func (a *adminService) FindAdminByGrade(grade entity.GradeType, limit, offset int) (result []*entity.Admin, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindAdminByGrade(tx, grade, limit, offset)
 		if err != nil {
@@ -310,8 +310,8 @@ func (a *adminService) FindAdminByGrade(grade admin.GradeType, limit, offset int
 	return result, nil
 }
 
-func (a *adminService) FindAllAdmin(limit, offset int) ([]*admin.Admin, error) {
-	var result []*admin.Admin
+func (a *adminService) FindAllAdmin(limit, offset int) ([]*entity.Admin, error) {
+	var result []*entity.Admin
 	var err error
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindAllAdmin(tx, limit, offset)
