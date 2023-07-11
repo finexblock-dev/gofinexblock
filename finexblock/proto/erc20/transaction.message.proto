@@ -1,0 +1,11 @@
+syntax = "proto3";
+package erc20;
+option go_package = "/erc20";
+
+message TransferInput {
+
+}
+
+message TransferOutput {
+
+}

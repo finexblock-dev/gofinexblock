@@ -1,0 +1,19 @@
+syntax = "proto3";
+package erc20;
+option go_package = "/erc20";
+
+message CreateWalletInput {
+  uint64 UserID = 1 [json_name = "user_id"];
+}
+
+message CreateWalletOutput {
+  string Address = 1 [json_name = "address"];
+}
+
+message GetBalanceInput {
+  string Address = 1 [json_name = "address"];
+}
+
+message GetBalanceOutput {
+  string Balance = 1 [json_name = "balance"];
+}
