@@ -41,6 +41,6 @@ func NewRepository(db *gorm.DB) Repository {
 	return newAnnouncementRepository(db)
 }
 
-func NewService(repo Repository) Service {
-	return newAnnouncementService(repo)
+func NewService(db *gorm.DB) Service {
+	return newAnnouncementService(NewRepository(db))
 }

@@ -98,6 +98,6 @@ func NewRepository(db *gorm.DB) Repository {
 	return newAdminRepository(db)
 }
 
-func NewService(repo Repository) Service {
-	return newAdminService(repo)
+func NewService(db *gorm.DB) Service {
+	return newAdminService(NewRepository(db))
 }
