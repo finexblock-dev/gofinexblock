@@ -3,6 +3,11 @@ GOCMD=go
 
 GEN = gen
 PROTO_PATH = proto
+CONTRACT_PATH = contracts
+
+## Contract abis
+ABI = $(GEN)/abi
+BIN = $(GEN)/bin
 
 GREEN  := $(shell tput -Txterm setaf 2)
 YELLOW := $(shell tput -Txterm setaf 3)
@@ -22,11 +27,41 @@ proto: ## Compile protobuf files
 	@protoc --go_out=$(GEN) --go-grpc_out=$(GEN) ./$(PROTO_PATH)/**/*.proto
 	@echo "${CYAN}Compile done${RESET}"
 
+## Abi:
+abi:
+	@echo "${YELLOW}Generating ABIs...${YELLOW}"
+	@mkdir -p $(ABI)
+	@solc --abi --overwrite -o $(ABI) $(CONTRACT_PATH)/*.sol
+	@echo "${CYAN}Generate done${CYAN}"
+
+bin:
+	@echo "${YELLOW}Generating Binary files...${YELLOW}"
+	@mkdir -p $(BIN)
+	@solc --bin --overwrite -o $(BIN) $(CONTRACT_PATH)/*.sol
+	@echo "${CYAN}Generate done${CYAN}"
+
+## Abigen:
+abigen: abi bin ## Compile solidity files and generate abi
+	@echo "${YELLOW}Compiling smart contract...${YELLOW}"
+	@mkdir -p $(GEN)/$(CONTRACT_PATH)
+	@abigen --abi $(ABI)/*.abi --bin $(BIN)/*.bin --pkg=ethereum --out=$(GEN)/$(CONTRACT_PATH)/gofinexblock.go
+	@echo "${CYAN}Compile done${RESET}"
+
+## Contract:
+contract: ## Compile solidity files
+	@echo "${YELLOW}Compiling smart contract...${YELLOW}"
+	@mkdir -p $(GEN)
+	@solc --abi --bin --overwrite --pkg=gofinexblock $(GEN) $(CONTRACT_PATH)/**/*.sol
+	@echo "${CYAN}Compile done${RESET}"
+
 ## Clean:
 clean: ## Clear all generated files
 	@echo "${YELLOW}Clean generated files...${YELLOW}"
 	@rm -rf $(GEN)/*
 	@echo "${CYAN}Clean done${CYAN}"
+
+## Build:
+build: proto
 
 ## Help:
 help: ## Show this help.
