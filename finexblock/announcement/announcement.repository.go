@@ -45,7 +45,7 @@ func (a *announcementRepository) FindAllAdmin(tx *gorm.DB, limit, offset int) ([
 	panic("implement me")
 }
 
-func (a *announcementRepository) CreateAdmin(tx *gorm.DB, email, password string) (*admin.Admin, error) {
+func (a *announcementRepository) InsertAdmin(tx *gorm.DB, email, password string) (*admin.Admin, error) {
 	//TODO implement me
 	panic("implement me")
 }

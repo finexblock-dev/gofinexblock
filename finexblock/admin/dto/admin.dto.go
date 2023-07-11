@@ -7,8 +7,8 @@ import (
 
 type (
 	FindAllAdminInput struct {
-		Limit  int `json:"limit,omitempty" query:"limit,omitempty"`
-		Offset int `json:"offset,omitempty" query:"offset,omitempty"`
+		Limit  int `json:"limit" query:"limit" default:"20"`
+		Offset int `json:"offset" query:"offset" default:"0"`
 	}
 
 	FindAllAdminOutput struct {
@@ -16,29 +16,29 @@ type (
 	}
 
 	FindAllAdminSuccessResponse struct {
-		Code int                `json:"code,omitempty"`
-		Data FindAllAdminOutput `json:"data,omitempty"`
+		Code int                `json:"code"`
+		Data FindAllAdminOutput `json:"data"`
 	}
 )
 
 type (
 	FindAdminByGradeInput struct {
-		Limit  int             `json:"limit" query:"limit"`
-		Offset int             `json:"offset" query:"offset"`
+		Limit  int             `json:"limit" query:"limit" default:"20"`
+		Offset int             `json:"offset" query:"offset" default:"0"`
 		Grade  admin.GradeType `json:"grade" query:"grade"`
 	}
 
 	FindAdminByGradeOutput struct {
-		Result []*admin.Admin `json:"result,omitempty"`
+		Result []*admin.Admin `json:"result"`
 	}
 
 	FindAdminByGradeSwaggerOutput struct {
-		Result []*types.PartialAdmin `json:"result,omitempty"`
+		Result []*types.PartialAdmin `json:"result"`
 	}
 
 	FindAdminByGradeSuccessResponse struct {
-		Code int                           `json:"code,omitempty"`
-		Data FindAdminByGradeSwaggerOutput `json:"data,omitempty"`
+		Code int                           `json:"code"`
+		Data FindAdminByGradeSwaggerOutput `json:"data"`
 	}
 )
 
@@ -48,12 +48,12 @@ type (
 	}
 
 	DeleteAdminOutput struct {
-		Msg string `json:"msg,omitempty"`
+		Msg string `json:"msg"`
 	}
 
 	DeleteAdminSuccessResponse struct {
-		Code int               `json:"code,omitempty"`
-		Data DeleteAdminOutput `json:"data,omitempty"`
+		Code int               `json:"code"`
+		Data DeleteAdminOutput `json:"data"`
 	}
 )
 
@@ -65,12 +65,12 @@ type (
 	}
 
 	UpdatePasswordOutput struct {
-		Msg string `json:"msg,omitempty"`
+		Msg string `json:"msg"`
 	}
 
 	UpdatePasswordSuccessResponse struct {
-		Code int                  `json:"code,omitempty"`
-		Data UpdatePasswordOutput `json:"data,omitempty"`
+		Code int                  `json:"code"`
+		Data UpdatePasswordOutput `json:"data"`
 	}
 )
 
@@ -81,12 +81,12 @@ type (
 	}
 
 	UpdateEmailOutput struct {
-		Msg string `json:"msg,omitempty"`
+		Msg string `json:"msg"`
 	}
 
 	UpdateEmailSuccessResponse struct {
-		Code int               `json:"code,omitempty"`
-		Data UpdateEmailOutput `json:"data,omitempty"`
+		Code int               `json:"code"`
+		Data UpdateEmailOutput `json:"data"`
 	}
 )
 
@@ -97,41 +97,41 @@ type (
 	}
 
 	UpdateGradeOutput struct {
-		Msg string `json:"msg,omitempty"`
+		Msg string `json:"msg"`
 	}
 
 	UpdateGradeSuccessResponse struct {
-		Code int               `json:"code,omitempty"`
-		Data UpdateGradeOutput `json:"data,omitempty"`
+		Code int               `json:"code"`
+		Data UpdateGradeOutput `json:"data"`
 	}
 )
 
 type (
 	BlockAdminInput struct {
-		AdminID uint `json:"adminID" query:"admin_id" default:"1"`
+		AdminID uint `json:"admin_id" query:"admin_id" default:"1"`
 	}
 
 	BlockAdminOutput struct {
-		Msg string `json:"msg,omitempty" default:"Successfully blocked"`
+		Msg string `json:"msg" default:"Successfully blocked"`
 	}
 
 	BlockAdminSuccessResponse struct {
-		Code int              `json:"code,omitempty"`
-		Data BlockAdminOutput `json:"data,omitempty"`
+		Code int              `json:"code"`
+		Data BlockAdminOutput `json:"data"`
 	}
 )
 
 type (
 	UnblockAdminInput struct {
-		AdminID uint `json:"adminID" query:"admin_id" default:"1"`
+		AdminID uint `json:"admin_id" query:"admin_id" default:"1"`
 	}
 
 	UnblockAdminOutput struct {
-		Msg string `json:"msg,omitempty" default:"Successfully unblocked"`
+		Msg string `json:"msg" default:"Successfully unblocked"`
 	}
 
 	UnblockAdminSuccessResponse struct {
-		Code int                `json:"code,omitempty"`
-		Data UnblockAdminOutput `json:"data,omitempty"`
+		Code int                `json:"code"`
+		Data UnblockAdminOutput `json:"data"`
 	}
 )

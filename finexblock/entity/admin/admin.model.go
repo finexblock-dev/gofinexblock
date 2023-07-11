@@ -9,9 +9,9 @@ import (
 type GradeType string
 
 const (
-	MAINTAINER = "MAINTAINER"
-	SUPERUSER  = "SUPERUSER"
-	SUPPORT    = "SUPPORT"
+	MAINTAINER GradeType = "MAINTAINER"
+	SUPERUSER  GradeType = "SUPERUSER"
+	SUPPORT    GradeType = "SUPPORT"
 )
 
 type Admin struct {
