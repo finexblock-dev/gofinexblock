@@ -4,13 +4,13 @@ import "github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
 
 type (
 	SearchApiLogInput struct {
-		Limit     int    `json:"limit" query:"limit" default:"20"`
-		Offset    int    `json:"offset" query:"offset" default:"0"`
-		AdminID   uint   `json:"admin_id" query:"admin_id"`
-		StartTime string `json:"start_time" query:"start_time"`
-		EndTime   string `json:"end_time" query:"end_time"`
-		Method    string `json:"method" query:"method"`
-		Endpoint  string `json:"endpoint" query:"endpoint"`
+		Limit     int    `json:"limit,required" query:"limit,required" default:"20"`
+		Offset    int    `json:"offset,required" query:"offset,required" default:"0"`
+		AdminID   uint   `json:"admin_id,required" query:"admin_id,required"`
+		StartTime string `json:"start_time,required" query:"start_time,required"`
+		EndTime   string `json:"end_time,required" query:"end_time,required"`
+		Method    string `json:"method,required" query:"method,required"`
+		Endpoint  string `json:"endpoint,required" query:"endpoint,required"`
 	}
 
 	SearchApiLogOutput struct {
@@ -18,15 +18,15 @@ type (
 	}
 
 	SearchApiLogSuccessResponse struct {
-		Code int                `json:"code"`
-		Data SearchApiLogOutput `json:"data"`
+		Code int                `json:"code,required"`
+		Data SearchApiLogOutput `json:"data,required"`
 	}
 )
 
 type (
 	FindAllApiLogInput struct {
-		Limit  int `json:"limit" query:"limit" default:"20"`
-		Offset int `json:"offset" query:"offset" default:"0"`
+		Limit  int `json:"limit,required" query:"limit,required" default:"20"`
+		Offset int `json:"offset,required" query:"offset,required" default:"0"`
 	}
 
 	FindAllApiLogOutput struct {
@@ -34,16 +34,16 @@ type (
 	}
 
 	FindAllApiLogSuccessResponse struct {
-		Code int                 `json:"code"`
-		Data FindAllApiLogOutput `json:"data"`
+		Code int                 `json:"code,required"`
+		Data FindAllApiLogOutput `json:"data,required"`
 	}
 )
 
 type (
 	FindApiLogByAdminInput struct {
-		AdminID uint `json:"admin_id" query:"admin_id"`
-		Limit   int  `json:"limit" query:"limit" default:"20"`
-		Offset  int  `json:"offset" query:"offset" default:"0"`
+		AdminID uint `json:"admin_id,required" query:"admin_id,required"`
+		Limit   int  `json:"limit,required" query:"limit,required" default:"20"`
+		Offset  int  `json:"offset,required" query:"offset,required" default:"0"`
 	}
 
 	FindApiLogByAdminOutput struct {
@@ -51,17 +51,17 @@ type (
 	}
 
 	FindApiLogByAdminSuccessResponse struct {
-		Code int                     `json:"code"`
-		Data FindApiLogByAdminOutput `json:"data"`
+		Code int                     `json:"code,required"`
+		Data FindApiLogByAdminOutput `json:"data,required"`
 	}
 )
 
 type (
 	FindApiLogByTimeCondInput struct {
-		StartTime string `json:"start_time" query:"start_time"`
-		EndTime   string `json:"end_time" query:"end_time"`
-		Limit     int    `json:"limit" query:"limit" default:"20"`
-		Offset    int    `json:"offset" query:"offset" default:"0"`
+		StartTime string `json:"start_time,required" query:"start_time,required"`
+		EndTime   string `json:"end_time,required" query:"end_time,required"`
+		Limit     int    `json:"limit,required" query:"limit,required" default:"20"`
+		Offset    int    `json:"offset,required" query:"offset,required" default:"0"`
 	}
 
 	FindApiLogByTimeCondOutput struct {
@@ -69,16 +69,16 @@ type (
 	}
 
 	FindApiLogByTimeCondSuccessResponse struct {
-		Code int                        `json:"code"`
-		Data FindApiLogByTimeCondOutput `json:"data"`
+		Code int                        `json:"code,required"`
+		Data FindApiLogByTimeCondOutput `json:"data,required"`
 	}
 )
 
 type (
 	FindApiLogByMethodCondInput struct {
-		Method string `json:"method" query:"method"`
-		Limit  int    `json:"limit" query:"limit" default:"20"`
-		Offset int    `json:"offset" query:"offset" default:"0"`
+		Method string `json:"method,required" query:"method,required"`
+		Limit  int    `json:"limit,required" query:"limit,required" default:"20"`
+		Offset int    `json:"offset,required" query:"offset,required" default:"0"`
 	}
 
 	FindApiLogByMethodCondOutput struct {
@@ -86,24 +86,24 @@ type (
 	}
 
 	FindApiLogByMethodCondSuccessResponse struct {
-		Code int                          `json:"code"`
-		Data FindApiLogByMethodCondOutput `json:"data"`
+		Code int                          `json:"code,required"`
+		Data FindApiLogByMethodCondOutput `json:"data,required"`
 	}
 )
 
 type (
 	FindApiLogByEndpointInput struct {
-		Endpoint string `json:"endpoint" query:"endpoint"`
-		Limit    int    `json:"limit" query:"limit" default:"20"`
-		Offset   int    `json:"offset" query:"offset" default:"0"`
+		Endpoint string `json:"endpoint,required" query:"endpoint,required"`
+		Limit    int    `json:"limit,required" query:"limit,required" default:"20"`
+		Offset   int    `json:"offset,required" query:"offset,required" default:"0"`
 	}
 
 	FindApiLogByEndpointOutput struct {
-		Result []*admin.AdminApiLog `json:"result"`
+		Result []*admin.AdminApiLog `json:"result,required"`
 	}
 
 	FindApiLogByEndpointSuccessResponse struct {
-		Code int                        `json:"code"`
-		Data FindApiLogByEndpointOutput `json:"data"`
+		Code int                        `json:"code,required"`
+		Data FindApiLogByEndpointOutput `json:"data,required"`
 	}
 )

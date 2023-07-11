@@ -4,70 +4,70 @@ import "github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
 
 type (
 	SearchPasswordUpdateLogInput struct {
-		Limit     int    `json:"limit" query:"limit" default:"20"`
-		Offset    int    `json:"offset" query:"offset" default:"0"`
-		StartTime string `json:"start_time" query:"start_time"`
-		EndTime   string `json:"end_time" query:"end_time"`
-		Executor  uint   `json:"executor" query:"executor"`
-		Target    uint   `json:"target" query:"target"`
+		Limit     int    `json:"limit,required" query:"limit,required" default:"20"`
+		Offset    int    `json:"offset,required" query:"offset,required" default:"0"`
+		StartTime string `json:"start_time,required" query:"start_time,required"`
+		EndTime   string `json:"end_time,required" query:"end_time,required"`
+		Executor  uint   `json:"executor,required" query:"executor,required"`
+		Target    uint   `json:"target,required" query:"target,required"`
 	}
 
 	SearchPasswordUpdateLogOutput struct {
-		Result []*admin.AdminPasswordLog `json:"result"`
+		Result []*admin.AdminPasswordLog `json:"result,required"`
 	}
 
 	SearchPasswordUpdateLogSuccessResponse struct {
-		Code int                           `json:"code"`
-		Data SearchPasswordUpdateLogOutput `json:"data"`
+		Code int                           `json:"code,required"`
+		Data SearchPasswordUpdateLogOutput `json:"data,required"`
 	}
 )
 
 type (
 	FindAllPasswordUpdateLogInput struct {
-		Limit  int `json:"limit" query:"limit" default:"20"`
-		Offset int `json:"offset" query:"offset" default:"0"`
+		Limit  int `json:"limit,required" query:"limit,required" default:"20"`
+		Offset int `json:"offset,required" query:"offset,required" default:"0"`
 	}
 
 	FindAllPasswordUpdateLogOutput struct {
-		Result []*admin.AdminPasswordLog `json:"result"`
+		Result []*admin.AdminPasswordLog `json:"result,required"`
 	}
 
 	FindAllPasswordUpdateLogSuccessResponse struct {
-		Code int                            `json:"code"`
-		Data FindAllPasswordUpdateLogOutput `json:"data"`
+		Code int                            `json:"code,required"`
+		Data FindAllPasswordUpdateLogOutput `json:"data,required"`
 	}
 )
 
 type (
 	FindPasswordUpdateLogOfExecutorInput struct {
-		AdminID uint `json:"admin_id" query:"admin_id"`
-		Limit   int  `json:"limit" query:"limit" default:"20"`
-		Offset  int  `json:"offset" query:"offset" default:"0"`
+		AdminID uint `json:"admin_id,required" query:"admin_id,required"`
+		Limit   int  `json:"limit,required" query:"limit,required" default:"20"`
+		Offset  int  `json:"offset,required" query:"offset,required" default:"0"`
 	}
 
 	FindPasswordUpdateLogOfExecutorOutput struct {
-		Result []*admin.AdminPasswordLog `json:"result"`
+		Result []*admin.AdminPasswordLog `json:"result,required"`
 	}
 
 	FindPasswordUpdateLogOfExecutorSuccessResponse struct {
-		Code int                                   `json:"code"`
-		Data FindPasswordUpdateLogOfExecutorOutput `json:"data"`
+		Code int                                   `json:"code,required"`
+		Data FindPasswordUpdateLogOfExecutorOutput `json:"data,required"`
 	}
 )
 
 type (
 	FindPasswordUpdateLogOfTargetInput struct {
-		AdminID uint `json:"admin_id" query:"admin_id"`
-		Limit   int  `json:"limit" query:"limit" default:"20"`
-		Offset  int  `json:"offset" query:"offset" default:"0"`
+		AdminID uint `json:"admin_id,required" query:"admin_id,required"`
+		Limit   int  `json:"limit,required" query:"limit,required" default:"20"`
+		Offset  int  `json:"offset,required" query:"offset,required" default:"0"`
 	}
 
 	FindPasswordUpdateLogOfTargetOutput struct {
-		Result []*admin.AdminPasswordLog `json:"result"`
+		Result []*admin.AdminPasswordLog `json:"result,required"`
 	}
 
 	FindPasswordUpdateLogOfTargetSuccessResponse struct {
-		Code int                                 `json:"code"`
-		Data FindPasswordUpdateLogOfTargetOutput `json:"data"`
+		Code int                                 `json:"code,required"`
+		Data FindPasswordUpdateLogOfTargetOutput `json:"data,required"`
 	}
 )

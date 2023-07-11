@@ -7,8 +7,8 @@ import (
 
 type (
 	FindAllAdminInput struct {
-		Limit  int `json:"limit" query:"limit" default:"20"`
-		Offset int `json:"offset" query:"offset" default:"0"`
+		Limit  int `json:"limit,required" query:"limit,required" default:"20"`
+		Offset int `json:"offset,required" query:"offset,required" default:"0"`
 	}
 
 	FindAllAdminOutput struct {
@@ -16,122 +16,122 @@ type (
 	}
 
 	FindAllAdminSuccessResponse struct {
-		Code int                `json:"code"`
-		Data FindAllAdminOutput `json:"data"`
+		Code int                `json:"code,required"`
+		Data FindAllAdminOutput `json:"data,required"`
 	}
 )
 
 type (
 	FindAdminByGradeInput struct {
-		Limit  int             `json:"limit" query:"limit" default:"20"`
-		Offset int             `json:"offset" query:"offset" default:"0"`
-		Grade  admin.GradeType `json:"grade" query:"grade"`
+		Limit  int             `json:"limit,required" query:"limit,required" default:"20"`
+		Offset int             `json:"offset,required" query:"offset,required" default:"0"`
+		Grade  admin.GradeType `json:"grade,required" query:"grade,required"`
 	}
 
 	FindAdminByGradeOutput struct {
-		Result []*admin.Admin `json:"result"`
+		Result []*admin.Admin `json:"result,required"`
 	}
 
 	FindAdminByGradeSwaggerOutput struct {
-		Result []*types.PartialAdmin `json:"result"`
+		Result []*types.PartialAdmin `json:"result,required"`
 	}
 
 	FindAdminByGradeSuccessResponse struct {
-		Code int                           `json:"code"`
-		Data FindAdminByGradeSwaggerOutput `json:"data"`
+		Code int                           `json:"code,required"`
+		Data FindAdminByGradeSwaggerOutput `json:"data,required"`
 	}
 )
 
 type (
 	DeleteAdminInput struct {
-		AdminID uint `json:"admin_id"`
+		AdminID uint `json:"admin_id,required"`
 	}
 
 	DeleteAdminOutput struct {
-		Msg string `json:"msg"`
+		Msg string `json:"msg,required"`
 	}
 
 	DeleteAdminSuccessResponse struct {
-		Code int               `json:"code"`
-		Data DeleteAdminOutput `json:"data"`
+		Code int               `json:"code,required"`
+		Data DeleteAdminOutput `json:"data,required"`
 	}
 )
 
 type (
 	UpdatePasswordInput struct {
-		AdminID      uint   `json:"admin_id"`
-		PrevPassword string `json:"prev_password"`
-		NewPassword  string `json:"new_password"`
+		AdminID      uint   `json:"admin_id,required"`
+		PrevPassword string `json:"prev_password,required"`
+		NewPassword  string `json:"new_password,required"`
 	}
 
 	UpdatePasswordOutput struct {
-		Msg string `json:"msg"`
+		Msg string `json:"msg,required"`
 	}
 
 	UpdatePasswordSuccessResponse struct {
-		Code int                  `json:"code"`
-		Data UpdatePasswordOutput `json:"data"`
+		Code int                  `json:"code,required"`
+		Data UpdatePasswordOutput `json:"data,required"`
 	}
 )
 
 type (
 	UpdateEmailInput struct {
-		AdminID uint   `json:"admin_id"`
-		Email   string `json:"email"`
+		AdminID uint   `json:"admin_id,required"`
+		Email   string `json:"email,required"`
 	}
 
 	UpdateEmailOutput struct {
-		Msg string `json:"msg"`
+		Msg string `json:"msg,required"`
 	}
 
 	UpdateEmailSuccessResponse struct {
-		Code int               `json:"code"`
-		Data UpdateEmailOutput `json:"data"`
+		Code int               `json:"code,required"`
+		Data UpdateEmailOutput `json:"data,required"`
 	}
 )
 
 type (
 	UpdateGradeInput struct {
-		AdminID uint            `json:"admin_id"`
-		Grade   admin.GradeType `json:"grade"`
+		AdminID uint            `json:"admin_id,required"`
+		Grade   admin.GradeType `json:"grade,required"`
 	}
 
 	UpdateGradeOutput struct {
-		Msg string `json:"msg"`
+		Msg string `json:"msg,required"`
 	}
 
 	UpdateGradeSuccessResponse struct {
-		Code int               `json:"code"`
-		Data UpdateGradeOutput `json:"data"`
+		Code int               `json:"code,required"`
+		Data UpdateGradeOutput `json:"data,required"`
 	}
 )
 
 type (
 	BlockAdminInput struct {
-		AdminID uint `json:"admin_id" query:"admin_id" default:"1"`
+		AdminID uint `json:"admin_id,required" query:"admin_id,required" default:"1"`
 	}
 
 	BlockAdminOutput struct {
-		Msg string `json:"msg" default:"Successfully blocked"`
+		Msg string `json:"msg,required" default:"Successfully blocked"`
 	}
 
 	BlockAdminSuccessResponse struct {
-		Code int              `json:"code"`
-		Data BlockAdminOutput `json:"data"`
+		Code int              `json:"code,required"`
+		Data BlockAdminOutput `json:"data,required"`
 	}
 )
 
 type (
 	UnblockAdminInput struct {
-		AdminID uint `json:"admin_id" query:"admin_id" default:"1"`
+		AdminID uint `json:"admin_id,required" query:"admin_id,required" default:"1"`
 	}
 
 	UnblockAdminOutput struct {
-		Msg string `json:"msg" default:"Successfully unblocked"`
+		Msg string `json:"msg,required" default:"Successfully unblocked"`
 	}
 
 	UnblockAdminSuccessResponse struct {
-		Code int                `json:"code"`
-		Data UnblockAdminOutput `json:"data"`
+		Code int                `json:"code,required"`
+		Data UnblockAdminOutput `json:"data,required"`
 	}
 )
