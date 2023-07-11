@@ -43,6 +43,7 @@ type Service interface {
 	WalletService
 	BlockService
 	TransactionService
+	SmartContractService
 }
 
 type gethClient struct {
