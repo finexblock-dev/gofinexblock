@@ -5,7 +5,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity/order"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity/user"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
-	"github.com/finexblock-dev/gofinexblock/finexblock/order/types"
+	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 	"time"

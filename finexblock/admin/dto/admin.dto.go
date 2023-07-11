@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"github.com/finexblock-dev/gofinexblock/finexblock/admin/types"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
+	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 )
 
 type (
