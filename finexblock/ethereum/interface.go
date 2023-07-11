@@ -7,25 +7,42 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/finexblock-dev/gofinexblock/finexblock/ethereum/hdwallet"
+	ERC20 "github.com/finexblock-dev/gofinexblock/finexblock/gen/contracts"
 	"log"
 	"math/big"
 )
 
-type Service interface {
+type WalletService interface {
 	MasterWallet() *accounts.Account
-	GetReceipt(ctx context.Context, txHash string) (*types.Receipt, error)
-	Transfer(ctx context.Context, userID, from, amount string) (string, error)
 	CreateWallet(ctx context.Context, userID uint64) (string, error)
+	BalanceAt(c context.Context, address common.Address) (*big.Int, error)
 	GetBalance(ctx context.Context, address string) (string, error)
+}
+
+type BlockService interface {
 	GetBlockNumber(ctx context.Context) (uint64, error)
 	GetBlockTransactions(ctx context.Context, start, end uint64) ([]types.Transactions, error)
 	BlockNumber(c context.Context) (uint64, error)
-	Nonce(c context.Context, account common.Address) (uint64, error)
 	ChainID(c context.Context) (*big.Int, error)
+}
+
+type TransactionService interface {
 	GasCap(c context.Context) (*big.Int, *big.Int, error)
 	GasPrice(c context.Context) (*big.Int, error)
-	BalanceAt(c context.Context, address common.Address) (*big.Int, error)
 	SendRawTransaction(c context.Context, signedTx *types.Transaction) error
+	Nonce(c context.Context, account common.Address) (uint64, error)
+	Transfer(ctx context.Context, userID, from, amount string) (string, error)
+	GetReceipt(ctx context.Context, txHash string) (*types.Receipt, error)
+}
+
+type SmartContractService interface {
+	NewERC20(address string) (*ERC20.ERC20, error)
+}
+
+type Service interface {
+	WalletService
+	BlockService
+	TransactionService
 }
 
 type gethClient struct {
