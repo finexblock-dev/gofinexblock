@@ -21,6 +21,12 @@ type Repository interface {
 	CreateMemo(tx *gorm.DB, id uint, desc string) (err error)
 
 	FindUserProfileByUserID(tx *gorm.DB, userID uint) (result *user.UserProfile, err error)
+	FindUserSingleSignOnInfoByCond(tx *gorm.DB, userID uint, ssoType user.SSOType) (result *user.UserSingleSignOnInfo, err error)
+	FindUserEmailSignUpByUserID(tx *gorm.DB, userID uint) (result *user.UserEmailSignUp, err error)
+
+	FindUserMemoByUserID(tx *gorm.DB, userID uint) (result *user.UserMemo, err error)
+
+	FindUserDormantByUserID(tx *gorm.DB, userID uint) (result *user.UserDormant, err error)
 }
 
 type Service interface {
@@ -39,4 +45,8 @@ type Service interface {
 
 func NewRepository(db *gorm.DB) Repository {
 	return newUserRepository(db)
+}
+
+func NewService(repo Repository) Service {
+	return newUserService(repo)
 }

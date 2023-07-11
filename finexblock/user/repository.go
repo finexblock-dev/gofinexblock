@@ -15,6 +15,37 @@ type userRepository struct {
 	db *gorm.DB
 }
 
+func (u *userRepository) FindUserDormantByUserID(tx *gorm.DB, userID uint) (result *user.UserDormant, err error) {
+	if err = tx.Table(result.TableName()).Where("user_id = ?", userID).First(&result).Error; err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (u *userRepository) FindUserMemoByUserID(tx *gorm.DB, userID uint) (result *user.UserMemo, err error) {
+	if err = tx.Table(result.TableName()).Where("user_id = ?", userID).First(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (u *userRepository) FindUserEmailSignUpByUserID(tx *gorm.DB, userID uint) (result *user.UserEmailSignUp, err error) {
+	if err = tx.Table(result.TableName()).Where("user_id = ?", userID).First(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (u *userRepository) FindUserSingleSignOnInfoByCond(tx *gorm.DB, userID uint, ssoType user.SSOType) (result *user.UserSingleSignOnInfo, err error) {
+	if err = tx.Table(result.TableName()).Where("user_id = ? and sso_type = ?", userID, ssoType).First(&result, "user_id = ?", userID).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (u *userRepository) FindUserProfileByUserID(tx *gorm.DB, userID uint) (result *user.UserProfile, err error) {
 	if err = tx.Table(result.TableName()).First(&result, "user_id = ?", userID).Error; err != nil {
 		return nil, err
@@ -29,7 +60,6 @@ func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *types.M
 	var metaverseSSO *user.UserSingleSignOnInfo
 	var appleSSO *user.UserSingleSignOnInfo
 	var googleSSO *user.UserSingleSignOnInfo
-	var emailSignUp *user.UserEmailSignUp
 	var dormant *user.UserDormant
 	var memo *user.UserMemo
 
@@ -46,27 +76,33 @@ func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *types.M
 		return nil, err
 	}
 
-	if err = tx.Table(metaverseSSO.TableName()).Where(&user.UserSingleSignOnInfo{UserID: id, SSOType: user.Metaverse}).First(&metaverseSSO, "user_id = ?", id).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	metaverseSSO, err = u.FindUserSingleSignOnInfoByCond(tx, id, user.Metaverse)
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 
-	if err = tx.Table(emailSignUp.TableName()).Where(&user.UserEmailSignUp{UserID: id}).First(&emailSignUp).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	appleSSO, err = u.FindUserSingleSignOnInfoByCond(tx, id, user.Apple)
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 
-	if err = tx.Table(googleSSO.TableName()).Where(&user.UserSingleSignOnInfo{UserID: id, SSOType: user.Google}).First(&googleSSO, "user_id = ?", id).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	googleSSO, err = u.FindUserSingleSignOnInfoByCond(tx, id, user.Google)
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 
-	if err = tx.Table(appleSSO.TableName()).Where(&user.UserSingleSignOnInfo{UserID: id, SSOType: user.Apple}).First(&appleSSO, "user_id = ?", id).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	_, err = u.FindUserEmailSignUpByUserID(tx, id)
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 
-	if err = tx.Table(memo.TableName()).First(&memo, "user_id = ?", id).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	memo, err = u.FindUserMemoByUserID(tx, id)
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 
-	if err = tx.Table(dormant.TableName()).First(&dormant, "user_id = ?", id).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	dormant, err = u.FindUserDormantByUserID(tx, id)
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 
@@ -98,11 +134,11 @@ func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *types.M
 		PhoneNumber:       _profile.PhoneNumber,
 		BTC:               btcTotal,
 		IsBlock:           _user.IsBlock,
-		IsDormant:         !errors.Is(err, gorm.ErrRecordNotFound),
-		IsMetaverseUser:   metaverseSSO.SSOType == "METAVERSE",
-		IsAppleUser:       appleSSO.SSOType == "APPLE",
-		IsGoogleUser:      googleSSO.SSOType == "GOOGLE",
-		IsEmailSignUpUser: metaverseSSO.SSOType != "METAVERSE" && appleSSO.SSOType != "APPLE" && googleSSO.SSOType != "GOOGLE",
+		IsDormant:         dormant.ID != 0,
+		IsMetaverseUser:   metaverseSSO.SSOType == user.Metaverse,
+		IsAppleUser:       appleSSO.SSOType == user.Apple,
+		IsGoogleUser:      googleSSO.SSOType == user.Google,
+		IsEmailSignUpUser: metaverseSSO.SSOType != user.Metaverse && appleSSO.SSOType != user.Apple && googleSSO.SSOType != user.Google,
 		CreatedAt:         _user.CreatedAt,
 		UpdatedAt:         _user.UpdatedAt,
 		UserMemo:          memo,
@@ -111,14 +147,104 @@ func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *types.M
 	return info, nil
 }
 
-func (u *userRepository) SearchUser(tx *gorm.DB, input *dto.SearchUserInput) ([]*types.Metadata, error) {
-	//TODO implement me
-	panic("implement me")
+func (u *userRepository) SearchUser(tx *gorm.DB, input *dto.SearchUserInput) (result []*types.Metadata, err error) {
+	var _user *user.User
+	var users []*user.User
+	var metadata *types.Metadata
+
+	query := tx.Table(_user.TableName())
+
+	if input.ID != 0 {
+		query = query.Where("user.id = ?", input.ID)
+	}
+
+	if input.GradeID != 0 {
+		query = query.Where("user.grade_id = ?", input.GradeID)
+	}
+
+	if input.Description != "" {
+		query = query.Joins("JOIN user_memo on user_memo.user_id = user.id").Where("user_memo.description LIKE ?", "%"+input.Description+"%")
+	}
+
+	if input.UUID != "" {
+		query = query.Where("user.uuid = ?", input.UUID)
+	}
+
+	if input.UserType != "" {
+		query = query.Where("user.user_type = ?", input.UserType)
+	}
+
+	if input.Email != "" {
+		query = query.Joins("JOIN user_email_signup on user_email_signup.user_id = user.id").Where("user_email_signup.email = ?", input.Email)
+	}
+
+	if input.Nickname != "" {
+		query = query.Joins("JOIN user_profile on user_profile.user_id = user.id").
+			Where("user_profile.nickname = ?", input.Nickname)
+	}
+
+	if input.Fullname != "" {
+		query = query.Joins("JOIN user_profile on user_profile.user_id = user.id").
+			Where("user_profile.fullname = ?", input.Fullname)
+	}
+	if input.PhoneNumber != "" {
+		query = query.Joins("JOIN user_profile on user_profile.user_id = user.id").
+			Where("user_profile.phone_number = ?", input.PhoneNumber)
+	}
+
+	if input.IsMetaverseUser {
+		query = query.Joins("JOIN user_sso_info on user_sso_info.user_id = user.id").
+			Where("user_sso_info.sso_type = ?", user.Metaverse)
+	}
+
+	if input.IsDormant {
+		query = query.Joins("JOIN user_dormant on user_dormant.user_id = user.id")
+	} else {
+		query = query.Joins("LEFT JOIN user_dormant on user_dormant.user_id = user.id").
+			Where("user_dormant.id IS NULL")
+	}
+
+	if input.IsDropOutUser {
+		query = query.Where("user.deleted_at IS NOT NULL")
+	} else {
+		query = query.Where("user.deleted_at IS NULL")
+	}
+
+	if input.IsBlock {
+		query = query.Where("user.is_block = ?", input.IsBlock)
+	}
+
+	if input.Offset != 0 {
+		query = query.Offset(input.Offset)
+	}
+
+	if input.Limit != 0 {
+		query = query.Limit(input.Limit)
+	}
+
+	if err = query.Group("user.id").Find(&users).Error; err != nil {
+		return nil, err
+	}
+
+	for _, v := range users {
+		metadata, err = u.FindUserMetadata(tx, v.ID)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, metadata)
+	}
+
+	return result, nil
 }
 
 func (u *userRepository) CreateMemo(tx *gorm.DB, id uint, desc string) (err error) {
-	//TODO implement me
-	panic("implement me")
+	var _memo = &user.UserMemo{UserID: id, Description: desc}
+
+	if err = tx.Table(_memo.TableName()).Create(_memo).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (u *userRepository) FindUserByUUID(tx *gorm.DB, uuid string) (*user.User, error) {
