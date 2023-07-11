@@ -53,11 +53,6 @@ message TxData {
   string ToAddress = 1 [json_name = "to_address"];
   string Amount = 2 [json_name = "amount"];
   string TxHash = 3 [json_name = "tx_hash"];
-  uint64 Status = 4 [json_name = "status"];
-  string BlockHash = 5 [json_name = "block_hash"];
-  string BlockNumber = 6 [json_name = "block_number"];
-  uint64 GasUsed = 7 [json_name = "gas_used"];
-  uint64 TransactionIndex = 8 [json_name = "transaction_index"];
 }
 
 message GetBlocksOutput {
