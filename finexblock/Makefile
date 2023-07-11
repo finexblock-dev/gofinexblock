@@ -40,18 +40,11 @@ bin:
 	@solc --bin --overwrite -o $(BIN) $(CONTRACT_PATH)/*.sol
 	@echo "${CYAN}Generate done${CYAN}"
 
-## Abigen:
-abigen: abi bin ## Compile solidity files and generate abi
+## ERC20:
+erc20: abi bin ## Compile solidity files and generate abi
 	@echo "${YELLOW}Compiling smart contract...${YELLOW}"
 	@mkdir -p $(GEN)/$(CONTRACT_PATH)
-	@abigen --abi $(ABI)/*.abi --bin $(BIN)/*.bin --pkg=ethereum --out=$(GEN)/$(CONTRACT_PATH)/gofinexblock.go
-	@echo "${CYAN}Compile done${RESET}"
-
-## Contract:
-contract: ## Compile solidity files
-	@echo "${YELLOW}Compiling smart contract...${YELLOW}"
-	@mkdir -p $(GEN)
-	@solc --abi --bin --overwrite --pkg=gofinexblock $(GEN) $(CONTRACT_PATH)/**/*.sol
+	@abigen --abi $(ABI)/*.abi --bin $(BIN)/*.bin --pkg=ERC20 --out=$(GEN)/$(CONTRACT_PATH)/ERC20.go
 	@echo "${CYAN}Compile done${RESET}"
 
 ## Clean:

@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/finexblock-dev/gofinexblock/finexblock/ethereum/hdwallet"
+	ERC20 "github.com/finexblock-dev/gofinexblock/finexblock/gen/contracts"
 	"log"
 	"math/big"
 )
@@ -35,7 +36,7 @@ type TransactionService interface {
 }
 
 type SmartContractService interface {
-	ContractInstance(address common.Address)
+	NewERC20(address string) (*ERC20.ERC20, error)
 }
 
 type Service interface {
