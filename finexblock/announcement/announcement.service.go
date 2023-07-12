@@ -3,75 +3,130 @@ package announcement
 import (
 	"context"
 	"database/sql"
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity/announcement"
-	"github.com/gofiber/fiber/v2"
+	"github.com/finexblock-dev/gofinexblock/finexblock/announcement/dto"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"gorm.io/gorm"
 )
 
 type announcementService struct {
-	announcementRepository Repository
+	repo Repository
+}
+
+func (a *announcementService) FindAnnouncementByID(id uint) (result *entity.Announcement, err error) {
+	err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.FindAnnouncementByID(tx, id)
+		return err
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *announcementService) FindAllAnnouncement(limit, offset int) (result []*entity.Announcement, err error) {
+	err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.FindAllAnnouncement(tx, limit, offset)
+		return err
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *announcementService) SearchAnnouncement(input dto.SearchAnnouncementInput) (result []*entity.Announcement, err error) {
+	err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.SearchAnnouncement(tx, input)
+		return err
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *announcementService) InsertAnnouncement(_announcement *entity.Announcement) (result *entity.Announcement, err error) {
+	err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.InsertAnnouncement(tx, _announcement)
+		return err
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *announcementService) UpdateAnnouncement(id uint, _announcement *entity.Announcement) (result *entity.Announcement, err error) {
+	err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.UpdateAnnouncement(tx, id, _announcement)
+		return err
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *announcementService) DeleteAnnouncement(id uint) (err error) {
+	return a.Conn().Transaction(func(tx *gorm.DB) error {
+		return a.repo.DeleteAnnouncement(tx, id)
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
+}
+
+func (a *announcementService) InsertCategory(ko, en, cn string) (result *entity.AnnouncementCategory, err error) {
+	err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.InsertCategory(tx, ko, en, cn)
+		return err
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *announcementService) FindAllCategory(limit, offset int) (result []*entity.AnnouncementCategory, err error) {
+	err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.FindAllCategory(tx)
+		return err
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *announcementService) UpdateCategory(id uint, ko, en, cn string) (err error) {
+	return a.Conn().Transaction(func(tx *gorm.DB) error {
+		return a.repo.UpdateCategory(tx, id, ko, en, cn)
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
+}
+
+func (a *announcementService) DeleteCategory(id uint) (err error) {
+	return a.Conn().Transaction(func(tx *gorm.DB) error {
+		return a.repo.DeleteCategory(tx, id)
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
 
 func (a *announcementService) Conn() *gorm.DB {
-	return a.announcementRepository.Conn()
+	return a.repo.Conn()
 }
 
 func (a *announcementService) Tx(level sql.IsolationLevel) *gorm.DB {
-	return a.announcementRepository.Tx(level)
-}
-
-func (a *announcementService) FindAnnouncementByID(c *fiber.Ctx, id uint) (*announcement.Announcement, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *announcementService) FindAllAnnouncement(c *fiber.Ctx, limit, offset int) ([]*announcement.Announcement, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *announcementService) SearchAnnouncement(c *fiber.Ctx, title, word string, visible, pinned bool, limit, offset int) ([]*announcement.Announcement, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *announcementService) CreateAnnouncement(c *fiber.Ctx, categoryID uint, kot, ent, cnt, kor, eng, cn string, visible, pinned bool) (*announcement.Announcement, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *announcementService) UpdateAnnouncement(c *fiber.Ctx, id, categoryID uint, kot, ent, cnt, kor, eng, cn string, visible, pinned bool) (*announcement.Announcement, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *announcementService) DeleteAnnouncement(c *fiber.Ctx, id uint) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *announcementService) CreateCategory(c *fiber.Ctx, ko, en, cn string) (*announcement.AnnouncementCategory, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *announcementService) FindAllCategory(c *fiber.Ctx) ([]*announcement.AnnouncementCategory, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *announcementService) UpdateCategory(c *fiber.Ctx, id uint, ko, en, cn string) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *announcementService) DeleteCategory(c *fiber.Ctx, id uint) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func newAnnouncementService(announcementRepository Repository) *announcementService {
-	return &announcementService{announcementRepository: announcementRepository}
+	return a.repo.Tx(level)
 }
 
 func (a *announcementService) Ctx() context.Context {
@@ -80,4 +135,8 @@ func (a *announcementService) Ctx() context.Context {
 
 func (a *announcementService) CtxWithCancel(ctx context.Context) (context.Context, context.CancelFunc) {
 	return context.WithCancel(ctx)
+}
+
+func newAnnouncementService(announcementRepository Repository) *announcementService {
+	return &announcementService{repo: announcementRepository}
 }

@@ -1,20 +1,22 @@
 package dto
 
-import "github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
+import (
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
+)
 
 type (
 	FindLoginFailedLogInput struct {
-		AdminID uint `json:"admin_id" query:"admin_id"`
-		Limit   int  `json:"limit" query:"limit"`
-		Offset  int  `json:"offset" query:"offset"`
+		AdminID uint `json:"admin_id,required" query:"admin_id,required"`
+		Limit   int  `json:"limit,required" query:"limit,required" default:"20"`
+		Offset  int  `json:"offset,required" query:"offset,required" default:"0"`
 	}
 
 	FindLoginFailedLogOutput struct {
-		Result []*admin.AdminLoginFailedLog `json:"result,omitempty"`
+		Result []*entity.AdminLoginFailedLog `json:"result,required"`
 	}
 
 	FindLoginFailedLogSuccessResponse struct {
-		Code int                      `json:"code,omitempty"`
-		Data FindLoginFailedLogOutput `json:"data,omitempty"`
+		Code int                      `json:"code,required"`
+		Data FindLoginFailedLogOutput `json:"data,required"`
 	}
 )

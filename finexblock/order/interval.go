@@ -1,12 +1,12 @@
 package order
 
 import (
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity/order"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"gorm.io/gorm"
 )
 
-func (o *orderService) FindRecentIntervalByName(tx *gorm.DB, name string) (*order.OrderInterval, error) {
-	var _interval *order.OrderInterval
+func (o *orderService) FindRecentIntervalByName(tx *gorm.DB, name string) (*entity.OrderInterval, error) {
+	var _interval *entity.OrderInterval
 	var err error
 
 	if err = tx.Table(_interval.TableName()).Where("duration = ?", name).Order("end_time desc").First(&_interval).Error; err != nil {
