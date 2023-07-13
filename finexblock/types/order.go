@@ -2,6 +2,30 @@ package types
 
 import "math"
 
+type Reason string
+
+const (
+	Cancel Reason = "CANCEL"
+	Fill   Reason = "FILL"
+	Place  Reason = "PLACE"
+)
+
+type OrderType string
+
+const (
+	Bid OrderType = "BID"
+	Ask OrderType = "ASK"
+)
+
+type OrderStatus string
+
+const (
+	Cancelled     OrderStatus = "CANCELLED"
+	Placed        OrderStatus = "PLACED"
+	Fulfilled     OrderStatus = "FULFILLED"
+	PartialFilled OrderStatus = "PARTIAL_FILLED"
+)
+
 type PoleData struct {
 	LowPrice     float64 `json:"low_price,omitempty"`
 	HighPrice    float64 `json:"high_price,omitempty"`

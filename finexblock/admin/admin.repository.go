@@ -8,31 +8,27 @@ import (
 	"time"
 )
 
-var table = &entity.Admin{}
-
 type adminRepository struct {
 	db *gorm.DB
 }
 
-func (a *adminRepository) InsertAccessToken(tx *gorm.DB, adminID uint, expiredAt time.Time) (*entity.AdminAccessToken, error) {
-	var err error
-
-	var _accessToken = &entity.AdminAccessToken{
+func (a *adminRepository) InsertAccessToken(tx *gorm.DB, adminID uint, expiredAt time.Time) (result *entity.AdminAccessToken, err error) {
+	result = &entity.AdminAccessToken{
 		AdminID:   adminID,
 		ExpiredAt: expiredAt,
 	}
 
-	if err = tx.Table(_accessToken.TableName()).Create(_accessToken).Error; err != nil {
+	if err = tx.Table(result.TableName()).Create(result).Error; err != nil {
 		return nil, err
 	}
 
-	return _accessToken, nil
+	return result, nil
 }
 
-func (a *adminRepository) DeleteAccessToken(tx *gorm.DB, id uint) error {
+func (a *adminRepository) DeleteAccessToken(tx *gorm.DB, id uint) (err error) {
 	var _accessToken = &entity.AdminAccessToken{ID: id}
 
-	if err := tx.Table(_accessToken.TableName()).Where("id = ?", id).Delete(_accessToken).Error; err != nil {
+	if err = tx.Table(_accessToken.TableName()).Where("id = ?", id).Delete(_accessToken).Error; err != nil {
 		return err
 	}
 
@@ -48,37 +44,33 @@ func (a *adminRepository) InsertApiLog(tx *gorm.DB, log *entity.AdminApiLog) (*e
 	return log, nil
 }
 
-func (a *adminRepository) FindAllApiLog(tx *gorm.DB, limit, offset int) ([]*entity.AdminApiLog, error) {
+func (a *adminRepository) FindAllApiLog(tx *gorm.DB, limit, offset int) (result []*entity.AdminApiLog, err error) {
 	var _apiLog *entity.AdminApiLog
-	var result []*entity.AdminApiLog
-
-	if err := tx.Table(_apiLog.TableName()).Offset(offset).Limit(limit).Find(&result).Error; err != nil {
+	if err = tx.Table(_apiLog.TableName()).Offset(offset).Limit(limit).Find(&result).Error; err != nil {
 		return nil, err
 	}
 
 	return result, nil
 }
 
-func (a *adminRepository) FindApiLogByAdminID(tx *gorm.DB, adminID uint, limit, offset int) ([]*entity.AdminApiLog, error) {
-	var _apiLog *entity.AdminApiLog
-	var result []*entity.AdminApiLog
+func (a *adminRepository) FindApiLogByAdminID(tx *gorm.DB, adminID uint, limit, offset int) (result []*entity.AdminApiLog, err error) {
+	var _table *entity.AdminApiLog
 
-	if err := tx.Table(_apiLog.TableName()).Where("admin_id = ?", adminID).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err = tx.Table(_table.TableName()).Where("admin_id = ?", adminID).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
 		return nil, err
 	}
 
 	return result, nil
 }
 
-func (a *adminRepository) FindApiLogByTimeCond(tx *gorm.DB, start, end time.Time, limit, offset int) ([]*entity.AdminApiLog, error) {
-	var apiLogs []*entity.AdminApiLog
+func (a *adminRepository) FindApiLogByTimeCond(tx *gorm.DB, start, end time.Time, limit, offset int) (result []*entity.AdminApiLog, err error) {
 	var _apiLog *entity.AdminApiLog
 
-	if err := tx.Table(_apiLog.TableName()).Where("created_at BETWEEN ? AND ?", start, end).Limit(limit).Offset(offset).Find(&apiLogs).Error; err != nil {
+	if err = tx.Table(_apiLog.TableName()).Where("created_at BETWEEN ? AND ?", start, end).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
 		return nil, err
 	}
 
-	return apiLogs, nil
+	return result, nil
 }
 
 func (a *adminRepository) FindApiLogByMethodCond(tx *gorm.DB, method entity.ApiMethod, limit, offset int) ([]*entity.AdminApiLog, error) {
@@ -414,7 +406,7 @@ func (a *adminRepository) FindAdminByID(tx *gorm.DB, id uint) (*entity.Admin, er
 	var result *entity.Admin
 	var err error
 
-	if err = tx.Table(table.TableName()).Where("id = ?", id).First(&result).Error; err != nil {
+	if err = tx.Table(result.TableName()).Where("id = ?", id).First(&result).Error; err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -424,7 +416,7 @@ func (a *adminRepository) FindAdminByEmail(tx *gorm.DB, email string) (*entity.A
 	var result *entity.Admin
 	var err error
 
-	if err = tx.Table(table.TableName()).Where("email = ?", email).First(&result).Error; err != nil {
+	if err = tx.Table(result.TableName()).Where("email = ?", email).First(&result).Error; err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -451,9 +443,10 @@ func (a *adminRepository) FindAccessToken(tx *gorm.DB, limit, offset int) ([]*en
 
 func (a *adminRepository) FindAdminByGrade(tx *gorm.DB, grade entity.GradeType, limit, offset int) ([]*entity.Admin, error) {
 	var result []*entity.Admin
+	var _admin *entity.Admin
 	var err error
 
-	if err = tx.Table(table.TableName()).Where("grade = ?", grade).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err = tx.Table(_admin.TableName()).Where("grade = ?", grade).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -462,9 +455,10 @@ func (a *adminRepository) FindAdminByGrade(tx *gorm.DB, grade entity.GradeType, 
 
 func (a *adminRepository) FindAllAdmin(tx *gorm.DB, limit, offset int) ([]*entity.Admin, error) {
 	var result []*entity.Admin
+	var _admin *entity.Admin
 	var err error
 
-	if err = tx.Table(table.TableName()).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err = tx.Table(_admin.TableName()).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -480,7 +474,7 @@ func (a *adminRepository) InsertAdmin(tx *gorm.DB, email, password string) (*ent
 		Password: password,
 	}
 
-	if err = tx.Table(table.TableName()).Create(input).Error; err != nil {
+	if err = tx.Table(input.TableName()).Create(input).Error; err != nil {
 		return nil, err
 	}
 
@@ -489,8 +483,7 @@ func (a *adminRepository) InsertAdmin(tx *gorm.DB, email, password string) (*ent
 
 func (a *adminRepository) UpdateAdminByID(tx *gorm.DB, id uint, admin *entity.Admin) error {
 	var err error
-
-	if err = tx.Table(table.TableName()).Where("id = ?", id).Updates(admin).Error; err != nil {
+	if err = tx.Table(admin.TableName()).Where("id = ?", id).Updates(admin).Error; err != nil {
 		return err
 	}
 
@@ -499,8 +492,8 @@ func (a *adminRepository) UpdateAdminByID(tx *gorm.DB, id uint, admin *entity.Ad
 
 func (a *adminRepository) DeleteAdminByID(tx *gorm.DB, id uint) error {
 	var err error
-
-	if err = tx.Table(table.TableName()).Where("id = ?", id).Delete(&entity.Admin{ID: id}).Error; err != nil {
+	var _admin = &entity.Admin{ID: id}
+	if err = tx.Table(_admin.TableName()).Where("id = ?", id).Delete(_admin).Error; err != nil {
 		return err
 	}
 
