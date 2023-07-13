@@ -22,7 +22,7 @@ type Repository interface {
 
 	BatchInsertOrderBookDifference(tx *gorm.DB, differences []*entity.OrderBookDifference) (err error)
 
-	FindRecentIntervalByDuration(tx *gorm.DB, duration entity.Duration) (result *entity.OrderInterval, err error)
+	FindRecentIntervalByDuration(tx *gorm.DB, duration types.Duration) (result *entity.OrderInterval, err error)
 	FindRecentIntervalGroupByDuration(tx *gorm.DB) (result []*entity.OrderInterval, err error)
 	InsertOrderInterval(tx *gorm.DB, interval *entity.OrderInterval) (result *entity.OrderInterval, err error)
 
@@ -43,7 +43,7 @@ type Service interface {
 	FindSymbolByName(name string) (result *entity.OrderSymbol, err error)
 	FindSymbolByID(id uint) (result *entity.OrderSymbol, err error)
 	FindManyOrderByUUID(uuids []string) (result []*entity.OrderBook, err error)
-	FindRecentIntervalByDuration(duration entity.Duration) (result *entity.OrderInterval, err error)
+	FindRecentIntervalByDuration(duration types.Duration) (result *entity.OrderInterval, err error)
 
 	OrderMatchingEventInBatch(event []*grpc_order.OrderMatching) (err error)
 	ChartDraw(event []*grpc_order.OrderMatching) (err error)
@@ -51,9 +51,9 @@ type Service interface {
 	LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFulfillment) (remain []*grpc_order.OrderFulfillment, err error)
 	LimitOrderPartialFillInBatch(event []*grpc_order.OrderPartialFill) (remain []*grpc_order.OrderPartialFill, err error)
 	LimitOrderInitializeInBatch(event []*grpc_order.OrderInitialize) (err error)
-	LimitOrderCancellationInBatch(event []*grpc_order.OrderCancelled) (result []*grpc_order.OrderCancelled, err error)
+	LimitOrderCancellationInBatch(event []*grpc_order.OrderCancelled) (remain []*grpc_order.OrderCancelled, err error)
 
-	HandleOrderInterval(name string, duration time.Duration) (err error)
+	HandleOrderInterval(name types.Duration, duration time.Duration) (err error)
 }
 
 func NewRepository(db *gorm.DB) Repository {

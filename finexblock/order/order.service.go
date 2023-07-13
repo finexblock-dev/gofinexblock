@@ -62,7 +62,7 @@ func (o *orderService) FindManyOrderByUUID(uuids []string) (result []*entity.Ord
 	return result, nil
 }
 
-func (o *orderService) FindRecentIntervalByDuration(duration entity.Duration) (result *entity.OrderInterval, err error) {
+func (o *orderService) FindRecentIntervalByDuration(duration types.Duration) (result *entity.OrderInterval, err error) {
 	if err = o.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = o.orderRepository.FindRecentIntervalByDuration(tx, duration)
 		return err
@@ -107,7 +107,7 @@ func (o *orderService) OrderMatchingEventInBatch(event []*grpc_order.OrderMatchi
 			_ = symbolCache.Set(symbol.Name, symbol)
 		}
 
-		recentInterval, err = o.orderRepository.FindRecentIntervalByDuration(tx, entity.OneMinute)
+		recentInterval, err = o.orderRepository.FindRecentIntervalByDuration(tx, types.OneMinute)
 		if err != nil {
 			return err
 		}
@@ -199,7 +199,7 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 		}
 
 		// update all orders
-		if err = o.orderRepository.BatchUpdateOrderBookStatus(tx, orderUUIDs, entity.Fulfilled); err != nil {
+		if err = o.orderRepository.BatchUpdateOrderBookStatus(tx, orderUUIDs, types.PartialFilled); err != nil {
 			return err
 		}
 
@@ -248,7 +248,7 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 		}
 
 		return o.orderRepository.BatchInsertOrderMatchingHistory(tx, orderMatchingHistories)
-	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
+	}, &sql.TxOptions{Isolation: sql.LevelRepeatableRead}); err != nil {
 		return event, err
 	}
 
@@ -256,28 +256,369 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 }
 
 func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPartialFill) (remain []*grpc_order.OrderPartialFill, err error) {
-	//TODO implement me
-	panic("implement me")
+	// case of failed to handle order partial fill event
+	if err = o.orderRepository.Conn().Transaction(func(tx *gorm.DB) error {
+		var userCache = cache.NewDefaultKeyValueStore[entity.User](len(event))
+		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
+		var orderCache = cache.NewDefaultKeyValueStore[entity.OrderBook](len(event))
+
+		var orderBookDifferences []*entity.OrderBookDifference
+
+		var orderMatchingHistories []*entity.OrderMatchingHistory
+
+		var users []*entity.User
+		var _user *entity.User
+		var userUUIDs []string
+
+		var symbols []*entity.OrderSymbol
+		var _symbol *entity.OrderSymbol
+		var symbolNames []string
+
+		var orders []*entity.OrderBook
+		var _order *entity.OrderBook
+		var orderUUIDs []string
+
+		// Cache all data for select and batch insert
+		for _, v := range event {
+			if _, err = userCache.Get(v.UserUUID); err == cache.ErrKeyNotFound {
+				userUUIDs = append(userUUIDs, v.UserUUID)
+				_ = userCache.Set(v.UserUUID, &entity.User{UUID: v.UserUUID})
+			}
+
+			if _, err = symbolCache.Get(v.Symbol.String()); err == cache.ErrKeyNotFound {
+				symbolNames = append(symbolNames, v.Symbol.String())
+				_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+			}
+
+			if _, err = orderCache.Get(v.OrderUUID); err == cache.ErrKeyNotFound {
+				orderUUIDs = append(orderUUIDs, v.OrderUUID)
+				_ = orderCache.Set(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
+			}
+		}
+
+		// find all users
+		users, err = o.userRepository.FindManyUserByUUID(tx, userUUIDs)
+		if err != nil {
+			return err
+		}
+
+		for _, _user := range users {
+			_ = userCache.Set(_user.UUID, _user)
+		}
+
+		// find all symbols
+		symbols, err = o.orderRepository.FindManySymbolByName(tx, symbolNames)
+		if err != nil {
+			return err
+		}
+
+		for _, _symbol := range symbols {
+			_ = symbolCache.Set(_symbol.Name, _symbol)
+		}
+
+		// find all orders
+		orders, err = o.orderRepository.FindManyOrderByUUID(tx, orderUUIDs)
+		if err != nil {
+			return err
+		}
+
+		// update all orders
+		// checkpoint: do not update order status
+		//if err = o.orderRepository.BatchUpdateOrderBookStatus(tx, orderUUIDs, types.Fulfilled); err != nil {
+		//	return err
+		//}
+
+		for _, _order := range orders {
+			_ = orderCache.Set(_order.OrderUUID, _order)
+		}
+
+		for _, v := range event {
+			_symbol, err = symbolCache.Get(v.Symbol.String())
+			if err == cache.ErrKeyNotFound {
+				remain = append(remain, v)
+				continue
+			}
+
+			_user, err = userCache.Get(v.UserUUID)
+			if err == cache.ErrKeyNotFound {
+				remain = append(remain, v)
+				continue
+			}
+
+			_order, err = orderCache.Get(v.OrderUUID)
+			if err == cache.ErrKeyNotFound {
+				remain = append(remain, v)
+				continue
+			}
+
+			orderBookDifferences = append(orderBookDifferences, &entity.OrderBookDifference{
+				OrderBookID: _order.ID,
+				Reason:      types.Fill,
+				Diff:        decimal.NewFromFloat(v.FilledQuantity),
+			})
+
+			orderMatchingHistories = append(orderMatchingHistories, &entity.OrderMatchingHistory{
+				UserID:         _user.ID,
+				OrderUUID:      _order.OrderUUID,
+				OrderSymbolID:  _symbol.ID,
+				FilledQuantity: decimal.NewFromFloat(v.FilledQuantity),
+				UnitPrice:      decimal.NewFromFloat(v.UnitPrice),
+				Fee:            decimal.NewFromFloat(v.Fee.Amount),
+				OrderType:      _order.OrderType,
+			})
+		}
+
+		if err = o.orderRepository.BatchInsertOrderBookDifference(tx, orderBookDifferences); err != nil {
+			return err
+		}
+
+		return o.orderRepository.BatchInsertOrderMatchingHistory(tx, orderMatchingHistories)
+	}, &sql.TxOptions{Isolation: sql.LevelRepeatableRead}); err != nil {
+		return event, err
+	}
+
+	return remain, err
 }
 
 func (o *orderService) LimitOrderInitializeInBatch(event []*grpc_order.OrderInitialize) (err error) {
-	//TODO implement me
-	panic("implement me")
+	return o.Conn().Transaction(func(tx *gorm.DB) error {
+		var userUUIDs []string
+		var symbolNames []string
+
+		var users []*entity.User
+		var _user *entity.User
+		var symbols []*entity.OrderSymbol
+		var _symbol *entity.OrderSymbol
+
+		var orders []*entity.OrderBook
+
+		var userCache = cache.NewDefaultKeyValueStore[entity.User](len(event))
+		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
+
+		for _, v := range event {
+			if _, err = userCache.Get(v.UserUUID); err == cache.ErrKeyNotFound {
+				userUUIDs = append(userUUIDs, v.UserUUID)
+				_ = userCache.Set(v.UserUUID, &entity.User{UUID: v.UserUUID})
+			}
+
+			if _, err = symbolCache.Get(v.Symbol.String()); err == cache.ErrKeyNotFound {
+				symbolNames = append(symbolNames, v.Symbol.String())
+				_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+			}
+		}
+
+		// find all users
+		users, err = o.userRepository.FindManyUserByUUID(tx, userUUIDs)
+		if err != nil {
+			return err
+		}
+
+		for _, _user = range users {
+			_ = userCache.Set(_user.UUID, _user)
+		}
+
+		symbols, err = o.orderRepository.FindManySymbolByName(tx, symbolNames)
+		if err != nil {
+			return err
+		}
+
+		for _, _symbol = range symbols {
+			_ = symbolCache.Set(_symbol.Name, _symbol)
+		}
+
+		for _, v := range event {
+			_symbol, err = symbolCache.Get(v.Symbol.String())
+			if err == cache.ErrKeyNotFound {
+				continue
+			}
+
+			_user, err = userCache.Get(v.UserUUID)
+			if err == cache.ErrKeyNotFound {
+				continue
+			}
+
+			orders = append(orders, &entity.OrderBook{
+				UserID:        _user.ID,
+				OrderUUID:     v.OrderUUID,
+				OrderSymbolID: _symbol.ID,
+				UnitPrice:     decimal.NewFromFloat(v.UnitPrice),
+				Quantity:      decimal.NewFromFloat(v.Quantity),
+				OrderType:     types.OrderType(v.OrderType),
+				Status:        types.Placed,
+			})
+		}
+
+		return o.orderRepository.BatchInsertOrderBook(tx, orders)
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
 
 func (o *orderService) ChartDraw(event []*grpc_order.OrderMatching) (err error) {
-	//TODO implement me
-	panic("implement me")
+	return o.Conn().Transaction(func(tx *gorm.DB) error {
+		var data *types.PoleData
+
+		var symbols []*entity.OrderSymbol
+		var symbolNames []string
+		var symbolIDs []uint
+
+		var recentIntervals []*entity.OrderInterval
+		var _interval *entity.OrderInterval
+		var recentIntervalIDs []uint
+
+		var recentPoles []*entity.Chart
+		var pole *entity.Chart
+
+		// cache symbol
+		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
+
+		// cache price for each symbol
+		var priceCache = cache.NewDefaultKeyValueStore[types.PoleData](len(event))
+
+		for _, v := range event {
+
+			name := v.Symbol.String()
+			if _, err = symbolCache.Get(name); err == cache.ErrKeyNotFound {
+				symbolNames = append(symbolNames, name)
+				_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+			}
+
+			if _, err = priceCache.Get(name); err == cache.ErrKeyNotFound {
+				_ = priceCache.Set(name, &types.PoleData{
+					LowPrice:     v.UnitPrice,
+					HighPrice:    v.UnitPrice,
+					ClosePrice:   v.UnitPrice,
+					Volume:       v.Quantity,
+					TradingValue: v.UnitPrice * v.Quantity,
+				})
+				continue
+			}
+
+			data, _ = priceCache.Get(name)
+
+			if data.HighPrice < v.UnitPrice {
+				data.HighPrice = v.UnitPrice
+			}
+
+			if data, _ = priceCache.Get(name); data.LowPrice > v.UnitPrice {
+				data.LowPrice = v.UnitPrice
+			}
+
+			data.ClosePrice = v.UnitPrice
+			data.TradingValue += v.UnitPrice * v.Quantity
+			data.Volume += v.Quantity
+
+			_ = priceCache.Set(name, data)
+		}
+
+		// find all symbols
+		symbols, err = o.orderRepository.FindManySymbolByName(tx, symbolNames)
+		if err != nil {
+			return err
+		}
+
+		for _, v := range symbols {
+			_ = symbolCache.Set(v.Name, v)
+			symbolIDs = append(symbolIDs, v.ID)
+		}
+
+		recentIntervals, err = o.orderRepository.FindRecentIntervalGroupByDuration(tx)
+		if err != nil {
+			return err
+		}
+
+		for _, _interval = range recentIntervals {
+			recentIntervalIDs = append(recentIntervalIDs, _interval.ID)
+		}
+
+		recentPoles, err = o.orderRepository.FindChartByCond(tx, recentIntervalIDs, symbolIDs)
+		if err != nil {
+			return err
+		}
+
+		for _, pole = range recentPoles {
+
+		}
+		// TODO: implement drawing
+
+		return nil
+
+	}, &sql.TxOptions{Isolation: sql.LevelRepeatableRead})
 }
 
-func (o *orderService) LimitOrderCancellationInBatch(event []*grpc_order.OrderCancelled) (result []*grpc_order.OrderCancelled, err error) {
-	//TODO implement me
-	panic("implement me")
+func (o *orderService) LimitOrderCancellationInBatch(event []*grpc_order.OrderCancelled) (remain []*grpc_order.OrderCancelled, err error) {
+	if err = o.Conn().Transaction(func(tx *gorm.DB) error {
+		var orderUUIDs []string
+		var orders []*entity.OrderBook
+		var orderCache = cache.NewDefaultKeyValueStore[entity.OrderBook](len(event))
+
+		for _, v := range event {
+			orderUUIDs = append(orderUUIDs, v.OrderUUID)
+		}
+
+		orders, err = o.orderRepository.FindManyOrderByUUID(tx, orderUUIDs)
+		if err != nil {
+			return err
+		}
+
+		for _, v := range orders {
+			_ = orderCache.Set(v.OrderUUID, v)
+		}
+
+		for _, cancellation := range event {
+			if _, err = orderCache.Get(cancellation.OrderUUID); err == cache.ErrKeyNotFound {
+				remain = append(remain, cancellation)
+			}
+		}
+
+		return o.orderRepository.BatchUpdateOrderBookStatus(tx, orderUUIDs, types.Cancelled)
+
+	}, &sql.TxOptions{Isolation: sql.LevelRepeatableRead}); err != nil {
+		return event, err
+	}
+
+	return remain, err
 }
 
-func (o *orderService) HandleOrderInterval(name string, duration time.Duration) (err error) {
-	//TODO implement me
-	panic("implement me")
+func (o *orderService) HandleOrderInterval(name types.Duration, duration time.Duration) (err error) {
+	return o.Conn().Transaction(func(tx *gorm.DB) error {
+		var recentInterval *entity.OrderInterval
+		var recentPoles []*entity.Chart
+		var newInterval *entity.OrderInterval
+		var newPoles []*entity.Chart
+
+		recentInterval, err = o.orderRepository.FindRecentIntervalByDuration(tx, name)
+		if err != nil {
+			return err
+		}
+
+		recentPoles, err = o.orderRepository.FindChartByInterval(tx, recentInterval.ID)
+		if err != nil {
+			return err
+		}
+
+		newInterval, err = o.orderRepository.InsertOrderInterval(tx, &entity.OrderInterval{
+			Duration:  name,
+			StartTime: recentInterval.StartTime.Add(duration),
+			EndTime:   recentInterval.EndTime.Add(duration),
+		})
+
+		if err != nil {
+			return err
+		}
+
+		for _, pole := range recentPoles {
+			newPoles = append(newPoles, &entity.Chart{
+				OrderIntervalID: newInterval.ID,
+				OrderSymbolID:   pole.OrderSymbolID,
+				OpenPrice:       pole.ClosePrice,
+				LowPrice:        pole.ClosePrice,
+				HighPrice:       pole.ClosePrice,
+				ClosePrice:      pole.ClosePrice,
+				Volume:          decimal.Zero,
+			})
+		}
+
+		return o.orderRepository.BatchInsertChart(tx, newPoles)
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
 
 func (o *orderService) Conn() *gorm.DB {
