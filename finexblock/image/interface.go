@@ -10,7 +10,7 @@ import (
 type Repository interface {
 	types.Repository
 	FindAllImages(tx *gorm.DB, limit, offset int) ([]*entity.Image, error)
-	UploadFiles(tx *gorm.DB, f *multipart.Form) ([]*entity.Image, error)
+	UploadFiles(tx *gorm.DB, f *multipart.Form, bucket, basePath string) ([]*entity.Image, error)
 }
 
 type Service interface {
