@@ -23,6 +23,6 @@ func NewRepository(db *gorm.DB) Repository {
 	return newImageRepository(db)
 }
 
-func NewService(db *gorm.DB) Service {
-	return newImageService(NewRepository(db))
+func NewService(db *gorm.DB, bucket, basePath string) Service {
+	return newImageService(NewRepository(db), bucket, basePath)
 }
