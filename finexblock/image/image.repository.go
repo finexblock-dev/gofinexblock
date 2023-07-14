@@ -28,9 +28,10 @@ func (i *imageRepository) FindAllImages(tx *gorm.DB, limit, offset int) ([]*enti
 	return result, nil
 }
 
-func (i *imageRepository) UploadFiles(tx *gorm.DB, f *multipart.Form) (result []*entity.Image, err error) {
+func (i *imageRepository) UploadFiles(tx *gorm.DB, f *multipart.Form, bucket, basePath string) (result []*entity.Image, err error) {
 	var client *s3.S3
 	var uploadResult map[string]string
+	var files []*multipart.FileHeader
 	var sess *session.Session
 
 	sess, err = secure.GetSessionFromEnv()
@@ -40,7 +41,11 @@ func (i *imageRepository) UploadFiles(tx *gorm.DB, f *multipart.Form) (result []
 
 	client = goaws.NewS3Client(sess)
 
-	uploadResult, err = goaws.UploadBatch(client, f, "", "")
+	for _, header := range f.File {
+		files = append(files, header...)
+	}
+
+	uploadResult, err = goaws.UploadBatch(client, files, bucket, basePath)
 	if err != nil {
 		return nil, err
 	}

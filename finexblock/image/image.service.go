@@ -9,7 +9,9 @@ import (
 )
 
 type imageService struct {
-	repo Repository
+	repo     Repository
+	bucket   string
+	basePath string
 }
 
 func (i *imageService) FindAllImages(tx *gorm.DB, limit, offset int) (result []*entity.Image, err error) {
@@ -24,7 +26,7 @@ func (i *imageService) FindAllImages(tx *gorm.DB, limit, offset int) (result []*
 
 func (i *imageService) UploadFile(f *multipart.Form) (result []*entity.Image, err error) {
 	if err = i.repo.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = i.repo.UploadFiles(tx, f)
+		result, err = i.repo.UploadFiles(tx, f, i.bucket, i.basePath)
 		return err
 	}); err != nil {
 		return nil, err
@@ -40,8 +42,8 @@ func (i *imageService) Tx(level sql.IsolationLevel) *gorm.DB {
 	return i.repo.Tx(level)
 }
 
-func newImageService(imageRepository Repository) *imageService {
-	return &imageService{repo: imageRepository}
+func newImageService(imageRepository Repository, bucket, basePath string) *imageService {
+	return &imageService{repo: imageRepository, bucket: bucket, basePath: basePath}
 }
 
 func (i *imageService) Ctx() context.Context {

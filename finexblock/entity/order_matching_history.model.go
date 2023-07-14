@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/shopspring/decimal"
 	"time"
 )
@@ -13,7 +14,7 @@ type OrderMatchingHistory struct {
 	FilledQuantity decimal.Decimal `gorm:"not null;type:decimal(30,4);comment:'체결 수량'" sql:"type:decimal(30,4)"`
 	UnitPrice      decimal.Decimal `gorm:"not null;type:decimal(30,4);comment:'단위 가격'" sql:"type:decimal(30,4)"`
 	Fee            decimal.Decimal `gorm:"not null;type:decimal(30,4);comment:'수수료'" sql:"type:decimal(30,4)"`
-	OrderType      string          `gorm:"not null;comment:'bid/ask';type:enum('BID', 'ASK')"`
+	OrderType      types.OrderType `gorm:"not null;comment:'bid/ask';type:enum('BID', 'ASK')"`
 	CreatedAt      time.Time       `gorm:"not null;comment:'생성일자';default:CURRENT_TIMESTAMP;type:timestamp"`
 	UpdatedAt      time.Time       `gorm:"not null;comment:'수정일자';default:CURRENT_TIMESTAMP;type:timestamp"`
 }

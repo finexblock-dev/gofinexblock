@@ -10,7 +10,7 @@ import (
 type Repository interface {
 	types.Repository
 	FindUserByUUID(tx *gorm.DB, uuid string) (result *entity.User, err error)
-	FindUserByUUIDs(tx *gorm.DB, uuids []string) (result []*entity.User, err error)
+	FindManyUserByUUID(tx *gorm.DB, uuids []string) (result []*entity.User, err error)
 	FindUserByID(tx *gorm.DB, id uint) (result *entity.User, err error)
 	FindUserMetadata(tx *gorm.DB, id uint) (result *types.Metadata, err error)
 	SearchUser(tx *gorm.DB, input *dto.SearchUserInput) (result []*types.Metadata, err error)

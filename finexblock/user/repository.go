@@ -258,7 +258,7 @@ func (u *userRepository) FindUserByUUID(tx *gorm.DB, uuid string) (*entity.User,
 	return _user, nil
 }
 
-func (u *userRepository) FindUserByUUIDs(tx *gorm.DB, uuids []string) ([]*entity.User, error) {
+func (u *userRepository) FindManyUserByUUID(tx *gorm.DB, uuids []string) ([]*entity.User, error) {
 	var users []*entity.User
 	var table *entity.User
 	var err error

@@ -10,7 +10,7 @@ import (
 type Repository interface {
 	types.Repository
 	FindAllImages(tx *gorm.DB, limit, offset int) ([]*entity.Image, error)
-	UploadFiles(tx *gorm.DB, f *multipart.Form) ([]*entity.Image, error)
+	UploadFiles(tx *gorm.DB, f *multipart.Form, bucket, basePath string) ([]*entity.Image, error)
 }
 
 type Service interface {
@@ -23,6 +23,6 @@ func NewRepository(db *gorm.DB) Repository {
 	return newImageRepository(db)
 }
 
-func NewService(db *gorm.DB) Service {
-	return newImageService(NewRepository(db))
+func NewService(db *gorm.DB, bucket, basePath string) Service {
+	return newImageService(NewRepository(db), bucket, basePath)
 }

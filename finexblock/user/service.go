@@ -46,7 +46,7 @@ func (u *userService) FindUserByUUID(uuid string) (result *entity.User, err erro
 
 func (u *userService) FindUserByUUIDs(uuids []string) (result []*entity.User, err error) {
 	if err = u.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = u.repo.FindUserByUUIDs(tx, uuids)
+		result, err = u.repo.FindManyUserByUUID(tx, uuids)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
