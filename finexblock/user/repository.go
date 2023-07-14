@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
-	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/finexblock-dev/gofinexblock/finexblock/user/dto"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
@@ -54,7 +53,7 @@ func (u *userRepository) FindUserProfileByUserID(tx *gorm.DB, userID uint) (resu
 	return result, nil
 }
 
-func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *types.Metadata, err error) {
+func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *entity.UserMetadata, err error) {
 	var _user *entity.User
 	var _profile *entity.UserProfile
 	var metaverseSSO *entity.UserSingleSignOnInfo
@@ -125,7 +124,7 @@ func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *types.M
 
 	//btc = btc.Div(decimal.NewFromFloat(math.Pow10(8)))
 
-	info := &types.Metadata{
+	info := &entity.UserMetadata{
 		ID:                _user.ID,
 		UUID:              _user.UUID,
 		UserType:          _user.UserType,
@@ -147,10 +146,10 @@ func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *types.M
 	return info, nil
 }
 
-func (u *userRepository) SearchUser(tx *gorm.DB, input *dto.SearchUserInput) (result []*types.Metadata, err error) {
+func (u *userRepository) SearchUser(tx *gorm.DB, input *dto.SearchUserInput) (result []*entity.UserMetadata, err error) {
 	var _user *entity.User
 	var users []*entity.User
-	var metadata *types.Metadata
+	var metadata *entity.UserMetadata
 
 	query := tx.Table(_user.TableName())
 

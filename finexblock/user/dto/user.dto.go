@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/finexblock-dev/gofinexblock/finexblock/types"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 )
 
 type (
@@ -10,7 +10,7 @@ type (
 	}
 
 	FindUserByIDOutput struct {
-		Result types.Metadata `json:"result,required"`
+		Result entity.UserMetadata `json:"result,required"`
 	}
 
 	FindUserByIDSuccessResponse struct {
@@ -39,7 +39,7 @@ type (
 	}
 
 	SearchUserOutput struct {
-		Result []*types.Metadata `json:"result,required"`
+		Result []*entity.UserMetadata `json:"result,required"`
 	}
 
 	SearchUserSuccessResponse struct {
