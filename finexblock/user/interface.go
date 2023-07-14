@@ -12,8 +12,8 @@ type Repository interface {
 	FindUserByUUID(tx *gorm.DB, uuid string) (result *entity.User, err error)
 	FindManyUserByUUID(tx *gorm.DB, uuids []string) (result []*entity.User, err error)
 	FindUserByID(tx *gorm.DB, id uint) (result *entity.User, err error)
-	FindUserMetadata(tx *gorm.DB, id uint) (result *types.Metadata, err error)
-	SearchUser(tx *gorm.DB, input *dto.SearchUserInput) (result []*types.Metadata, err error)
+	FindUserMetadata(tx *gorm.DB, id uint) (result *entity.UserMetadata, err error)
+	SearchUser(tx *gorm.DB, input *dto.SearchUserInput) (result []*entity.UserMetadata, err error)
 
 	BlockUser(tx *gorm.DB, id uint) (err error)
 	UnBlockUser(tx *gorm.DB, id uint) (err error)
@@ -34,8 +34,8 @@ type Service interface {
 	FindUserByUUID(uuid string) (result *entity.User, err error)
 	FindUserByUUIDs(uuids []string) (result []*entity.User, err error)
 	FindUserByID(id uint) (result *entity.User, err error)
-	FindUserMetadata(id uint) (result *types.Metadata, err error)
-	SearchUser(input *dto.SearchUserInput) (result []*types.Metadata, err error)
+	FindUserMetadata(id uint) (result *entity.UserMetadata, err error)
+	SearchUser(input *dto.SearchUserInput) (result []*entity.UserMetadata, err error)
 
 	BlockUser(id uint) (err error)
 	UnBlockUser(id uint) (err error)
