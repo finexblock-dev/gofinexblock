@@ -23,7 +23,7 @@ func (o *orderRepository) FindManySymbolByName(tx *gorm.DB, names []string) (res
 func (o *orderRepository) BatchInsertOrderBook(tx *gorm.DB, orders []*entity.OrderBook) (err error) {
 	var _table *entity.OrderBook
 
-	if err = tx.Table(_table.TableName()).Create(&orders).Error; err != nil {
+	if err = tx.Table(_table.TableName()).CreateInBatches(&orders, len(orders)).Error; err != nil {
 		return err
 	}
 	return nil
@@ -41,7 +41,7 @@ func (o *orderRepository) BatchUpdateOrderBookStatus(tx *gorm.DB, orderUUIDs []s
 func (o *orderRepository) BatchInsertOrderBookDifference(tx *gorm.DB, differences []*entity.OrderBookDifference) (err error) {
 	var _table *entity.OrderBookDifference
 
-	if err = tx.Table(_table.TableName()).Create(&differences).Error; err != nil {
+	if err = tx.Table(_table.TableName()).CreateInBatches(&differences, len(differences)).Error; err != nil {
 		return err
 	}
 	return nil
@@ -94,7 +94,7 @@ func (o *orderRepository) FindChartByCond(tx *gorm.DB, intervalIDs []uint, symbo
 func (o *orderRepository) BatchInsertChart(tx *gorm.DB, charts []*entity.Chart) (err error) {
 	var _table *entity.Chart
 
-	if err = tx.Table(_table.TableName()).Create(&charts).Error; err != nil {
+	if err = tx.Table(_table.TableName()).CreateInBatches(&charts, len(charts)).Error; err != nil {
 		return err
 	}
 	return nil
@@ -103,7 +103,7 @@ func (o *orderRepository) BatchInsertChart(tx *gorm.DB, charts []*entity.Chart) 
 func (o *orderRepository) BatchInsertOrderMatchingHistory(tx *gorm.DB, histories []*entity.OrderMatchingHistory) (err error) {
 	var _table *entity.OrderMatchingHistory
 
-	if err = tx.Table(_table.TableName()).Create(&histories).Error; err != nil {
+	if err = tx.Table(_table.TableName()).CreateInBatches(&histories, len(histories)).Error; err != nil {
 		return err
 	}
 	return nil
@@ -112,7 +112,7 @@ func (o *orderRepository) BatchInsertOrderMatchingHistory(tx *gorm.DB, histories
 func (o *orderRepository) BatchInsertOrderMatchingEvent(tx *gorm.DB, events []*entity.OrderMatchingEvent) (err error) {
 	var _table *entity.OrderMatchingEvent
 
-	if err = tx.Table(_table.TableName()).Create(&events).Error; err != nil {
+	if err = tx.Table(_table.TableName()).CreateInBatches(&events, len(events)).Error; err != nil {
 		return err
 	}
 	return nil
