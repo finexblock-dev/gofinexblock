@@ -1,6 +1,9 @@
 package types
 
-import "math"
+import (
+	"github.com/shopspring/decimal"
+	"math"
+)
 
 type Reason string
 
@@ -47,19 +50,19 @@ const (
 )
 
 type PoleData struct {
-	LowPrice     float64 `json:"low_price,omitempty"`
-	HighPrice    float64 `json:"high_price,omitempty"`
-	ClosePrice   float64 `json:"close_price,omitempty"`
-	Volume       float64 `json:"volume,omitempty"`
-	TradingValue float64 `json:"trading_value,omitempty"`
+	LowPrice     decimal.Decimal `json:"low_price,omitempty"`
+	HighPrice    decimal.Decimal `json:"high_price,omitempty"`
+	ClosePrice   decimal.Decimal `json:"close_price,omitempty"`
+	Volume       decimal.Decimal `json:"volume,omitempty"`
+	TradingValue decimal.Decimal `json:"trading_value,omitempty"`
 }
 
 func NewPriceSet() *PoleData {
 	return &PoleData{
-		LowPrice:     math.MaxFloat64,
-		HighPrice:    0,
-		ClosePrice:   0,
-		Volume:       0,
-		TradingValue: 0,
+		LowPrice:     decimal.NewFromFloat(math.MaxFloat64),
+		HighPrice:    decimal.Zero,
+		ClosePrice:   decimal.Zero,
+		Volume:       decimal.Zero,
+		TradingValue: decimal.Zero,
 	}
 }

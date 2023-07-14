@@ -3,6 +3,8 @@ package order
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
+	"fmt"
 	"github.com/finexblock-dev/gofinexblock/finexblock/cache"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
@@ -10,6 +12,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/user"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
+	"strconv"
 	"time"
 )
 
@@ -18,9 +21,25 @@ type orderService struct {
 	userRepository  user.Repository
 }
 
-func (o *orderService) InsertSnapshot(symbolID uint, _snapshot *entity.SnapshotOrderBook) (result *entity.SnapshotOrderBook, err error) {
+func (o *orderService) InsertSnapshot(symbolID uint, bid, ask []*grpc_order.Order) (result *entity.SnapshotOrderBook, err error) {
 	if err = o.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = o.orderRepository.InsertSnapshot(tx, symbolID, _snapshot)
+		var bidMarshal, askMarshal []byte
+
+		bidMarshal, err = json.Marshal(bid)
+		if err != nil {
+			return err
+		}
+
+		askMarshal, err = json.Marshal(ask)
+		if err != nil {
+			return err
+		}
+
+		result, err = o.orderRepository.InsertSnapshot(tx, &entity.SnapshotOrderBook{
+			OrderSymbolID: symbolID,
+			BidOrderList:  string(bidMarshal),
+			AskOrderList:  string(askMarshal),
+		})
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -457,6 +476,7 @@ func (o *orderService) ChartDraw(event []*grpc_order.OrderMatching) (err error) 
 		var data *types.PoleData
 
 		var symbols []*entity.OrderSymbol
+		var _symbol *entity.OrderSymbol
 		var symbolNames []string
 		var symbolIDs []uint
 
@@ -465,48 +485,48 @@ func (o *orderService) ChartDraw(event []*grpc_order.OrderMatching) (err error) 
 		var recentIntervalIDs []uint
 
 		var recentPoles []*entity.Chart
+		var poleIDs []uint
 		var pole *entity.Chart
 
 		// cache symbol
 		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
 
 		// cache price for each symbol
-		var priceCache = cache.NewDefaultKeyValueStore[types.PoleData](len(event))
+		var poleDataCache = cache.NewDefaultKeyValueStore[types.PoleData](len(event))
 
 		for _, v := range event {
 
 			name := v.Symbol.String()
-			if _, err = symbolCache.Get(name); err == cache.ErrKeyNotFound {
-				symbolNames = append(symbolNames, name)
-				_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
-			}
+			symbolNames = append(symbolNames, name)
 
-			if _, err = priceCache.Get(name); err == cache.ErrKeyNotFound {
-				_ = priceCache.Set(name, &types.PoleData{
-					LowPrice:     v.UnitPrice,
-					HighPrice:    v.UnitPrice,
-					ClosePrice:   v.UnitPrice,
-					Volume:       v.Quantity,
-					TradingValue: v.UnitPrice * v.Quantity,
+			unitPrice := decimal.NewFromFloat(v.UnitPrice)
+			quantity := decimal.NewFromFloat(v.Quantity)
+			if _, err = poleDataCache.Get(name); err == cache.ErrKeyNotFound {
+				_ = poleDataCache.Set(name, &types.PoleData{
+					LowPrice:     unitPrice,
+					HighPrice:    unitPrice,
+					ClosePrice:   unitPrice,
+					Volume:       quantity,
+					TradingValue: unitPrice.Mul(quantity),
 				})
 				continue
 			}
 
-			data, _ = priceCache.Get(name)
+			data, _ = poleDataCache.Get(name)
 
-			if data.HighPrice < v.UnitPrice {
-				data.HighPrice = v.UnitPrice
+			if data.HighPrice.LessThan(unitPrice) {
+				data.HighPrice = unitPrice
 			}
 
-			if data, _ = priceCache.Get(name); data.LowPrice > v.UnitPrice {
-				data.LowPrice = v.UnitPrice
+			if data, _ = poleDataCache.Get(name); data.LowPrice.GreaterThan(unitPrice) {
+				data.LowPrice = unitPrice
 			}
 
-			data.ClosePrice = v.UnitPrice
-			data.TradingValue += v.UnitPrice * v.Quantity
-			data.Volume += v.Quantity
+			data.ClosePrice = unitPrice
+			data.TradingValue.Add(unitPrice.Mul(quantity))
+			data.Volume.Add(quantity)
 
-			_ = priceCache.Set(name, data)
+			_ = poleDataCache.Set(name, data)
 		}
 
 		// find all symbols
@@ -516,7 +536,7 @@ func (o *orderService) ChartDraw(event []*grpc_order.OrderMatching) (err error) 
 		}
 
 		for _, v := range symbols {
-			_ = symbolCache.Set(v.Name, v)
+			_ = symbolCache.Set(strconv.Itoa(int(v.ID)), v)
 			symbolIDs = append(symbolIDs, v.ID)
 		}
 
@@ -535,12 +555,54 @@ func (o *orderService) ChartDraw(event []*grpc_order.OrderMatching) (err error) 
 		}
 
 		for _, pole = range recentPoles {
+			poleIDs = append(poleIDs, pole.ID)
+			_symbol, err = symbolCache.Get(strconv.Itoa(int(pole.OrderSymbolID)))
+			if err == cache.ErrKeyNotFound {
+				continue
+			}
+
+			data, err = poleDataCache.Get(_symbol.Name)
+			if err == cache.ErrKeyNotFound {
+				continue
+			}
+
+			if pole.LowPrice.GreaterThan(data.LowPrice) {
+				pole.LowPrice = data.LowPrice
+			}
+
+			if pole.HighPrice.LessThan(data.HighPrice) {
+				pole.HighPrice = data.HighPrice
+			}
+
+			pole.Volume = data.Volume.Add(data.Volume)
+			pole.TradingValue = data.TradingValue.Add(data.TradingValue)
+			pole.ClosePrice = data.ClosePrice
 
 		}
-		// TODO: implement drawing
 
-		return nil
+		updateQuery := "UPDATE " + pole.TableName() + " SET high_price = CASE id "
+		for _, p := range recentPoles {
+			updateQuery += fmt.Sprintf("WHEN %v THEN %v ", p.ID, p.HighPrice)
+		}
+		updateQuery += "END, low_price = CASE id "
+		for _, p := range recentPoles {
+			updateQuery += fmt.Sprintf("WHEN %v THEN %v ", p.ID, p.LowPrice)
+		}
+		updateQuery += "END, close_price = CASE id "
+		for _, p := range recentPoles {
+			updateQuery += fmt.Sprintf("WHEN %v THEN %v ", p.ID, p.ClosePrice)
+		}
+		updateQuery += "END, volume = CASE id "
+		for _, p := range recentPoles {
+			updateQuery += fmt.Sprintf("WHEN %v THEN %v ", p.ID, p.Volume)
+		}
+		updateQuery += "END, trading_value = CASE id "
+		for _, p := range recentPoles {
+			updateQuery += fmt.Sprintf("WHEN %v THEN %v ", p.ID, p.TradingValue)
+		}
 
+		updateQuery += fmt.Sprintf("END WHERE id IN (?)")
+		return tx.Exec(updateQuery, poleIDs).Error
 	}, &sql.TxOptions{Isolation: sql.LevelRepeatableRead})
 }
 

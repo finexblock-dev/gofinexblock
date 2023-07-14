@@ -118,7 +118,7 @@ func (o *orderRepository) BatchInsertOrderMatchingEvent(tx *gorm.DB, events []*e
 	return nil
 }
 
-func (o *orderRepository) InsertSnapshot(tx *gorm.DB, symbolID uint, _snapshot *entity.SnapshotOrderBook) (result *entity.SnapshotOrderBook, err error) {
+func (o *orderRepository) InsertSnapshot(tx *gorm.DB, _snapshot *entity.SnapshotOrderBook) (result *entity.SnapshotOrderBook, err error) {
 	if err = tx.Table(_snapshot.TableName()).Create(_snapshot).Error; err != nil {
 		return nil, err
 	}
@@ -151,7 +151,7 @@ func (o *orderRepository) FindManyOrderByUUID(tx *gorm.DB, uuids []string) (resu
 	return result, nil
 }
 
-func (o *orderRepository) FindRecentIntervalByDuration(tx *gorm.DB, duration entity.Duration) (result *entity.OrderInterval, err error) {
+func (o *orderRepository) FindRecentIntervalByDuration(tx *gorm.DB, duration types.Duration) (result *entity.OrderInterval, err error) {
 	var _table = &entity.OrderInterval{}
 
 	if err = tx.Table(_table.TableName()).Where("duration = ?", duration).Order("end_time desc").First(&result).Error; err != nil {
