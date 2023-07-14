@@ -1,0 +1,45 @@
+syntax = "proto3";
+package erc20;
+option go_package = "/erc20";
+
+message GetCurrentBlockNumberInput {
+}
+
+message GetCurrentBlockNumberOutput {
+  uint64 BlockNumber = 1 [json_name = "block_number"];
+}
+
+message TxData {
+  string ToAddress = 1 [json_name = "to_address"];
+  string Amount = 2 [json_name = "amount"];
+  string TxHash = 3 [json_name = "tx_hash"];
+}
+
+message GetBlocksInput {
+  uint64 Start = 1 [json_name = "start"];
+  uint64 End = 2 [json_name = "end"];
+}
+
+message GetBlocksOutput {
+  repeated TxData Result = 1 [json_name = "result"];
+}
+
+message GetReceiptInput {
+  string TxHash = 1 [json_name = "tx_hash"];
+}
+
+message Log {
+  string Address = 1 [json_name = "address"];
+  repeated bytes Topics = 2 [json_name = "topics"];
+  bytes Data = 3 [json_name = "data"];
+}
+
+message GetReceiptOutput {
+  string TxHash = 1 [json_name = "tx_hash"];
+  uint64 Status = 2 [json_name = "status"];
+  repeated Log Logs = 3 [json_name = "logs"];
+  string BlockHash = 4 [json_name = "block_hash"];
+  string BlockNumber = 5 [json_name = "block_number"];
+  uint64 GasUsed = 6 [json_name = "gas_used"];
+  uint64 TransactionIndex = 7 [json_name = "transaction_index"];
+}

@@ -1,9 +1,10 @@
 package auth
 
 import (
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity/admin"
+	"github.com/finexblock-dev/gofinexblock/finexblock/admin"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
-	"github.com/gofiber/fiber/v2"
+	"github.com/finexblock-dev/gofinexblock/finexblock/user"
 	"gorm.io/gorm"
 )
 
@@ -13,15 +14,11 @@ type Repository interface {
 
 type Service interface {
 	types.Service
-	Login(c *fiber.Ctx, email, password string) (string, error)
-	GenerateToken(c *fiber.Ctx, _admin *admin.Admin) (string, error)
-	Register(c *fiber.Ctx, email, password string) (*admin.Admin, error)
+	AdminLogin(email, password string) (string, error)
+	AdminToken(_admin *entity.Admin) (string, error)
+	AdminRegister(email, password string) (*entity.Admin, error)
 }
 
-func NewRepository(db *gorm.DB) Repository {
-	return newAuthRepository(db)
-}
-
-func NewService(repo Repository) Service {
-	return newAuthService(repo)
+func NewService(db *gorm.DB) Service {
+	return newAuthService(admin.NewRepository(db), user.NewRepository(db))
 }
