@@ -75,7 +75,7 @@ type GetRawTransactionOutput struct {
 	Hex           string  `protobuf:"bytes,1,opt,name=Hex,json=hex,proto3" json:"Hex,omitempty"`
 	TxId          string  `protobuf:"bytes,2,opt,name=TxId,json=tx_id,proto3" json:"TxId,omitempty"`
 	Hash          string  `protobuf:"bytes,3,opt,name=Hash,json=hash,proto3" json:"Hash,omitempty"`
-	Size          int32   `protobuf:"varint,4,opt,name=CurrentSize,json=size,proto3" json:"CurrentSize,omitempty"`
+	Size          int32   `protobuf:"varint,4,opt,name=Size,json=size,proto3" json:"Size,omitempty"`
 	Vsize         int32   `protobuf:"varint,5,opt,name=Vsize,json=vsize,proto3" json:"Vsize,omitempty"`
 	Weight        int32   `protobuf:"varint,6,opt,name=Weight,json=weight,proto3" json:"Weight,omitempty"`
 	Version       uint32  `protobuf:"varint,7,opt,name=Version,json=version,proto3" json:"Version,omitempty"`
