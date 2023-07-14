@@ -12,6 +12,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/user"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
+	"math"
 	"strconv"
 	"time"
 )
@@ -19,6 +20,7 @@ import (
 type orderService struct {
 	orderRepository Repository
 	userRepository  user.Repository
+	userCache       *cache.DefaultKeyValueStore[entity.User]
 }
 
 func (o *orderService) InsertSnapshot(symbolID uint, bid, ask []*grpc_order.Order) (result *entity.SnapshotOrderBook, err error) {
@@ -603,7 +605,7 @@ func (o *orderService) ChartDraw(event []*grpc_order.OrderMatching) (err error) 
 
 		updateQuery += fmt.Sprintf("END WHERE id IN (?)")
 		return tx.Exec(updateQuery, poleIDs).Error
-	}, &sql.TxOptions{Isolation: sql.LevelRepeatableRead})
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
 
 func (o *orderService) LimitOrderCancellationInBatch(event []*grpc_order.OrderCancelled) (remain []*grpc_order.OrderCancelled, err error) {
@@ -700,5 +702,5 @@ func (o *orderService) CtxWithCancel(ctx context.Context) (context.Context, cont
 }
 
 func newOrderService(db *gorm.DB) *orderService {
-	return &orderService{orderRepository: newOrderRepository(db)}
+	return &orderService{orderRepository: newOrderRepository(db), userRepository: user.NewRepository(db), userCache: cache.NewDefaultKeyValueStore[entity.User](math.MaxInt)}
 }
