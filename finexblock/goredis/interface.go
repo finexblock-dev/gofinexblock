@@ -31,3 +31,11 @@ type Service interface {
 	SetNX(key string, value interface{}, exp time.Duration) (ok bool, err error)
 	Del(key string) (err error)
 }
+
+func NewRepository(cluster *redis.ClusterClient) Repository {
+	return newRepository(cluster)
+}
+
+func NewService(cluster *redis.ClusterClient) Service {
+	return newService(cluster)
+}

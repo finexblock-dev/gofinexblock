@@ -10,6 +10,10 @@ type service struct {
 	repository Repository
 }
 
+func newService(cluster *redis.ClusterClient) *service {
+	return &service{repository: newRepository(cluster)}
+}
+
 func (s *service) XReadGroup(args *redis.XReadGroupArgs) (result []redis.XStream, err error) {
 	return s.repository.XReadGroup(context.Background(), args)
 }

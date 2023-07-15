@@ -11,6 +11,10 @@ type repository struct {
 	cluster *redis.ClusterClient
 }
 
+func newRepository(cluster *redis.ClusterClient) *repository {
+	return &repository{cluster: cluster}
+}
+
 func (r *repository) XReadGroup(ctx context.Context, args *redis.XReadGroupArgs) ([]redis.XStream, error) {
 	return r.cluster.XReadGroup(ctx, args).Result()
 }
