@@ -11,7 +11,33 @@ type OrderStructs interface {
 	*grpc_order.BidAsk | *grpc_order.Order | *grpc_order.BalanceUpdate |
 		*grpc_order.OrderMatching | *grpc_order.OrderMatchingFailed |
 		*grpc_order.OrderFulfillment | *grpc_order.OrderPartialFill |
-		*grpc_order.OrderCancelled | *grpc_order.OrderInitialize
+		*grpc_order.OrderCancelled | *grpc_order.OrderInitialize |
+		*grpc_order.OrderCancellationFailed | *grpc_order.OrderCancellation |
+		*grpc_order.MarketOrderInput | *grpc_order.LimitOrderInput |
+		*grpc_order.ErrorInput | *grpc_order.GetOrderBookOutput
+}
+
+func ParseLimitOrderInput(input *grpc_order.LimitOrderInput) *grpc_order.Order {
+	return &grpc_order.Order{
+		UserUUID:  input.GetUserUUID(),
+		OrderUUID: input.GetOrderUUID(),
+		Quantity:  input.GetQuantity(),
+		UnitPrice: input.GetUnitPrice(),
+		OrderType: input.GetOrderType(),
+		Symbol:    input.GetSymbol(),
+		MakeTime:  input.GetMakeTime(),
+	}
+}
+
+func ParseMarketOrderInput(input *grpc_order.MarketOrderInput) *grpc_order.Order {
+	return &grpc_order.Order{
+		UserUUID:  input.GetUserUUID(),
+		OrderUUID: input.GetOrderUUID(),
+		Quantity:  input.GetQuantity(),
+		OrderType: input.GetOrderType(),
+		Symbol:    input.GetSymbol(),
+		MakeTime:  input.GetMakeTime(),
+	}
 }
 
 func MessagesToJson(s proto.Message) (map[string]interface{}, error) {

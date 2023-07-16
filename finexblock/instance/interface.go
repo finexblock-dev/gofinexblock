@@ -1,43 +1,18 @@
 package instance
 
 import (
-	context "context"
-	"database/sql"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"gorm.io/gorm"
 )
 
-type Service interface {
-	types.Service
+type Repository interface {
+	types.Repository
+	FindServerByIP(tx *gorm.DB, ip string) (result *entity.FinexblockServerIP, err error)
 	FindServerByName(tx *gorm.DB, name string) (*entity.FinexblockServer, error)
 	InsertErrorLog(tx *gorm.DB, errorLog *entity.FinexblockErrorLog) (*entity.FinexblockErrorLog, error)
 }
 
-type instanceService struct {
-	db *gorm.DB
-}
-
-func (i *instanceService) Conn() *gorm.DB {
-	return i.db
-}
-
-func (i *instanceService) Tx(level sql.IsolationLevel) *gorm.DB {
-	return i.db.Begin(&sql.TxOptions{Isolation: level})
-}
-
-func (i *instanceService) Ctx() context.Context {
-	return context.Background()
-}
-
-func (i *instanceService) CtxWithCancel(ctx context.Context) (context.Context, context.CancelFunc) {
-	return context.WithCancel(ctx)
-}
-
-func newInstanceService(db *gorm.DB) *instanceService {
-	return &instanceService{db: db}
-}
-
-func NewService(db *gorm.DB) Service {
-	return newInstanceService(db)
+func NewRepository(db *gorm.DB) Repository {
+	return newRepository(db)
 }
