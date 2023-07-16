@@ -3,11 +3,38 @@ package orderbook
 import (
 	"container/heap"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
+	"github.com/shopspring/decimal"
 )
 
 type repository struct {
 	askOrderBook *askOrderBook
 	bidOrderBook *bidOrderBook
+}
+
+func (r *repository) BidMarketPrice() decimal.Decimal {
+	if r.bidOrderBook.Len() > 0 {
+		order := r.PopBid()
+		if order == nil {
+			return decimal.Zero
+		}
+		marketPrice := decimal.NewFromFloat(order.UnitPrice)
+		r.PushBid(order)
+		return marketPrice
+	}
+	return decimal.Zero
+}
+
+func (r *repository) AskMarketPrice() decimal.Decimal {
+	if r.askOrderBook.Len() > 0 {
+		order := r.PopAsk()
+		if order == nil {
+			return decimal.Zero
+		}
+		marketPrice := decimal.NewFromFloat(order.UnitPrice)
+		r.PushAsk(order)
+		return marketPrice
+	}
+	return decimal.Zero
 }
 
 func (r *repository) BidOrder() []*grpc_order.Order {

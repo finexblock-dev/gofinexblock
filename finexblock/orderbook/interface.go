@@ -3,6 +3,7 @@ package orderbook
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"github.com/finexblock-dev/gofinexblock/finexblock/safety"
+	"github.com/shopspring/decimal"
 )
 
 // Queue is interface for order book queue, use Service, and Service use Repository.
@@ -13,13 +14,13 @@ type Queue interface {
 	LimitBidInsert(bid *grpc_order.Order) (order *grpc_order.Order, err error)
 	MarketAskInsert(ask *grpc_order.Order) (order *grpc_order.Order, err error)
 	MarketBidInsert(bid *grpc_order.Order) (order *grpc_order.Order, err error)
-	AskRemove(uuid string) (order *grpc_order.Order, err error)
-	BidRemove(uuid string) (order *grpc_order.Order, err error)
-	BidOrder() (bids []*grpc_order.Order, err error)
-	AskOrder() (asks []*grpc_order.Order, err error)
+	CancelOrder(uuid string) (order *grpc_order.Order, err error)
+	BidOrder() (bids []*grpc_order.Order)
+	AskOrder() (asks []*grpc_order.Order)
 }
 
-// Service is interface for order book service
+// Service is interface for order book service, control repository.
+// Also has market price for each order book(ask/bid).
 type Service interface {
 	LimitAsk(ask *grpc_order.Order) error                         // 지정가 매도 주문
 	LimitBid(bid *grpc_order.Order) error                         // 지정가 매수 주문
@@ -38,6 +39,9 @@ type Repository interface {
 	PopBid() (order *grpc_order.Order)
 	RemoveAsk(uuid string) (order *grpc_order.Order)
 	RemoveBid(uuid string) (order *grpc_order.Order)
+
+	BidMarketPrice() decimal.Decimal
+	AskMarketPrice() decimal.Decimalw
 
 	BidOrder() []*grpc_order.Order
 	AskOrder() []*grpc_order.Order

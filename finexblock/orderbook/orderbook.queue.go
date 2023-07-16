@@ -13,11 +13,7 @@ type queue struct {
 	limitBid  chan *types.ErrReceiveContext[*grpc_order.Order] // limitBid is channel for limit bid order
 	marketBid chan *types.ErrReceiveContext[*grpc_order.Order] // marketBid is channel for market bid order
 
-	askRemove chan *types.ResultReceiveContext[string, *grpc_order.Order] // askRemove is channel for cancel ask order
-	bidRemove chan *types.ResultReceiveContext[string, *grpc_order.Order] // bidRemove is channel for cancel bid order
-
-	// bidMarketPrice
-	// askMarketPrice
+	cancel chan *types.ResultReceiveContext[string, *grpc_order.Order] // cancel is channel for cancel order
 }
 
 func (q *queue) Subscribe() {
@@ -32,10 +28,7 @@ func (q *queue) Subscribe() {
 			ctx.Tunnel <- q.service.MarketAsk(ctx.Value)
 		case ctx := <-q.marketBid:
 			ctx.Tunnel <- q.service.MarketBid(ctx.Value)
-		case ctx := <-q.askRemove:
-			order, _ := q.service.CancelOrder(ctx.Value)
-			ctx.Tunnel <- order
-		case ctx := <-q.bidRemove:
+		case ctx := <-q.cancel:
 			order, _ := q.service.CancelOrder(ctx.Value)
 			ctx.Tunnel <- order
 		}
@@ -90,25 +83,12 @@ func (q *queue) MarketBidInsert(bid *grpc_order.Order) (order *grpc_order.Order,
 	return bid, nil
 }
 
-func (q *queue) AskRemove(uuid string) (order *grpc_order.Order, err error) {
+func (q *queue) CancelOrder(uuid string) (order *grpc_order.Order, err error) {
 	ctx := &types.ResultReceiveContext[string, *grpc_order.Order]{
 		Tunnel: make(chan *grpc_order.Order),
 		Value:  uuid,
 	}
-	q.askRemove <- ctx
-	order = <-ctx.Tunnel
-	if order == nil {
-		return nil, ErrOrderCancelFailed
-	}
-	return order, nil
-}
-
-func (q *queue) BidRemove(uuid string) (order *grpc_order.Order, err error) {
-	ctx := &types.ResultReceiveContext[string, *grpc_order.Order]{
-		Tunnel: make(chan *grpc_order.Order),
-		Value:  uuid,
-	}
-	q.bidRemove <- ctx
+	q.cancel <- ctx
 	order = <-ctx.Tunnel
 	if order == nil {
 		return nil, ErrOrderCancelFailed

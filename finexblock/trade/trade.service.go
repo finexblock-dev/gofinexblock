@@ -1,7 +1,6 @@
 package trade
 
 import (
-	"fmt"
 	"github.com/finexblock-dev/gofinexblock/finexblock/goredis"
 	"github.com/shopspring/decimal"
 	"time"
@@ -104,13 +103,13 @@ func (s *service) MinusBalance(uuid, currency string, amount decimal.Decimal) er
 }
 
 func (s *service) SetOrder(orderUUID string, side string) error {
-	return s.cluster.Set(fmt.Sprintf("order:%v", orderUUID), side, 0)
+	return s.cluster.Set(getOrderKey(orderUUID), side, 0)
 }
 
 func (s *service) GetOrder(orderUUID string) (string, error) {
-	return s.cluster.Get(fmt.Sprintf("order:%v", orderUUID))
+	return s.cluster.Get(getOrderKey(orderUUID))
 }
 
 func (s *service) DeleteOrder(orderUUID string) error {
-	return s.cluster.Del(fmt.Sprintf("order:%v", orderUUID))
+	return s.cluster.Del(getOrderKey(orderUUID))
 }

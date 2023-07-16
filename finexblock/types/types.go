@@ -1,8 +1,8 @@
 package types
 
-type ErrReceiveContext[T any] struct {
+type ErrReceiveContext[param any] struct {
 	Tunnel chan error
-	Value  T
+	Value  param
 }
 
 type ResultReceiveContext[param any, result any] struct {
