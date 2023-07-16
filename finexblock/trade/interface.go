@@ -25,6 +25,7 @@ type Service interface {
 	SendPlacementStream(order *grpc_order.Order) error
 	SendRefundStream(order *grpc_order.Order) error
 	SendErrorStream(input *grpc_order.ErrorInput) error
+	SendCancellationStream(order *grpc_order.Order) error
 }
 
 func NewService(redisClient *redis.ClusterClient) Service {

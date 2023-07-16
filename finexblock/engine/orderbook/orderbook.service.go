@@ -330,6 +330,9 @@ func (s *service) CancelOrder(uuid string) (order *grpc_order.Order, err error) 
 		s.askMarketPrice = s.repository.AskMarketPrice()
 		s.bidMarketPrice = s.repository.BidMarketPrice()
 	}()
+
+	var pushFunc func(*grpc_order.Order)
+
 	order, err = s.orderCache.Get(uuid)
 	if err == cache.ErrKeyNotFound {
 		return nil, ErrOrderNotFound
@@ -341,16 +344,23 @@ func (s *service) CancelOrder(uuid string) (order *grpc_order.Order, err error) 
 		if order == nil {
 			return nil, ErrOrderCancelFailed
 		}
-		return order, nil
+		pushFunc = s.repository.PushBid
+
 	case grpc_order.OrderType_ASK:
 		order = s.repository.RemoveAsk(uuid)
 		if order == nil {
 			return nil, ErrOrderCancelFailed
 		}
-		return order, nil
+		pushFunc = s.repository.PushAsk
 	default:
 		return nil, ErrOrderTypeNotFound
 	}
+
+	if err = s.tradeService.SendCancellationStream(order); err != nil {
+		pushFunc(order)
+		return nil, ErrOrderCancelFailed
+	}
+	return order, nil
 }
 
 func (s *service) BidOrder() (bids []*grpc_order.Order, err error) {

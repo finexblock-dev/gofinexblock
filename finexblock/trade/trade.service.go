@@ -17,6 +17,22 @@ type service struct {
 	cluster goredis.Service
 }
 
+func (s *service) SendCancellationStream(order *grpc_order.Order) error {
+	var stream map[string]interface{}
+	var err error
+
+	stream, err = utils.MessagesToJson(order)
+	if err != nil {
+		return ErrMarshalFailed
+	}
+
+	return s.cluster.XAdd(&redis.XAddArgs{
+		Stream: CancelStream.String(),
+		ID:     "*",
+		Values: stream,
+	})
+}
+
 func (s *service) SendMatchStream(matchCase types.Case, pair *grpc_order.BidAsk) error {
 	var stream map[string]interface{}
 	var err error
@@ -210,6 +226,9 @@ func (s *service) StreamsInit() error {
 	group.Go(func() error {
 		return s.cluster.XGroupCreateMkStream(ErrorStream.String(), ErrorGroup.String())
 	})
+	group.Go(func() error {
+		return s.cluster.XGroupCreateMkStream(CancelStream.String(), CancelGroup.String())
+	})
 
 	if err = group.Wait(); err != nil {
 		return err
@@ -228,6 +247,9 @@ func (s *service) StreamsInit() error {
 	})
 	group.Go(func() error {
 		return s.cluster.XGroupCreateConsumer(ErrorStream.String(), ErrorGroup.String(), ErrorConsumer.String())
+	})
+	group.Go(func() error {
+		return s.cluster.XGroupCreateConsumer(CancelStream.String(), CancelGroup.String(), CancelConsumer.String())
 	})
 
 	return group.Wait()

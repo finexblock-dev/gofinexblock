@@ -27,16 +27,19 @@ const (
 	PlaceStream  types.Stream = "STREAM:PLACEMENT"
 	RefundStream types.Stream = "STREAM:REFUND"
 	ErrorStream  types.Stream = "STREAM:ERROR"
+	CancelStream types.Stream = "STREAM:CANCELLATION"
 
 	MatchGroup  types.Group = "GROUP:MATCH"
 	PlaceGroup  types.Group = "GROUP:PLACEMENT"
 	RefundGroup types.Group = "GROUP:REFUND"
 	ErrorGroup  types.Group = "GROUP:ERROR"
+	CancelGroup types.Group = "GROUP:CANCELLATION"
 
 	MatchConsumer  types.Consumer = "CONSUMER:MATCH"
 	PlaceConsumer  types.Consumer = "CONSUMER:PLACEMENT"
 	RefundConsumer types.Consumer = "CONSUMER:REFUND"
 	ErrorConsumer  types.Consumer = "CONSUMER:ERROR"
+	CancelConsumer types.Consumer = "CONSUMER:CANCELLATION"
 )
 
 const (
