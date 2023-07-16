@@ -34,6 +34,10 @@ func (s *service) XGroupCreate(stream, group string) (err error) {
 	return s.repository.XGroupCreate(context.Background(), stream, group)
 }
 
+func (s *service) XGroupCreateConsumer(stream, group, consumer string) error {
+	return s.repository.XGroupCreateConsumer(context.Background(), stream, group, consumer)
+}
+
 func (s *service) XGroupCreateMkStream(stream, group string) (err error) {
 	return s.repository.XGroupCreateMkStream(context.Background(), stream, group)
 }

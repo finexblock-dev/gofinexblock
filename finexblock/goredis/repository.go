@@ -31,6 +31,10 @@ func (r *repository) XAdd(ctx context.Context, args *redis.XAddArgs) error {
 	return r.cluster.XAdd(ctx, args).Err()
 }
 
+func (r *repository) XGroupCreateConsumer(ctx context.Context, stream, group, consumer string) error {
+	return r.cluster.XGroupCreateConsumer(ctx, stream, group, consumer).Err()
+}
+
 func (r *repository) XGroupCreate(ctx context.Context, stream, group string) error {
 	return r.cluster.XGroupCreate(ctx, stream, group, "$").Err()
 }

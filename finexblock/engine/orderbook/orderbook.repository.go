@@ -4,6 +4,7 @@ import (
 	"container/heap"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"github.com/shopspring/decimal"
+	"math"
 )
 
 type repository struct {
@@ -28,13 +29,13 @@ func (r *repository) AskMarketPrice() decimal.Decimal {
 	if r.askOrderBook.Len() > 0 {
 		order := r.PopAsk()
 		if order == nil {
-			return decimal.Zero
+			return decimal.NewFromFloat(math.MaxFloat64)
 		}
 		marketPrice := decimal.NewFromFloat(order.UnitPrice)
 		r.PushAsk(order)
 		return marketPrice
 	}
-	return decimal.Zero
+	return decimal.NewFromFloat(math.MaxFloat64)
 }
 
 func (r *repository) BidOrder() []*grpc_order.Order {

@@ -13,6 +13,7 @@ type Repository interface {
 	XAdd(ctx context.Context, args *redis.XAddArgs) (err error)
 	XGroupCreate(ctx context.Context, stream, group string) (err error)
 	XGroupCreateMkStream(ctx context.Context, stream, group string) (err error)
+	XGroupCreateConsumer(ctx context.Context, stream, group, consumer string) error
 	Get(ctx context.Context, key string) (value string, err error)
 	Set(ctx context.Context, key string, value interface{}, exp time.Duration) (err error)
 	SetNX(ctx context.Context, key string, value interface{}, exp time.Duration) (ok bool, err error)
@@ -26,6 +27,7 @@ type Service interface {
 	XAdd(args *redis.XAddArgs) (err error)
 	XGroupCreate(stream, group string) (err error)
 	XGroupCreateMkStream(stream, group string) (err error)
+	XGroupCreateConsumer(stream, group, consumer string) error
 	Get(key string) (value string, err error)
 	Set(key string, value interface{}, exp time.Duration) (err error)
 	SetNX(key string, value interface{}, exp time.Duration) (ok bool, err error)

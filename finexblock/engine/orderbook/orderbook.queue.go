@@ -3,6 +3,7 @@ package orderbook
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
+	"github.com/redis/go-redis/v9"
 )
 
 type queue struct {
@@ -14,6 +15,17 @@ type queue struct {
 	marketBid chan *types.ErrReceiveContext[*grpc_order.Order] // marketBid is channel for market bid order
 
 	cancel chan *types.ResultReceiveContext[string, *grpc_order.Order] // cancel is channel for cancel order
+}
+
+func newQueue(cluster *redis.ClusterClient) *queue {
+	return &queue{
+		service:   NewService(cluster),
+		limitAsk:  make(chan *types.ErrReceiveContext[*grpc_order.Order]),
+		marketAsk: make(chan *types.ErrReceiveContext[*grpc_order.Order]),
+		limitBid:  make(chan *types.ErrReceiveContext[*grpc_order.Order]),
+		marketBid: make(chan *types.ErrReceiveContext[*grpc_order.Order]),
+		cancel:    make(chan *types.ResultReceiveContext[string, *grpc_order.Order]),
+	}
 }
 
 func (q *queue) Subscribe() {

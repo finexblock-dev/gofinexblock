@@ -3,6 +3,7 @@ package orderbook
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"github.com/finexblock-dev/gofinexblock/finexblock/safety"
+	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
 )
 
@@ -15,8 +16,8 @@ type Queue interface {
 	MarketAskInsert(ask *grpc_order.Order) (order *grpc_order.Order, err error)
 	MarketBidInsert(bid *grpc_order.Order) (order *grpc_order.Order, err error)
 	CancelOrder(uuid string) (order *grpc_order.Order, err error)
-	BidOrder() (bids []*grpc_order.Order)
-	AskOrder() (asks []*grpc_order.Order)
+	BidOrder() (bids []*grpc_order.Order, err error)
+	AskOrder() (asks []*grpc_order.Order, err error)
 }
 
 // Service is interface for order book service, control repository.
@@ -41,7 +42,7 @@ type Repository interface {
 	RemoveBid(uuid string) (order *grpc_order.Order)
 
 	BidMarketPrice() decimal.Decimal
-	AskMarketPrice() decimal.Decimalw
+	AskMarketPrice() decimal.Decimal
 
 	BidOrder() []*grpc_order.Order
 	AskOrder() []*grpc_order.Order
@@ -49,4 +50,12 @@ type Repository interface {
 
 func NewRepository() Repository {
 	return newRepository()
+}
+
+func NewService(cluster *redis.ClusterClient) Service {
+	return newService(cluster)
+}
+
+func NewQueue(cluster *redis.ClusterClient) Queue {
+	return newQueue(cluster)
 }
