@@ -41,6 +41,17 @@ type Admin struct {
 	AdminApiLog         []AdminApiLog         `json:"admin_api_log,omitempty" gorm:"foreignKey:AdminID;constraint:OnUpdate:CASCADE;OnDelete:SET NULL"`
 }
 
+type PartialAdmin struct {
+	ID           uint      `json:"id"`
+	Email        string    `json:"email"`
+	Grade        string    `json:"grade"`
+	IsBlocked    bool      `json:"is_blocked"`
+	InitialLogin bool      `json:"initial_login"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+	PwdUpdatedAt time.Time `json:"pwd_updated_at"`
+}
+
 func (a *Admin) Alias() string {
 	return "admin a"
 }

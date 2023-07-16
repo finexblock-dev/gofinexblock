@@ -1,31 +1,32 @@
 package trade
 
 import (
-	"context"
+	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
+	"github.com/finexblock-dev/gofinexblock/finexblock/goredis"
+	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
 )
 
 type Service interface {
-	AcquireLock(ctx context.Context, uuid, currency string) (bool, error)
-	ReleaseLock(ctx context.Context, uuid, currency string) error
-	GetBalance(ctx context.Context, uuid, currency string) (decimal.Decimal, error)
-	SetBalance(ctx context.Context, uuid, currency string, amount decimal.Decimal) error
-	PlusBalance(ctx context.Context, uuid, currency string, amount decimal.Decimal) error
-	MinusBalance(ctx context.Context, uuid, currency string, amount decimal.Decimal) error
-	SetOrder(ctx context.Context, orderUUID string, side string) error
-	GetOrder(ctx context.Context, orderUUID string) (string, error)
-	DeleteOrder(ctx context.Context, orderUUID string) error
-}
+	AcquireLock(uuid, currency string) (bool, error)
+	ReleaseLock(uuid, currency string) error
+	GetBalance(uuid, currency string) (decimal.Decimal, error)
+	SetBalance(uuid, currency string, amount decimal.Decimal) error
+	PlusBalance(uuid, currency string, amount decimal.Decimal) error
+	MinusBalance(uuid, currency string, amount decimal.Decimal) error
+	SetOrder(orderUUID string, side string) error
+	GetOrder(orderUUID string) (string, error)
+	DeleteOrder(orderUUID string) error
 
-type tradeService struct {
-	redisClient *redis.ClusterClient
-}
+	StreamsInit() error
 
-func newTradeService(redisClient *redis.ClusterClient) *tradeService {
-	return &tradeService{redisClient: redisClient}
+	SendMatchStream(matchCase types.Case, pair *grpc_order.BidAsk) error
+	SendPlacementStream(order *grpc_order.Order) error
+	SendRefundStream(order *grpc_order.Order) error
+	SendErrorStream(input *grpc_order.ErrorInput) error
 }
 
 func NewService(redisClient *redis.ClusterClient) Service {
-	return newTradeService(redisClient)
+	return newService(goredis.NewService(redisClient))
 }
