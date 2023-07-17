@@ -2,6 +2,7 @@ package trade
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"github.com/finexblock-dev/gofinexblock/finexblock/goredis"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
@@ -84,6 +85,7 @@ func (s *service) SendCancellationStream(order *grpc_order.Order) error {
 }
 
 func (s *service) SendMatchStream(matchCase types.Case, pair *grpc_order.BidAsk) error {
+	var _case = make(map[string]string)
 	var values []string
 	var stream []byte
 	var err error
@@ -94,7 +96,14 @@ func (s *service) SendMatchStream(matchCase types.Case, pair *grpc_order.BidAsk)
 	}
 
 	values = append(values, string(stream))
-	values = append(values, matchCase.String())
+
+	_case["case"] = matchCase.String()
+	stream, err = json.Marshal(_case)
+	if err != nil {
+		return ErrMarshalFailed
+	}
+
+	values = append(values, string(stream))
 
 	return s.cluster.XAdd(&redis.XAddArgs{
 		Stream: MatchStream.String(),
