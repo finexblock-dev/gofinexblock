@@ -9,6 +9,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
 	"golang.org/x/sync/errgroup"
+	"log"
 	"math"
 	"strings"
 	"time"
@@ -16,6 +17,24 @@ import (
 
 type service struct {
 	cluster goredis.Service
+}
+
+func (s *service) ReadStreamInfo(stream types.Stream) (*redis.XInfoStream, error) {
+	return s.cluster.XInfoStream(stream.String())
+}
+
+func (s *service) ClaimStream(stream types.Stream, group types.Group, consumer types.Consumer, minIdleTime time.Duration, ids []string) ([]redis.XMessage, error) {
+	return s.cluster.XClaim(&redis.XClaimArgs{
+		Stream:   stream.String(),
+		Group:    group.String(),
+		Consumer: consumer.String(),
+		MinIdle:  minIdleTime,
+		Messages: ids,
+	})
+}
+
+func (s *service) ReadPendingStream(stream types.Stream, group types.Group) (*redis.XPending, error) {
+	return s.cluster.XPending(stream.String(), group.String())
 }
 
 func (s *service) ReadStream(stream types.Stream, group types.Group, consumer types.Consumer, count int64, block time.Duration) ([]redis.XStream, error) {
@@ -69,7 +88,8 @@ func (s *service) SendMatchStream(matchCase types.Case, pair *grpc_order.BidAsk)
 		return ErrMarshalFailed
 	}
 
-	//stream["case"] = matchCase.String()
+	log.Println(string(stream))
+	log.Println(strings.Split(string(stream), ","))
 
 	return s.cluster.XAdd(&redis.XAddArgs{
 		Stream: MatchStream.String(),
@@ -256,6 +276,9 @@ func (s *service) StreamsInit() error {
 	group.Go(func() error {
 		return s.cluster.XGroupCreateMkStream(CancelStream.String(), CancelGroup.String())
 	})
+	group.Go(func() error {
+		return s.cluster.XGroupCreateMkStream(InitializeStream.String(), InitializeGroup.String())
+	})
 
 	if err = group.Wait(); err != nil {
 		return err
@@ -276,7 +299,7 @@ func (s *service) StreamsInit() error {
 		return s.cluster.XGroupCreateConsumer(ErrorStream.String(), ErrorGroup.String(), ErrorConsumer.String())
 	})
 	group.Go(func() error {
-		return s.cluster.XGroupCreateConsumer(CancelStream.String(), CancelGroup.String(), CancelConsumer.String())
+		return s.cluster.XGroupCreateConsumer(InitializeStream.String(), InitializeGroup.String(), InitializeConsumer.String())
 	})
 
 	return group.Wait()

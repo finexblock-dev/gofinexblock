@@ -15,6 +15,18 @@ func newRepository(cluster *redis.ClusterClient) *repository {
 	return &repository{cluster: cluster}
 }
 
+func (r *repository) XClaim(ctx context.Context, args *redis.XClaimArgs) ([]redis.XMessage, error) {
+	return r.cluster.XClaim(ctx, args).Result()
+}
+
+func (r *repository) XInfoStream(ctx context.Context, stream string) (*redis.XInfoStream, error) {
+	return r.cluster.XInfoStream(ctx, stream).Result()
+}
+
+func (r *repository) XPending(ctx context.Context, stream, group string) (*redis.XPending, error) {
+	return r.cluster.XPending(ctx, stream, group).Result()
+}
+
 func (r *repository) TxPipeline() redis.Pipeliner {
 	return r.cluster.TxPipeline()
 }

@@ -23,26 +23,35 @@ var (
 )
 
 const (
-	MatchStream      types.Stream = "STREAM:MATCH"
-	PlaceStream      types.Stream = "STREAM:PLACEMENT"
-	RefundStream     types.Stream = "STREAM:REFUND"
-	ErrorStream      types.Stream = "STREAM:ERROR"
-	CancelStream     types.Stream = "STREAM:CANCELLATION"
-	InitializeStream types.Stream = "STREAM:INITIALIZE"
+	MatchStream  types.Stream = "STREAM:MATCH"  // MatchStream for each match case
+	RefundStream types.Stream = "STREAM:REFUND" // RefundStream for refund process
+	ErrorStream  types.Stream = "STREAM:ERROR"  // ErrorStream for log error
 
-	MatchGroup      types.Group = "GROUP:MATCH"
-	PlaceGroup      types.Group = "GROUP:PLACEMENT"
-	RefundGroup     types.Group = "GROUP:REFUND"
-	ErrorGroup      types.Group = "GROUP:ERROR"
-	CancelGroup     types.Group = "GROUP:CANCELLATION"
-	InitializeGroup types.Group = "GROUP:INITIALIZE"
+	CancelStream      types.Stream = "STREAM:CANCELLATION" // CancelStream for send OrderCancellation event
+	PlaceStream       types.Stream = "STREAM:PLACEMENT"    // PlaceStream for send OrderPlacement event
+	InitializeStream  types.Stream = "STREAM:INITIALIZE"   // InitializeStream for send OrderInitialize event
+	FulfillmentStream types.Stream = "STREAM:FULFILLMENT"  // FulfillmentStream for send OrderFulfillment event
+	PartialFillStream types.Stream = "STREAM:PARTIAL_FILL" // PartialFillStream for send OrderPartialFill event
 
-	MatchConsumer      types.Consumer = "CONSUMER:MATCH"
-	PlaceConsumer      types.Consumer = "CONSUMER:PLACEMENT"
-	RefundConsumer     types.Consumer = "CONSUMER:REFUND"
-	ErrorConsumer      types.Consumer = "CONSUMER:ERROR"
-	CancelConsumer     types.Consumer = "CONSUMER:CANCELLATION"
-	InitializeConsumer types.Consumer = "CONSUMER:INITIALIZE"
+	MatchGroup  types.Group = "GROUP:MATCH"
+	RefundGroup types.Group = "GROUP:REFUND"
+	ErrorGroup  types.Group = "GROUP:ERROR"
+
+	CancelGroup      types.Group = "GROUP:CANCELLATION"
+	PlaceGroup       types.Group = "GROUP:PLACEMENT"
+	InitializeGroup  types.Group = "GROUP:INITIALIZE"
+	FulfillmentGroup types.Group = "GROUP:FULFILLMENT"
+	PartialFillGroup types.Group = "GROUP:PARTIAL_FILL"
+
+	MatchConsumer  types.Consumer = "CONSUMER:MATCH"
+	RefundConsumer types.Consumer = "CONSUMER:REFUND"
+	ErrorConsumer  types.Consumer = "CONSUMER:ERROR"
+
+	CancelConsumer      types.Consumer = "CONSUMER:CANCELLATION"
+	PlaceConsumer       types.Consumer = "CONSUMER:PLACEMENT"
+	InitializeConsumer  types.Consumer = "CONSUMER:INITIALIZE"
+	FulfillmentConsumer types.Consumer = "CONSUMER:FULFILLMENT"
+	PartialFillConsumer types.Consumer = "CONSUMER:PARTIAL_FILL"
 )
 
 const (

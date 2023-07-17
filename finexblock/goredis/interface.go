@@ -14,6 +14,10 @@ type Repository interface {
 	XGroupCreate(ctx context.Context, stream, group string) (err error)
 	XGroupCreateMkStream(ctx context.Context, stream, group string) (err error)
 	XGroupCreateConsumer(ctx context.Context, stream, group, consumer string) error
+	XPending(ctx context.Context, stream, group string) (result *redis.XPending, err error)
+	XInfoStream(ctx context.Context, stream string) (*redis.XInfoStream, error)
+	XClaim(ctx context.Context, args *redis.XClaimArgs) ([]redis.XMessage, error)
+
 	Get(ctx context.Context, key string) (value string, err error)
 	Set(ctx context.Context, key string, value interface{}, exp time.Duration) (err error)
 	SetNX(ctx context.Context, key string, value interface{}, exp time.Duration) (ok bool, err error)
@@ -28,6 +32,10 @@ type Service interface {
 	XGroupCreate(stream, group string) (err error)
 	XGroupCreateMkStream(stream, group string) (err error)
 	XGroupCreateConsumer(stream, group, consumer string) error
+	XPending(stream, group string) (result *redis.XPending, err error)
+	XInfoStream(stream string) (*redis.XInfoStream, error)
+	XClaim(args *redis.XClaimArgs) ([]redis.XMessage, error)
+
 	Get(key string) (value string, err error)
 	Set(key string, value interface{}, exp time.Duration) (err error)
 	SetNX(key string, value interface{}, exp time.Duration) (ok bool, err error)

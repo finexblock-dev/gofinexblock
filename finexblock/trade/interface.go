@@ -30,6 +30,10 @@ type Service interface {
 	SendCancellationStream(order *grpc_order.Order) error
 
 	ReadStream(stream types.Stream, group types.Group, consumer types.Consumer, count int64, block time.Duration) ([]redis.XStream, error)
+	ReadPendingStream(stream types.Stream, group types.Group) (*redis.XPending, error)
+	ReadStreamInfo(stream types.Stream) (*redis.XInfoStream, error)
+
+	ClaimStream(stream types.Stream, group types.Group, consumer types.Consumer, minIdleTime time.Duration, ids []string) ([]redis.XMessage, error)
 }
 
 func NewService(redisClient *redis.ClusterClient) Service {

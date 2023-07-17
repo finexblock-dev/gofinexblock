@@ -10,8 +10,16 @@ type service struct {
 	repository Repository
 }
 
-func newService(cluster *redis.ClusterClient) *service {
-	return &service{repository: newRepository(cluster)}
+func (s *service) XInfoStream(stream string) (*redis.XInfoStream, error) {
+	return s.repository.XInfoStream(context.Background(), stream)
+}
+
+func (s *service) XClaim(args *redis.XClaimArgs) ([]redis.XMessage, error) {
+	return s.repository.XClaim(context.Background(), args)
+}
+
+func (s *service) XPending(stream, group string) (result *redis.XPending, err error) {
+	return s.repository.XPending(context.Background(), stream, group)
 }
 
 func (s *service) XReadGroup(args *redis.XReadGroupArgs) (result []redis.XStream, err error) {
@@ -56,4 +64,8 @@ func (s *service) SetNX(key string, value interface{}, exp time.Duration) (ok bo
 
 func (s *service) Del(key string) (err error) {
 	return s.repository.Del(context.Background(), key)
+}
+
+func newService(cluster *redis.ClusterClient) *service {
+	return &service{repository: newRepository(cluster)}
 }
