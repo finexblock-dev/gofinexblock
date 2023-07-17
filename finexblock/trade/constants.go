@@ -3,6 +3,7 @@ package trade
 import (
 	"encoding/json"
 	"errors"
+	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 )
 
 const (
@@ -15,6 +16,48 @@ var (
 	ErrKeyNotFound     = errors.New("redis: key not found")
 	ErrDecimalParse    = errors.New("decimal parse error")
 	ErrNegativeBalance = errors.New("negative balance")
+
+	ErrMarshalFailed = errors.New("marshal failed")
+
+	ErrMessageNotSent = errors.New("message not sent")
+)
+
+const (
+	MatchStream  types.Stream = "STREAM:MATCH"
+	PlaceStream  types.Stream = "STREAM:PLACEMENT"
+	RefundStream types.Stream = "STREAM:REFUND"
+	ErrorStream  types.Stream = "STREAM:ERROR"
+	CancelStream types.Stream = "STREAM:CANCELLATION"
+
+	MatchGroup  types.Group = "GROUP:MATCH"
+	PlaceGroup  types.Group = "GROUP:PLACEMENT"
+	RefundGroup types.Group = "GROUP:REFUND"
+	ErrorGroup  types.Group = "GROUP:ERROR"
+	CancelGroup types.Group = "GROUP:CANCELLATION"
+
+	MatchConsumer  types.Consumer = "CONSUMER:MATCH"
+	PlaceConsumer  types.Consumer = "CONSUMER:PLACEMENT"
+	RefundConsumer types.Consumer = "CONSUMER:REFUND"
+	ErrorConsumer  types.Consumer = "CONSUMER:ERROR"
+	CancelConsumer types.Consumer = "CONSUMER:CANCELLATION"
+)
+
+const (
+	CaseLimitAskBigger  types.Case = "CASE:LIMIT_ASK_BIGGER"
+	CaseLimitAskEqual   types.Case = "CASE:LIMIT_ASK_EQUAL"
+	CaseLimitAskSmaller types.Case = "CASE:LIMIT_ASK_SMALLER"
+
+	CaseLimitBidBigger  types.Case = "CASE:LIMIT_BID_BIGGER"
+	CaseLimitBidEqual   types.Case = "CASE:LIMIT_BID_EQUAL"
+	CaseLimitBidSmaller types.Case = "CASE:LIMIT_BID_SMALLER"
+
+	CaseMarketBidBigger  types.Case = "CASE:MARKET_BID_BIGGER"
+	CaseMarketBidEqual   types.Case = "CASE:MARKET_BID_EQUAL"
+	CaseMarketBidSmaller types.Case = "CASE:MARKET_BID_SMALLER"
+
+	CaseMarketAskBigger  types.Case = "CASE:MARKET_ASK_BIGGER"
+	CaseMarketAskEqual   types.Case = "CASE:MARKET_ASK_EQUAL"
+	CaseMarketAskSmaller types.Case = "CASE:MARKET_ASK_SMALLER"
 )
 
 // test-accounts uuid

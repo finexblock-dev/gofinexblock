@@ -2,7 +2,6 @@ package dto
 
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
-	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 )
 
 type (
@@ -12,7 +11,7 @@ type (
 	}
 
 	FindAllAdminOutput struct {
-		Result []*types.PartialAdmin
+		Result []*entity.PartialAdmin
 	}
 
 	FindAllAdminSuccessResponse struct {
@@ -33,7 +32,7 @@ type (
 	}
 
 	FindAdminByGradeSwaggerOutput struct {
-		Result []*types.PartialAdmin `json:"result,required"`
+		Result []*entity.PartialAdmin `json:"result,required"`
 	}
 
 	FindAdminByGradeSuccessResponse struct {
