@@ -15,6 +15,10 @@ func newRepository(cluster *redis.ClusterClient) *repository {
 	return &repository{cluster: cluster}
 }
 
+func (r *repository) TxPipeline() redis.Pipeliner {
+	return r.cluster.TxPipeline()
+}
+
 func (r *repository) XReadGroup(ctx context.Context, args *redis.XReadGroupArgs) ([]redis.XStream, error) {
 	return r.cluster.XReadGroup(ctx, args).Result()
 }
