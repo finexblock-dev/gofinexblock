@@ -1,4 +1,4 @@
-package placement
+package cancellation
 
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/event"
