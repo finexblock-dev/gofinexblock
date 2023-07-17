@@ -22,7 +22,7 @@ func (s *service) ReadStream(stream types.Stream, group types.Group, consumer ty
 	return s.cluster.XReadGroup(&redis.XReadGroupArgs{
 		Group:    group.String(),
 		Consumer: consumer.String(),
-		Streams:  []string{stream.String(), "$"},
+		Streams:  []string{stream.String(), ">"},
 		Count:    count,
 		Block:    block,
 	})
