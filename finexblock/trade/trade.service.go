@@ -17,6 +17,10 @@ type service struct {
 	cluster goredis.Service
 }
 
+func (s *service) ReadStream(args *redis.XReadGroupArgs) ([]redis.XStream, error) {
+	return s.cluster.XReadGroup(args)
+}
+
 func (s *service) SendCancellationStream(order *grpc_order.Order) error {
 	var stream map[string]interface{}
 	var err error

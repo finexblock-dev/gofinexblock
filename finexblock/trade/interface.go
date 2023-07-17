@@ -26,6 +26,8 @@ type Service interface {
 	SendRefundStream(order *grpc_order.Order) error
 	SendErrorStream(input *grpc_order.ErrorInput) error
 	SendCancellationStream(order *grpc_order.Order) error
+
+	ReadStream(args *redis.XReadGroupArgs) ([]redis.XStream, error)
 }
 
 func NewService(redisClient *redis.ClusterClient) Service {
