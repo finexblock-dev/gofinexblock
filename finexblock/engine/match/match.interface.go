@@ -2,14 +2,12 @@ package match
 
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
-	"github.com/finexblock-dev/gofinexblock/finexblock/safety"
 	"github.com/finexblock-dev/gofinexblock/finexblock/stream"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/redis/go-redis/v9"
 )
 
 type Engine interface {
-	safety.Subscriber
 	stream.Consumer
 	stream.Claimer
 

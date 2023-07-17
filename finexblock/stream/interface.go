@@ -7,10 +7,12 @@ import (
 )
 
 type Claimer interface {
+	Claim()
 	ReadPendingStream(stream types.Stream, group types.Group) (*redis.XPending, error)
 	ClaimStream(stream types.Stream, group types.Group, consumer types.Consumer, minIdleTime time.Duration, ids []string) ([]redis.XMessage, error)
 }
 
 type Consumer interface {
+	Consume()
 	ReadStream(stream types.Stream, group types.Group, consumer types.Consumer, count int64, block time.Duration) ([]redis.XStream, error)
 }
