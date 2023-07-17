@@ -6,6 +6,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
+	"time"
 )
 
 type Service interface {
@@ -28,7 +29,7 @@ type Service interface {
 	SendErrorStream(input *grpc_order.ErrorInput) error
 	SendCancellationStream(order *grpc_order.Order) error
 
-	ReadStream(args *redis.XReadGroupArgs) ([]redis.XStream, error)
+	ReadStream(stream types.Stream, group types.Group, consumer types.Consumer, count int64, block time.Duration) ([]redis.XStream, error)
 }
 
 func NewService(redisClient *redis.ClusterClient) Service {
