@@ -74,7 +74,7 @@ func (s *service) SendMatchStream(matchCase types.Case, pair *grpc_order.BidAsk)
 	return s.cluster.XAdd(&redis.XAddArgs{
 		Stream: MatchStream.String(),
 		ID:     "*",
-		Values: strings.Split(string(stream), ","),
+		Values: append(strings.Split(string(stream), ","), "case", matchCase.String()),
 	})
 }
 
