@@ -9,9 +9,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
 	"golang.org/x/sync/errgroup"
-	"log"
 	"math"
-	"strings"
 	"time"
 )
 
@@ -48,6 +46,7 @@ func (s *service) ReadStream(stream types.Stream, group types.Group, consumer ty
 }
 
 func (s *service) SendInitializeStream(order *grpc_order.Order) error {
+	var values []string
 	var stream []byte
 	var err error
 
@@ -55,15 +54,18 @@ func (s *service) SendInitializeStream(order *grpc_order.Order) error {
 	if err != nil {
 		return ErrMarshalFailed
 	}
+
+	values = append(values, string(stream))
 
 	return s.cluster.XAdd(&redis.XAddArgs{
 		Stream: InitializeStream.String(),
 		ID:     "*",
-		Values: strings.Split(string(stream), ","),
+		Values: values,
 	})
 }
 
 func (s *service) SendCancellationStream(order *grpc_order.Order) error {
+	var values []string
 	var stream []byte
 	var err error
 
@@ -72,14 +74,17 @@ func (s *service) SendCancellationStream(order *grpc_order.Order) error {
 		return ErrMarshalFailed
 	}
 
+	values = append(values, string(stream))
+
 	return s.cluster.XAdd(&redis.XAddArgs{
 		Stream: CancelStream.String(),
 		ID:     "*",
-		Values: strings.Split(string(stream), ","),
+		Values: values,
 	})
 }
 
 func (s *service) SendMatchStream(matchCase types.Case, pair *grpc_order.BidAsk) error {
+	var values []string
 	var stream []byte
 	var err error
 
@@ -88,17 +93,19 @@ func (s *service) SendMatchStream(matchCase types.Case, pair *grpc_order.BidAsk)
 		return ErrMarshalFailed
 	}
 
-	log.Println(string(stream))
-	log.Println(strings.Split(string(stream), ","))
+	values = append(values, string(stream))
+	values = append(values, matchCase.String())
 
 	return s.cluster.XAdd(&redis.XAddArgs{
 		Stream: MatchStream.String(),
 		ID:     "*",
-		Values: append(strings.Split(string(stream), ","), "case", matchCase.String()),
+		Values: values,
 	})
 }
 
 func (s *service) SendPlacementStream(order *grpc_order.Order) error {
+	var values []string
+
 	var stream []byte
 	var err error
 
@@ -106,15 +113,18 @@ func (s *service) SendPlacementStream(order *grpc_order.Order) error {
 	if err != nil {
 		return ErrMarshalFailed
 	}
+
+	values = append(values, string(stream))
 
 	return s.cluster.XAdd(&redis.XAddArgs{
 		Stream: PlaceStream.String(),
 		ID:     "*",
-		Values: strings.Split(string(stream), ","),
+		Values: values,
 	})
 }
 
 func (s *service) SendRefundStream(order *grpc_order.Order) error {
+	var values []string
 	var stream []byte
 	var err error
 
@@ -123,14 +133,17 @@ func (s *service) SendRefundStream(order *grpc_order.Order) error {
 		return ErrMarshalFailed
 	}
 
+	values = append(values, string(stream))
+
 	return s.cluster.XAdd(&redis.XAddArgs{
 		Stream: RefundStream.String(),
 		ID:     "*",
-		Values: strings.Split(string(stream), ","),
+		Values: values,
 	})
 }
 
 func (s *service) SendErrorStream(input *grpc_order.ErrorInput) error {
+	var values []string
 	var stream []byte
 	var err error
 
@@ -139,10 +152,12 @@ func (s *service) SendErrorStream(input *grpc_order.ErrorInput) error {
 		return ErrMarshalFailed
 	}
 
+	values = append(values, string(stream))
+
 	return s.cluster.XAdd(&redis.XAddArgs{
 		Stream: ErrorStream.String(),
 		ID:     "*",
-		Values: strings.Split(string(stream), ","),
+		Values: values,
 	})
 }
 
