@@ -7,9 +7,9 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-// Queue is interface for order book queue, use Service, and Service use Repository.
+// Manager is interface for order book manager, use Service, and Service use Repository.
 // Receive request and control order book
-type Queue interface {
+type Manager interface {
 	safety.Subscriber
 	LimitAskInsert(ask *grpc_order.Order) (order *grpc_order.Order, err error)
 	LimitBidInsert(bid *grpc_order.Order) (order *grpc_order.Order, err error)
@@ -56,6 +56,6 @@ func NewService(cluster *redis.ClusterClient) Service {
 	return newService(cluster)
 }
 
-func NewQueue(cluster *redis.ClusterClient) Queue {
-	return newQueue(cluster)
+func New(cluster *redis.ClusterClient) Manager {
+	return newManager(cluster)
 }

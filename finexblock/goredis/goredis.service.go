@@ -10,6 +10,14 @@ type service struct {
 	repository Repository
 }
 
+func (s *service) TxPipeline() redis.Pipeliner {
+	return s.repository.TxPipeline()
+}
+
+func (s *service) XAddPipeline(tx redis.Pipeliner, ctx context.Context, args *redis.XAddArgs) (err error) {
+	return s.repository.XAddPipeline(tx, ctx, args)
+}
+
 func (s *service) XInfoStream(stream string) (*redis.XInfoStream, error) {
 	return s.repository.XInfoStream(context.Background(), stream)
 }

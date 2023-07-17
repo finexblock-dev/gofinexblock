@@ -23,19 +23,19 @@ var (
 )
 
 const (
-	MatchStream  types.Stream = "STREAM:MATCH"  // MatchStream for each match case
-	RefundStream types.Stream = "STREAM:REFUND" // RefundStream for refund process
-	ErrorStream  types.Stream = "STREAM:ERROR"  // ErrorStream for log error
+	MatchStream types.Stream = "STREAM:MATCH" // MatchStream for each match case
+	ErrorStream types.Stream = "STREAM:ERROR" // ErrorStream for log error
 
-	CancelStream      types.Stream = "STREAM:CANCELLATION" // CancelStream for send OrderCancellation event
-	PlaceStream       types.Stream = "STREAM:PLACEMENT"    // PlaceStream for send OrderPlacement event
-	InitializeStream  types.Stream = "STREAM:INITIALIZE"   // InitializeStream for send OrderInitialize event
-	FulfillmentStream types.Stream = "STREAM:FULFILLMENT"  // FulfillmentStream for send OrderFulfillment event
-	PartialFillStream types.Stream = "STREAM:PARTIAL_FILL" // PartialFillStream for send OrderPartialFill event
+	CancelStream        types.Stream = "STREAM:CANCELLATION"   // CancelStream for send OrderCancellation event
+	PlaceStream         types.Stream = "STREAM:PLACEMENT"      // PlaceStream for send OrderPlacement event
+	InitializeStream    types.Stream = "STREAM:INITIALIZE"     // InitializeStream for send OrderInitialize event
+	FulfillmentStream   types.Stream = "STREAM:FULFILLMENT"    // FulfillmentStream for send OrderFulfillment event
+	PartialFillStream   types.Stream = "STREAM:PARTIAL_FILL"   // PartialFillStream for send OrderPartialFill event
+	BalanceUpdateStream types.Stream = "STREAM:BALANCE_UPDATE" // BalanceUpdateStream for send BalanceUpdate event
+	OrderMatchingStream types.Stream = "STREAM:ORDER_MATCHING" // OrderMatchingStream for send OrderMatching event
 
-	MatchGroup  types.Group = "GROUP:MATCH"
-	RefundGroup types.Group = "GROUP:REFUND"
-	ErrorGroup  types.Group = "GROUP:ERROR"
+	MatchGroup types.Group = "GROUP:MATCH"
+	ErrorGroup types.Group = "GROUP:ERROR"
 
 	CancelGroup      types.Group = "GROUP:CANCELLATION"
 	PlaceGroup       types.Group = "GROUP:PLACEMENT"
@@ -43,9 +43,8 @@ const (
 	FulfillmentGroup types.Group = "GROUP:FULFILLMENT"
 	PartialFillGroup types.Group = "GROUP:PARTIAL_FILL"
 
-	MatchConsumer  types.Consumer = "CONSUMER:MATCH"
-	RefundConsumer types.Consumer = "CONSUMER:REFUND"
-	ErrorConsumer  types.Consumer = "CONSUMER:ERROR"
+	MatchConsumer types.Consumer = "CONSUMER:MATCH"
+	ErrorConsumer types.Consumer = "CONSUMER:ERROR"
 
 	CancelConsumer      types.Consumer = "CONSUMER:CANCELLATION"
 	PlaceConsumer       types.Consumer = "CONSUMER:PLACEMENT"

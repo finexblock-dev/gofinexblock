@@ -16,7 +16,7 @@ import (
 type service struct {
 	repository                     Repository
 	orderCache                     *cache.DefaultKeyValueStore[grpc_order.Order]
-	tradeService                   trade.Service
+	tradeService                   trade.Manager
 	askMarketPrice, bidMarketPrice decimal.Decimal
 }
 
@@ -24,7 +24,7 @@ func newService(cluster *redis.ClusterClient) *service {
 	return &service{
 		repository:     NewRepository(),
 		orderCache:     cache.NewDefaultKeyValueStore[grpc_order.Order](1000),
-		tradeService:   trade.NewService(cluster),
+		tradeService:   trade.NewManager(cluster),
 		askMarketPrice: decimal.NewFromFloat(math.MaxFloat64),
 		bidMarketPrice: decimal.Zero,
 	}
@@ -45,16 +45,17 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 
 	askUnitPrice := decimal.NewFromFloat(ask.UnitPrice)
 
+	// Set quantity to decimal for safe math
+	quantity := decimal.NewFromFloat(ask.Quantity)
+
 	// case if ask market price is less than ordered unit price
 	if askUnitPrice.GreaterThan(s.bidMarketPrice) {
 		s.repository.PushAsk(ask)
-		if err = s.tradeService.SendPlacementStream(ask); err != nil {
+		placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, askUnitPrice, quantity, ask.OrderType, ask.Symbol)
+		if err = s.tradeService.SendPlacementStream(placement); err != nil {
 			return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
 		}
 	}
-
-	// Set quantity to decimal for safe math
-	quantity := decimal.NewFromFloat(ask.Quantity)
 
 	// Loop while quantity is greater than zero
 	// Break if there is no ask order to match or ask order has fulfilled
@@ -69,7 +70,8 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 			// Push ask order
 			s.repository.PushAsk(ask)
 			// Place order (Send Redis Stream)
-			if err = s.tradeService.SendPlacementStream(ask); err != nil {
+			placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, askUnitPrice, quantity, ask.OrderType, ask.Symbol)
+			if err = s.tradeService.SendPlacementStream(placement); err != nil {
 				return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
 			}
 		}
@@ -86,7 +88,8 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 			s.repository.PushBid(bid)
 
 			// Place order (Send Redis Stream)
-			if err = s.tradeService.SendPlacementStream(ask); err != nil {
+			placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, askUnitPrice, quantity, ask.OrderType, ask.Symbol)
+			if err = s.tradeService.SendPlacementStream(placement); err != nil {
 				return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
 			}
 		}
@@ -139,6 +142,10 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 	}()
 
 	bidUnitPrice := decimal.NewFromFloat(bid.UnitPrice)
+
+	// Set quantity to decimal for safe math
+	quantity := decimal.NewFromFloat(bid.Quantity)
+
 	// If unit price is less than ask market price, place order.
 	if bidUnitPrice.LessThan(s.askMarketPrice) {
 		// Push bid order to heap
@@ -146,13 +153,11 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 		s.repository.PushBid(bid)
 
 		// Send placement event
-		if err = s.tradeService.SendPlacementStream(bid); err != nil {
+		placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, bidUnitPrice, quantity, bid.OrderType, bid.Symbol)
+		if err = s.tradeService.SendPlacementStream(placement); err != nil {
 			return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
 		}
 	}
-
-	// Set quantity to decimal for safe math
-	quantity := decimal.NewFromFloat(bid.Quantity)
 
 	// Loop while quantity is greater than zero
 	// Break if there is no ask order to match or bid order has fulfilled
@@ -166,7 +171,9 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 		if ask == nil {
 			// Place order
 			s.repository.PushBid(bid)
-			if err = s.tradeService.SendPlacementStream(bid); err != nil {
+
+			placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, bidUnitPrice, quantity, bid.OrderType, bid.Symbol)
+			if err = s.tradeService.SendPlacementStream(placement); err != nil {
 				return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
 			}
 		}
@@ -183,7 +190,9 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 			s.repository.PushBid(bid)
 
 			// Send placement event
-			if err = s.tradeService.SendPlacementStream(bid); err != nil {
+			placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, bidUnitPrice, quantity, bid.OrderType, bid.Symbol)
+
+			if err = s.tradeService.SendPlacementStream(placement); err != nil {
 				return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
 			}
 		}
@@ -243,7 +252,8 @@ func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 
 		// If there is no bid order, refund market ask order
 		if bid == nil {
-			if err = s.tradeService.SendRefundStream(ask); err != nil {
+			event := utils.NewBalanceUpdate(ask.UserUUID, quantity, utils.OpponentCurrency(ask.Symbol), grpc_order.Reason_REFUND)
+			if err = s.tradeService.SendBalanceUpdateStream(event); err != nil {
 				return status.Errorf(codes.Internal, "failed to send refund stream: %v", err)
 			}
 		}
@@ -308,7 +318,8 @@ func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
 		// If there is no ask order, refund order
 		if ask == nil {
 			// Refund order
-			if err = s.tradeService.SendRefundStream(bid); err != nil {
+			event := utils.NewBalanceUpdate(bid.UserUUID, quantity, grpc_order.Currency_BTC, grpc_order.Reason_REFUND)
+			if err = s.tradeService.SendBalanceUpdateStream(event); err != nil {
 				return status.Errorf(codes.Internal, "failed to send refund stream: %v", err)
 			}
 		}
@@ -389,7 +400,11 @@ func (s *service) CancelOrder(uuid string) (order *grpc_order.Order, err error) 
 		return nil, ErrOrderTypeNotFound
 	}
 
-	if err = s.tradeService.SendCancellationStream(order); err != nil {
+	// Send Cancellation event
+	quantity := decimal.NewFromFloat(order.Quantity)
+	unitPrice := decimal.NewFromFloat(order.UnitPrice)
+	cancelled := utils.NewOrderCancelled(order.UserUUID, order.OrderUUID, quantity, unitPrice, order.OrderType, order.Symbol)
+	if err = s.tradeService.SendCancellationStream(cancelled); err != nil {
 		pushFunc(order)
 		return nil, ErrOrderCancelFailed
 	}
