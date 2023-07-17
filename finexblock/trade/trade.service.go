@@ -18,8 +18,14 @@ type service struct {
 	cluster goredis.Service
 }
 
-func (s *service) ReadStream(args *redis.XReadGroupArgs) ([]redis.XStream, error) {
-	return s.cluster.XReadGroup(args)
+func (s *service) ReadStream(stream types.Stream, group types.Group, consumer types.Consumer, count int64, block time.Duration) ([]redis.XStream, error) {
+	return s.cluster.XReadGroup(&redis.XReadGroupArgs{
+		Group:    group.String(),
+		Consumer: consumer.String(),
+		Streams:  []string{stream.String(), "$"},
+		Count:    count,
+		Block:    block,
+	})
 }
 
 func (s *service) SendInitializeStream(order *grpc_order.Order) error {
