@@ -10,6 +10,7 @@ import (
 	"github.com/shopspring/decimal"
 	"golang.org/x/sync/errgroup"
 	"math"
+	"strings"
 	"time"
 )
 
@@ -21,8 +22,24 @@ func (s *service) ReadStream(args *redis.XReadGroupArgs) ([]redis.XStream, error
 	return s.cluster.XReadGroup(args)
 }
 
+func (s *service) SendInitializeStream(order *grpc_order.Order) error {
+	var stream []byte
+	var err error
+
+	stream, err = utils.MessagesToJson(order)
+	if err != nil {
+		return ErrMarshalFailed
+	}
+
+	return s.cluster.XAdd(&redis.XAddArgs{
+		Stream: InitializeStream.String(),
+		ID:     "*",
+		Values: strings.Split(string(stream), ","),
+	})
+}
+
 func (s *service) SendCancellationStream(order *grpc_order.Order) error {
-	var stream map[string]interface{}
+	var stream []byte
 	var err error
 
 	stream, err = utils.MessagesToJson(order)
@@ -33,12 +50,12 @@ func (s *service) SendCancellationStream(order *grpc_order.Order) error {
 	return s.cluster.XAdd(&redis.XAddArgs{
 		Stream: CancelStream.String(),
 		ID:     "*",
-		Values: stream,
+		Values: strings.Split(string(stream), ","),
 	})
 }
 
 func (s *service) SendMatchStream(matchCase types.Case, pair *grpc_order.BidAsk) error {
-	var stream map[string]interface{}
+	var stream []byte
 	var err error
 
 	stream, err = utils.MessagesToJson(pair)
@@ -46,17 +63,17 @@ func (s *service) SendMatchStream(matchCase types.Case, pair *grpc_order.BidAsk)
 		return ErrMarshalFailed
 	}
 
-	stream["case"] = matchCase.String()
+	//stream["case"] = matchCase.String()
 
 	return s.cluster.XAdd(&redis.XAddArgs{
 		Stream: MatchStream.String(),
 		ID:     "*",
-		Values: stream,
+		Values: strings.Split(string(stream), ","),
 	})
 }
 
 func (s *service) SendPlacementStream(order *grpc_order.Order) error {
-	var stream map[string]interface{}
+	var stream []byte
 	var err error
 
 	stream, err = utils.MessagesToJson(order)
@@ -67,12 +84,12 @@ func (s *service) SendPlacementStream(order *grpc_order.Order) error {
 	return s.cluster.XAdd(&redis.XAddArgs{
 		Stream: PlaceStream.String(),
 		ID:     "*",
-		Values: stream,
+		Values: strings.Split(string(stream), ","),
 	})
 }
 
 func (s *service) SendRefundStream(order *grpc_order.Order) error {
-	var stream map[string]interface{}
+	var stream []byte
 	var err error
 
 	stream, err = utils.MessagesToJson(order)
@@ -83,12 +100,12 @@ func (s *service) SendRefundStream(order *grpc_order.Order) error {
 	return s.cluster.XAdd(&redis.XAddArgs{
 		Stream: RefundStream.String(),
 		ID:     "*",
-		Values: stream,
+		Values: strings.Split(string(stream), ","),
 	})
 }
 
 func (s *service) SendErrorStream(input *grpc_order.ErrorInput) error {
-	var stream map[string]interface{}
+	var stream []byte
 	var err error
 
 	stream, err = utils.MessagesToJson(input)
@@ -99,7 +116,7 @@ func (s *service) SendErrorStream(input *grpc_order.ErrorInput) error {
 	return s.cluster.XAdd(&redis.XAddArgs{
 		Stream: ErrorStream.String(),
 		ID:     "*",
-		Values: stream,
+		Values: strings.Split(string(stream), ","),
 	})
 }
 

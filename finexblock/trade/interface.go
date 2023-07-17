@@ -21,6 +21,7 @@ type Service interface {
 
 	StreamsInit() error
 
+	SendInitializeStream(order *grpc_order.Order) error
 	SendMatchStream(matchCase types.Case, pair *grpc_order.BidAsk) error
 	SendPlacementStream(order *grpc_order.Order) error
 	SendRefundStream(order *grpc_order.Order) error

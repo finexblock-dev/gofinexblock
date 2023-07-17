@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"encoding/json"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -40,9 +39,8 @@ func ParseMarketOrderInput(input *grpc_order.MarketOrderInput) *grpc_order.Order
 	}
 }
 
-func MessagesToJson(s proto.Message) (map[string]interface{}, error) {
+func MessagesToJson(s proto.Message) ([]byte, error) {
 	var marshaller protojson.MarshalOptions
-	var mapData map[string]interface{}
 	var jsonData []byte
 	var err error
 
@@ -53,10 +51,6 @@ func MessagesToJson(s proto.Message) (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	err = json.Unmarshal(jsonData, &mapData)
-	if err != nil {
-		return nil, err
-	}
+	return jsonData, nil
 
-	return mapData, nil
 }
