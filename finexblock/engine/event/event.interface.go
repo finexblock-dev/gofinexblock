@@ -11,6 +11,6 @@ type Engine interface {
 	stream.Claimer
 }
 
-func New(cluster *redis.ClusterClient, conn *grpc.ClientConn) Engine {
-	return newEngine(cluster, conn)
+func New(cluster *redis.ClusterClient, eventSubscriber, chartServer *grpc.ClientConn) Engine {
+	return newEngine(cluster, eventSubscriber, chartServer)
 }

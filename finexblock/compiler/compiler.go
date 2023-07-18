@@ -10,6 +10,7 @@ import (
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/daemon"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/database"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/engine/cancellation"
+	_ "github.com/finexblock-dev/gofinexblock/finexblock/engine/event"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/engine/match"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/engine/refund"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/entity"
