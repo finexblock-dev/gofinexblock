@@ -21,6 +21,10 @@ type Manager interface {
 	GetOrder(orderUUID string) (string, error)
 	DeleteOrder(orderUUID string) error
 
+	SetBalanceWithTx(tx redis.Pipeliner, ctx context.Context, uuid, currency string, amount decimal.Decimal) error
+	MinusBalanceWithTx(tx redis.Pipeliner, ctx context.Context, uuid, currency string, amount decimal.Decimal) error
+	PlusBalanceWithTx(tx redis.Pipeliner, ctx context.Context, uuid, currency string, amount decimal.Decimal) error
+
 	StreamsInit() error
 
 	SendMatchStream(matchCase types.Case, pair *grpc_order.BidAsk) error
