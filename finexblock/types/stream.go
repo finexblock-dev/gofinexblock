@@ -18,6 +18,12 @@ func (c Consumer) String() string {
 	return string(c)
 }
 
+type Claimer string
+
+func (c Claimer) String() string {
+	return string(c)
+}
+
 type Case string
 
 func (c Case) String() string {

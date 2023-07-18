@@ -14,6 +14,7 @@ import (
 func (e *engine) ParseMessage(message redis.XMessage) (_case types.Case, pair *grpc_order.BidAsk, err error) {
 	var bytes []byte
 	var data = make(map[string]string)
+	pair = new(grpc_order.BidAsk)
 
 	bytes, err = json.Marshal(message.Values)
 	if err != nil {

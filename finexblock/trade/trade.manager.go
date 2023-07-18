@@ -51,7 +51,7 @@ func (m *manager) SendPlacementStreamPipeline(tx redis.Pipeliner, ctx context.Co
 	}
 
 	return m.cluster.XAddPipeline(tx, ctx, &redis.XAddArgs{
-		Stream: PlaceStream.String(),
+		Stream: OrderPlacementStream.String(),
 		ID:     "*",
 		Values: []string{"event", string(stream)},
 	})
@@ -83,7 +83,7 @@ func (m *manager) SendCancellationStreamPipeline(tx redis.Pipeliner, ctx context
 	}
 
 	return m.cluster.XAddPipeline(tx, ctx, &redis.XAddArgs{
-		Stream: CancelStream.String(),
+		Stream: OrderCancellationStream.String(),
 		ID:     "*",
 		Values: []string{"event", string(stream)},
 	})
@@ -131,7 +131,7 @@ func (m *manager) SendOrderFulfillmentStreamPipeline(tx redis.Pipeliner, ctx con
 	}
 
 	return m.cluster.XAddPipeline(tx, ctx, &redis.XAddArgs{
-		Stream: FulfillmentStream.String(),
+		Stream: OrderFulfillmentStream.String(),
 		ID:     "*",
 		Values: []string{"event", string(stream)},
 	})
@@ -147,7 +147,7 @@ func (m *manager) SendOrderFulfillmentStream(event *grpc_order.OrderFulfillment)
 	}
 
 	return m.cluster.XAdd(&redis.XAddArgs{
-		Stream: FulfillmentStream.String(),
+		Stream: OrderFulfillmentStream.String(),
 		ID:     "*",
 		Values: []string{"event", string(stream)},
 	})
@@ -163,7 +163,7 @@ func (m *manager) SendOrderPartialFillStreamPipeline(tx redis.Pipeliner, ctx con
 	}
 
 	return m.cluster.XAddPipeline(tx, ctx, &redis.XAddArgs{
-		Stream: PartialFillStream.String(),
+		Stream: OrderPartialFillStream.String(),
 		ID:     "*",
 		Values: []string{"event", string(stream)},
 	})
@@ -179,7 +179,7 @@ func (m *manager) SendOrderPartialFillStream(event *grpc_order.OrderPartialFill)
 	}
 
 	return m.cluster.XAdd(&redis.XAddArgs{
-		Stream: PartialFillStream.String(),
+		Stream: OrderPartialFillStream.String(),
 		ID:     "*",
 		Values: []string{"event", string(stream)},
 	})
@@ -227,7 +227,7 @@ func (m *manager) SendInitializeStreamPipeline(tx redis.Pipeliner, ctx context.C
 	}
 
 	return m.cluster.XAddPipeline(tx, ctx, &redis.XAddArgs{
-		Stream: InitializeStream.String(),
+		Stream: OrderInitializeStream.String(),
 		ID:     "*",
 		Values: []string{"event", string(stream)},
 	})
@@ -243,7 +243,7 @@ func (m *manager) SendInitializeStream(event *grpc_order.OrderInitialize) error 
 	}
 
 	return m.cluster.XAdd(&redis.XAddArgs{
-		Stream: InitializeStream.String(),
+		Stream: OrderInitializeStream.String(),
 		ID:     "*",
 		Values: []string{"event", string(stream)},
 	})
@@ -287,7 +287,7 @@ func (m *manager) SendCancellationStream(event *grpc_order.OrderCancelled) error
 	}
 
 	return m.cluster.XAdd(&redis.XAddArgs{
-		Stream: CancelStream.String(),
+		Stream: OrderCancellationStream.String(),
 		ID:     "*",
 		Values: []string{"event", string(stream)},
 	})
@@ -319,7 +319,7 @@ func (m *manager) SendPlacementStream(event *grpc_order.OrderPlacement) error {
 	}
 
 	return m.cluster.XAdd(&redis.XAddArgs{
-		Stream: PlaceStream.String(),
+		Stream: OrderPlacementStream.String(),
 		ID:     "*",
 		Values: []string{"event", string(stream)},
 	})
@@ -460,16 +460,16 @@ func (m *manager) StreamsInit() error {
 		return m.cluster.XGroupCreateMkStream(MatchStream.String(), MatchGroup.String())
 	})
 	group.Go(func() error {
-		return m.cluster.XGroupCreateMkStream(PlaceStream.String(), PlaceGroup.String())
+		return m.cluster.XGroupCreateMkStream(OrderPlacementStream.String(), OrderPlacementGroup.String())
 	})
 	group.Go(func() error {
 		return m.cluster.XGroupCreateMkStream(ErrorStream.String(), ErrorGroup.String())
 	})
 	group.Go(func() error {
-		return m.cluster.XGroupCreateMkStream(CancelStream.String(), CancelGroup.String())
+		return m.cluster.XGroupCreateMkStream(OrderCancellationStream.String(), OrderCancellationGroup.String())
 	})
 	group.Go(func() error {
-		return m.cluster.XGroupCreateMkStream(InitializeStream.String(), InitializeGroup.String())
+		return m.cluster.XGroupCreateMkStream(OrderInitializeStream.String(), OrderInitializeGroup.String())
 	})
 
 	if err = group.Wait(); err != nil {
@@ -482,13 +482,13 @@ func (m *manager) StreamsInit() error {
 		return m.cluster.XGroupCreateConsumer(MatchStream.String(), MatchGroup.String(), MatchConsumer.String())
 	})
 	group.Go(func() error {
-		return m.cluster.XGroupCreateConsumer(PlaceStream.String(), PlaceGroup.String(), PlaceConsumer.String())
+		return m.cluster.XGroupCreateConsumer(OrderPlacementStream.String(), OrderPlacementGroup.String(), OrderPlacementConsumer.String())
 	})
 	group.Go(func() error {
 		return m.cluster.XGroupCreateConsumer(ErrorStream.String(), ErrorGroup.String(), ErrorConsumer.String())
 	})
 	group.Go(func() error {
-		return m.cluster.XGroupCreateConsumer(InitializeStream.String(), InitializeGroup.String(), InitializeConsumer.String())
+		return m.cluster.XGroupCreateConsumer(OrderInitializeStream.String(), OrderInitializeGroup.String(), OrderInitializeConsumer.String())
 	})
 
 	return group.Wait()

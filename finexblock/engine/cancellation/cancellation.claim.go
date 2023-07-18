@@ -1,4 +1,4 @@
-package match
+package cancellation
 
 import (
 	"fmt"
@@ -12,15 +12,14 @@ import (
 
 func (e *engine) Claim() {
 	for {
-		var event *grpc_order.BidAsk
 		var xMessages []redis.XMessage
 		var xPending *redis.XPending
-		var _case types.Case
 		var err error
 
-		var claimer = e.Claimer(trade.OrderMatchingClaimer)
+		var event = new(grpc_order.OrderCancelled)
+		var claimer = e.Claimer(trade.OrderCancellationClaimer)
 
-		xPending, err = e.ReadPendingStream(trade.OrderMatchingStream, trade.OrderMatchingGroup)
+		xPending, err = e.ReadPendingStream(trade.OrderCancellationStream, trade.OrderCancellationGroup)
 		if err != nil {
 			continue
 		}
@@ -29,21 +28,20 @@ func (e *engine) Claim() {
 			continue
 		}
 
-		xMessages, err = e.ClaimStream(trade.OrderMatchingStream, trade.OrderMatchingGroup, claimer, time.Minute, []string{xPending.Lower})
+		xMessages, err = e.ClaimStream(trade.OrderCancellationStream, trade.OrderCancellationGroup, claimer, time.Minute, []string{xPending.Lower})
 		if err != nil {
 			continue
 		}
 
 		for _, xMessage := range xMessages {
 			go func(message redis.XMessage) {
-				_case, event, err = e.ParseMessage(message)
+				event, err = e.ParseMessage(message)
 				if err != nil {
 					// FIXME: error handling
 					return
 				}
 
-				if err = e.Do(_case, event); err != nil {
-					// FIXME: error handling
+				if err = e.Do(event); err != nil {
 					return
 				}
 
@@ -54,10 +52,6 @@ func (e *engine) Claim() {
 	}
 }
 
-func (e *engine) ReadPendingStream(stream types.Stream, group types.Group) (*redis.XPending, error) {
-	return e.tradeManager.ReadPendingStream(stream, group)
-}
-
 func (e *engine) Claimer(claimer types.Claimer) types.Claimer {
 	var privateIP string
 	var err error
@@ -66,6 +60,10 @@ func (e *engine) Claimer(claimer types.Claimer) types.Claimer {
 		panic(err)
 	}
 	return types.Claimer(fmt.Sprintf("%s:%s", claimer.String(), privateIP))
+}
+
+func (e *engine) ReadPendingStream(stream types.Stream, group types.Group) (*redis.XPending, error) {
+	return e.tradeManager.ReadPendingStream(stream, group)
 }
 
 func (e *engine) ClaimStream(stream types.Stream, group types.Group, claimer types.Claimer, minIdleTime time.Duration, ids []string) ([]redis.XMessage, error) {
