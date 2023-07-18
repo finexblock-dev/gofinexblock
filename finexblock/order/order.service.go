@@ -23,6 +23,17 @@ type orderService struct {
 	userCache       *cache.DefaultKeyValueStore[entity.User]
 }
 
+func (o *orderService) FindSnapshotByOrderSymbolID(symbolID uint) (result *entity.SnapshotOrderBook, err error) {
+	if err = o.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = o.orderRepository.FindSnapshotByOrderSymbolID(tx, symbolID)
+		return err
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (o *orderService) InsertSnapshot(symbolID uint, bid, ask []*grpc_order.Order) (result *entity.SnapshotOrderBook, err error) {
 	if err = o.Conn().Transaction(func(tx *gorm.DB) error {
 		var bidMarshal, askMarshal []byte

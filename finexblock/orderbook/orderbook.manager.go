@@ -6,7 +6,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type queue struct {
+type manager struct {
 	service Service
 
 	limitAsk  chan *types.ErrReceiveContext[*grpc_order.Order] // limitAsk is channel for limit ask order
@@ -17,8 +17,8 @@ type queue struct {
 	cancel chan *types.ResultReceiveContext[string, *grpc_order.Order] // cancel is channel for cancel order
 }
 
-func newQueue(cluster *redis.ClusterClient) *queue {
-	return &queue{
+func newManager(cluster *redis.ClusterClient) *manager {
+	return &manager{
 		service:   NewService(cluster),
 		limitAsk:  make(chan *types.ErrReceiveContext[*grpc_order.Order]),
 		marketAsk: make(chan *types.ErrReceiveContext[*grpc_order.Order]),
@@ -28,79 +28,83 @@ func newQueue(cluster *redis.ClusterClient) *queue {
 	}
 }
 
-func (q *queue) Subscribe() {
+func (m *manager) Subscribe() {
 
 	for {
 		select {
-		case ctx := <-q.limitAsk:
-			ctx.Tunnel <- q.service.LimitAsk(ctx.Value)
-		case ctx := <-q.limitBid:
-			ctx.Tunnel <- q.service.LimitBid(ctx.Value)
-		case ctx := <-q.marketAsk:
-			ctx.Tunnel <- q.service.MarketAsk(ctx.Value)
-		case ctx := <-q.marketBid:
-			ctx.Tunnel <- q.service.MarketBid(ctx.Value)
-		case ctx := <-q.cancel:
-			order, _ := q.service.CancelOrder(ctx.Value)
+		case ctx := <-m.limitAsk:
+			ctx.Tunnel <- m.service.LimitAsk(ctx.Value)
+		case ctx := <-m.limitBid:
+			ctx.Tunnel <- m.service.LimitBid(ctx.Value)
+		case ctx := <-m.marketAsk:
+			ctx.Tunnel <- m.service.MarketAsk(ctx.Value)
+		case ctx := <-m.marketBid:
+			ctx.Tunnel <- m.service.MarketBid(ctx.Value)
+		case ctx := <-m.cancel:
+			order, _ := m.service.CancelOrder(ctx.Value)
 			ctx.Tunnel <- order
 		}
 	}
 }
 
-func (q *queue) LimitAskInsert(ask *grpc_order.Order) (order *grpc_order.Order, err error) {
+func (m *manager) LoadOrderBook() (err error) {
+	return m.service.LoadOrderBook()
+}
+
+func (m *manager) LimitAskInsert(ask *grpc_order.Order) (order *grpc_order.Order, err error) {
 	ctx := &types.ErrReceiveContext[*grpc_order.Order]{
 		Tunnel: make(chan error),
 		Value:  ask,
 	}
-	q.limitAsk <- ctx
+	m.limitAsk <- ctx
 	if <-ctx.Tunnel != nil {
 		return nil, err
 	}
 	return ask, nil
 }
 
-func (q *queue) LimitBidInsert(bid *grpc_order.Order) (order *grpc_order.Order, err error) {
+func (m *manager) LimitBidInsert(bid *grpc_order.Order) (order *grpc_order.Order, err error) {
 	ctx := &types.ErrReceiveContext[*grpc_order.Order]{
 		Tunnel: make(chan error),
 		Value:  bid,
 	}
-	q.limitBid <- ctx
+	m.limitBid <- ctx
 	if <-ctx.Tunnel != nil {
 		return nil, err
 	}
 	return bid, nil
 }
 
-func (q *queue) MarketAskInsert(ask *grpc_order.Order) (order *grpc_order.Order, err error) {
+func (m *manager) MarketAskInsert(ask *grpc_order.Order) (order *grpc_order.Order, err error) {
 	ctx := &types.ErrReceiveContext[*grpc_order.Order]{
 		Tunnel: make(chan error),
 		Value:  ask,
 	}
-	q.marketAsk <- ctx
+	m.marketAsk <- ctx
 	if <-ctx.Tunnel != nil {
 		return nil, err
 	}
 	return ask, nil
 }
 
-func (q *queue) MarketBidInsert(bid *grpc_order.Order) (order *grpc_order.Order, err error) {
+func (m *manager) MarketBidInsert(bid *grpc_order.Order) (order *grpc_order.Order, err error) {
 	ctx := &types.ErrReceiveContext[*grpc_order.Order]{
 		Tunnel: make(chan error),
 		Value:  bid,
 	}
-	q.marketBid <- ctx
+	m.marketBid <- ctx
 	if <-ctx.Tunnel != nil {
 		return nil, err
 	}
 	return bid, nil
 }
 
-func (q *queue) CancelOrder(uuid string) (order *grpc_order.Order, err error) {
+func (m *manager) CancelOrder(uuid string) (order *grpc_order.Order, err error) {
 	ctx := &types.ResultReceiveContext[string, *grpc_order.Order]{
 		Tunnel: make(chan *grpc_order.Order),
 		Value:  uuid,
 	}
-	q.cancel <- ctx
+	m.cancel <- ctx
 	order = <-ctx.Tunnel
 	if order == nil {
 		return nil, ErrOrderCancelFailed
@@ -108,10 +112,10 @@ func (q *queue) CancelOrder(uuid string) (order *grpc_order.Order, err error) {
 	return order, nil
 }
 
-func (q *queue) BidOrder() (bids []*grpc_order.Order, err error) {
-	return q.service.BidOrder()
+func (m *manager) BidOrder() (bids []*grpc_order.Order, err error) {
+	return m.service.BidOrder()
 }
 
-func (q *queue) AskOrder() (asks []*grpc_order.Order, err error) {
-	return q.service.AskOrder()
+func (m *manager) AskOrder() (asks []*grpc_order.Order, err error) {
+	return m.service.AskOrder()
 }
