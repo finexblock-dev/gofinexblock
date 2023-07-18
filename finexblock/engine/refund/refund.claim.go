@@ -1,4 +1,4 @@
-package cancellation
+package refund
 
 import (
 	"fmt"
@@ -16,10 +16,10 @@ func (e *engine) Claim() {
 		var xPending *redis.XPending
 		var err error
 
-		var event = new(grpc_order.OrderCancelled)
-		var claimer = e.Claimer(trade.OrderCancellationClaimer)
+		var event = new(grpc_order.BalanceUpdate)
+		var claimer = e.Claimer(trade.BalanceUpdateClaimer)
 
-		xPending, err = e.ReadPendingStream(trade.OrderCancellationStream, trade.OrderCancellationGroup)
+		xPending, err = e.ReadPendingStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup)
 		if err != nil {
 			continue
 		}
@@ -28,7 +28,7 @@ func (e *engine) Claim() {
 			continue
 		}
 
-		xMessages, err = e.ClaimStream(trade.OrderCancellationStream, trade.OrderCancellationGroup, claimer, time.Minute, []string{xPending.Lower})
+		xMessages, err = e.ClaimStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, claimer, time.Minute, []string{xPending.Lower})
 		if err != nil {
 			continue
 		}
@@ -46,7 +46,7 @@ func (e *engine) Claim() {
 				}
 
 				// FIXME: error handling
-				_ = e.tradeManager.AckStream(trade.OrderCancellationStream, trade.OrderCancellationGroup, message.ID)
+				_ = e.tradeManager.AckStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, message.ID)
 			}(xMessage)
 		}
 	}

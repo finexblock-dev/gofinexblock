@@ -18,6 +18,13 @@ func (r *repository) FindServerByIP(tx *gorm.DB, ip string) (result *entity.Fine
 	return result, nil
 }
 
+func (r *repository) FindServerByID(tx *gorm.DB, id uint) (result *entity.FinexblockServer, err error) {
+	if err := tx.Table(result.TableName()).Where("id = ?", id).First(&result).Error; err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (r *repository) FindServerByName(tx *gorm.DB, name string) (*entity.FinexblockServer, error) {
 	var _server *entity.FinexblockServer
 	if err := tx.Table(_server.TableName()).Where("name = ?", name).First(&_server).Error; err != nil {

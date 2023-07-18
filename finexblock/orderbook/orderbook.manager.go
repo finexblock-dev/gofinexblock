@@ -47,6 +47,10 @@ func (m *manager) Subscribe() {
 	}
 }
 
+func (m *manager) LoadOrderBook() (err error) {
+	return m.service.LoadOrderBook()
+}
+
 func (m *manager) LimitAskInsert(ask *grpc_order.Order) (order *grpc_order.Order, err error) {
 	ctx := &types.ErrReceiveContext[*grpc_order.Order]{
 		Tunnel: make(chan error),

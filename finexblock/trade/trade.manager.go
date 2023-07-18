@@ -17,6 +17,54 @@ type manager struct {
 	cluster goredis.Service
 }
 
+func (m *manager) SendMarketOrderMatchingStream(event *grpc_order.MarketOrderMatching) error {
+	var stream []byte
+	var err error
+
+	stream, err = utils.MessagesToJson(event)
+	if err != nil {
+		return ErrMarshalFailed
+	}
+
+	return m.cluster.XAdd(&redis.XAddArgs{
+		Stream: MarketOrderMatchingStream.String(),
+		ID:     "*",
+		Values: []string{"event", string(stream)},
+	})
+}
+
+func (m *manager) SendMarketOrderMatchingStreamPipeline(tx redis.Pipeliner, ctx context.Context, event *grpc_order.MarketOrderMatching) error {
+	var stream []byte
+	var err error
+
+	stream, err = utils.MessagesToJson(event)
+	if err != nil {
+		return ErrMarshalFailed
+	}
+
+	return m.cluster.XAddPipeline(tx, ctx, &redis.XAddArgs{
+		Stream: MarketOrderMatchingStream.String(),
+		ID:     "*",
+		Values: []string{"event", string(stream)},
+	})
+}
+
+func (m *manager) ReadStreams(stream []types.Stream, group types.Group, consumer types.Consumer, count int64, block time.Duration) ([]redis.XStream, error) {
+	var values []string
+
+	for _, s := range stream {
+		values = append(values, s.String(), ">")
+	}
+
+	return m.cluster.XReadGroup(&redis.XReadGroupArgs{
+		Group:    group.String(),
+		Consumer: consumer.String(),
+		Streams:  values,
+		Count:    count,
+		Block:    block,
+	})
+}
+
 func (m *manager) AckStream(stream types.Stream, group types.Group, id string) (err error) {
 	return m.cluster.XAck(stream.String(), group.String(), id)
 }
@@ -459,17 +507,41 @@ func (m *manager) StreamsInit() error {
 	group.Go(func() error {
 		return m.cluster.XGroupCreateMkStream(MatchStream.String(), MatchGroup.String())
 	})
-	group.Go(func() error {
-		return m.cluster.XGroupCreateMkStream(OrderPlacementStream.String(), OrderPlacementGroup.String())
-	})
+
 	group.Go(func() error {
 		return m.cluster.XGroupCreateMkStream(ErrorStream.String(), ErrorGroup.String())
 	})
+
 	group.Go(func() error {
 		return m.cluster.XGroupCreateMkStream(OrderCancellationStream.String(), OrderCancellationGroup.String())
 	})
+
 	group.Go(func() error {
-		return m.cluster.XGroupCreateMkStream(OrderInitializeStream.String(), OrderInitializeGroup.String())
+		return m.cluster.XGroupCreateMkStream(BalanceUpdateStream.String(), BalanceUpdateGroup.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateMkStream(OrderPlacementStream.String(), EventGroup.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateMkStream(OrderInitializeStream.String(), EventGroup.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateMkStream(OrderFulfillmentStream.String(), EventGroup.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateMkStream(OrderPartialFillStream.String(), EventGroup.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateMkStream(OrderMatchingStream.String(), EventGroup.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateMkStream(MarketOrderMatchingStream.String(), EventGroup.String())
 	})
 
 	if err = group.Wait(); err != nil {
@@ -481,19 +553,91 @@ func (m *manager) StreamsInit() error {
 	group.Go(func() error {
 		return m.cluster.XGroupCreateConsumer(MatchStream.String(), MatchGroup.String(), MatchConsumer.String())
 	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(MatchStream.String(), MatchGroup.String(), MatchClaimer.String())
+	})
+
 	group.Go(func() error {
 		return m.cluster.XGroupCreateConsumer(OrderPlacementStream.String(), OrderPlacementGroup.String(), OrderPlacementConsumer.String())
 	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(OrderPlacementStream.String(), OrderPlacementGroup.String(), OrderPlacementClaimer.String())
+	})
+
 	group.Go(func() error {
 		return m.cluster.XGroupCreateConsumer(ErrorStream.String(), ErrorGroup.String(), ErrorConsumer.String())
 	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(ErrorStream.String(), ErrorGroup.String(), ErrorClaimer.String())
+	})
+
 	group.Go(func() error {
 		return m.cluster.XGroupCreateConsumer(OrderInitializeStream.String(), OrderInitializeGroup.String(), OrderInitializeConsumer.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(OrderInitializeStream.String(), OrderInitializeGroup.String(), OrderInitializeClaimer.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(BalanceUpdateStream.String(), BalanceUpdateGroup.String(), BalanceUpdateConsumer.String())
+
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(BalanceUpdateStream.String(), BalanceUpdateGroup.String(), BalanceUpdateClaimer.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(OrderPlacementStream.String(), EventGroup.String(), EventConsumer.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(OrderPlacementStream.String(), EventGroup.String(), EventClaimer.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(OrderInitializeStream.String(), EventGroup.String(), EventConsumer.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(OrderInitializeStream.String(), EventGroup.String(), EventClaimer.String())
+	})
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(OrderFulfillmentStream.String(), EventGroup.String(), EventConsumer.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(OrderFulfillmentStream.String(), EventGroup.String(), EventClaimer.String())
+	})
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(OrderPartialFillStream.String(), EventGroup.String(), EventConsumer.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(OrderPartialFillStream.String(), EventGroup.String(), EventClaimer.String())
+	})
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(OrderMatchingStream.String(), EventGroup.String(), EventConsumer.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(OrderMatchingStream.String(), EventGroup.String(), EventClaimer.String())
+	})
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(MarketOrderMatchingStream.String(), EventGroup.String(), EventConsumer.String())
+	})
+
+	group.Go(func() error {
+		return m.cluster.XGroupCreateConsumer(MarketOrderMatchingStream.String(), EventGroup.String(), EventClaimer.String())
 	})
 
 	return group.Wait()
 }
 
-func newService(cluster goredis.Service) *manager {
+func newManager(cluster goredis.Service) *manager {
 	return &manager{cluster: cluster}
 }

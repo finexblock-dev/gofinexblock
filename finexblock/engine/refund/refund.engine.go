@@ -1,4 +1,4 @@
-package cancellation
+package refund
 
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"

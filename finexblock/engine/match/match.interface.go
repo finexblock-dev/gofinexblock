@@ -8,7 +8,7 @@ import (
 )
 
 type Engine interface {
-	stream.Consumer
+	stream.SingleStreamConsumer
 	stream.Claimer
 
 	ParseMessage(message redis.XMessage) (_case types.Case, pair *grpc_order.BidAsk, err error)

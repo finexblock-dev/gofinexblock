@@ -3,8 +3,6 @@ package utils
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"github.com/shopspring/decimal"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -39,22 +37,6 @@ func ParseMarketOrderInput(input *grpc_order.MarketOrderInput) *grpc_order.Order
 		Symbol:    input.GetSymbol(),
 		MakeTime:  input.GetMakeTime(),
 	}
-}
-
-func MessagesToJson(s proto.Message) ([]byte, error) {
-	var marshaller protojson.MarshalOptions
-	var jsonData []byte
-	var err error
-
-	marshaller = protojson.MarshalOptions{UseProtoNames: true}
-
-	jsonData, err = marshaller.Marshal(s)
-	if err != nil {
-		return nil, err
-	}
-
-	return jsonData, nil
-
 }
 
 func NewOrderFulfillment(

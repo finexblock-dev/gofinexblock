@@ -1,20 +1,28 @@
 package orderbook
 
 import (
+	"encoding/json"
 	"github.com/finexblock-dev/gofinexblock/finexblock/cache"
+	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
+	"github.com/finexblock-dev/gofinexblock/finexblock/goaws"
+	"github.com/finexblock-dev/gofinexblock/finexblock/instance"
+	"github.com/finexblock-dev/gofinexblock/finexblock/order"
 	"github.com/finexblock-dev/gofinexblock/finexblock/trade"
 	"github.com/finexblock-dev/gofinexblock/finexblock/utils"
 	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 	"math"
 	"time"
 )
 
 type service struct {
-	repository                     Repository
+	orderBookRepository            Repository
+	instanceRepository             instance.Repository
+	orderRepository                order.Repository
 	orderCache                     *cache.DefaultKeyValueStore[grpc_order.Order]
 	tradeService                   trade.Manager
 	askMarketPrice, bidMarketPrice decimal.Decimal
@@ -22,18 +30,73 @@ type service struct {
 
 func newService(cluster *redis.ClusterClient) *service {
 	return &service{
-		repository:     NewRepository(),
-		orderCache:     cache.NewDefaultKeyValueStore[grpc_order.Order](1000),
-		tradeService:   trade.NewManager(cluster),
-		askMarketPrice: decimal.NewFromFloat(math.MaxFloat64),
-		bidMarketPrice: decimal.Zero,
+		orderBookRepository: NewRepository(),
+		orderCache:          cache.NewDefaultKeyValueStore[grpc_order.Order](1000),
+		tradeService:        trade.New(cluster),
+		askMarketPrice:      decimal.NewFromFloat(math.MaxFloat64),
+		bidMarketPrice:      decimal.Zero,
 	}
+}
+
+func (s *service) LoadOrderBook() (err error) {
+	var privateIP string
+	var ipModel *entity.FinexblockServerIP
+	var serverModel *entity.FinexblockServer
+	var symbol *entity.OrderSymbol
+	var snapshot *entity.SnapshotOrderBook
+	var askOrderList []*grpc_order.Order
+	var bidOrderList []*grpc_order.Order
+
+	privateIP, err = goaws.OwnPrivateIP()
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to get private ip: %v", err)
+	}
+
+	return s.instanceRepository.Conn().Transaction(func(tx *gorm.DB) error {
+		ipModel, err = s.instanceRepository.FindServerByIP(tx, privateIP)
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to find server by ip: %v", err)
+		}
+
+		// Find server by id
+		serverModel, err = s.instanceRepository.FindServerByID(tx, ipModel.ServerID)
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to find server by id: %v", err)
+		}
+
+		if serverModel.Name[:3] != "BTC" {
+			return status.Errorf(codes.Internal, "server name is not valid: %v", serverModel.Name)
+		}
+
+		// Find order symbol
+		symbol, err = s.orderRepository.FindSymbolByName(tx, serverModel.Name)
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to find order symbol: %v", err)
+		}
+
+		// Find snapshot by server order symbol id
+		snapshot, err = s.orderRepository.FindSnapshotByOrderSymbolID(tx, symbol.ID)
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to find snapshot: %v", err)
+		}
+
+		if err = json.Unmarshal([]byte(snapshot.AskOrderList), &askOrderList); err != nil {
+			return status.Errorf(codes.Internal, "failed to unmarshal ask order list: %v", err)
+		}
+
+		if err = json.Unmarshal([]byte(snapshot.BidOrderList), &bidOrderList); err != nil {
+			return status.Errorf(codes.Internal, "failed to unmarshal bid order list: %v", err)
+		}
+
+		// Load order book
+		return s.orderBookRepository.LoadOrderBook(askOrderList, bidOrderList)
+	})
 }
 
 func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 	defer func() {
-		s.askMarketPrice = s.repository.AskMarketPrice()
-		s.bidMarketPrice = s.repository.BidMarketPrice()
+		s.askMarketPrice = s.orderBookRepository.AskMarketPrice()
+		s.bidMarketPrice = s.orderBookRepository.BidMarketPrice()
 
 		// Cache order information
 		// FIXME: expiration time is 4 week now.
@@ -50,7 +113,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 
 	// case if ask market price is less than ordered unit price
 	if askUnitPrice.GreaterThan(s.bidMarketPrice) {
-		s.repository.PushAsk(ask)
+		s.orderBookRepository.PushAsk(ask)
 		placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, askUnitPrice, quantity, ask.OrderType, ask.Symbol)
 		if err = s.tradeService.SendPlacementStream(placement); err != nil {
 			return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
@@ -63,12 +126,12 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 		ask.Quantity = quantity.InexactFloat64()
 
 		// Get bid order to match
-		bid := s.repository.PopBid()
+		bid := s.orderBookRepository.PopBid()
 
 		// If there is no bid order, just place order
 		if bid == nil {
 			// Push ask order
-			s.repository.PushAsk(ask)
+			s.orderBookRepository.PushAsk(ask)
 			// Place order (Send Redis Stream)
 			placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, askUnitPrice, quantity, ask.OrderType, ask.Symbol)
 			if err = s.tradeService.SendPlacementStream(placement); err != nil {
@@ -81,11 +144,11 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 		if askUnitPrice.GreaterThan(bidUnitPrice) {
 			// Push ask order
 			// Update market price or not
-			s.repository.PushAsk(ask)
+			s.orderBookRepository.PushAsk(ask)
 
 			// Push bid order
 			// Update market price or not
-			s.repository.PushBid(bid)
+			s.orderBookRepository.PushBid(bid)
 
 			// Place order (Send Redis Stream)
 			placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, askUnitPrice, quantity, ask.OrderType, ask.Symbol)
@@ -103,7 +166,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 		case bidQuantity.GreaterThan(quantity):
 			// Minus bid order quantity
 			bid.Quantity = bidQuantity.Sub(quantity).InexactFloat64()
-			s.repository.PushBid(bid)
+			s.orderBookRepository.PushBid(bid)
 			// Place order (Send Redis Stream)
 			if err = s.tradeService.SendMatchStream(trade.CaseLimitAskBigger, &grpc_order.BidAsk{Ask: ask, Bid: bid}); err != nil {
 				return status.Errorf(codes.Internal, "failed to send match stream: %v", err)
@@ -130,8 +193,8 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 
 func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 	defer func() {
-		s.askMarketPrice = s.repository.AskMarketPrice()
-		s.bidMarketPrice = s.repository.BidMarketPrice()
+		s.askMarketPrice = s.orderBookRepository.AskMarketPrice()
+		s.bidMarketPrice = s.orderBookRepository.BidMarketPrice()
 
 		// Cache order information
 		// FIXME: expiration time is 4 week now.
@@ -150,7 +213,7 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 	if bidUnitPrice.LessThan(s.askMarketPrice) {
 		// Push bid order to heap
 		// Update market price or not
-		s.repository.PushBid(bid)
+		s.orderBookRepository.PushBid(bid)
 
 		// Send placement event
 		placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, bidUnitPrice, quantity, bid.OrderType, bid.Symbol)
@@ -165,12 +228,12 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 		bid.Quantity = quantity.InexactFloat64()
 
 		// Get ask order to match
-		ask := s.repository.PopAsk()
+		ask := s.orderBookRepository.PopAsk()
 
 		// If there is no ask order, just place order
 		if ask == nil {
 			// Place order
-			s.repository.PushBid(bid)
+			s.orderBookRepository.PushBid(bid)
 
 			placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, bidUnitPrice, quantity, bid.OrderType, bid.Symbol)
 			if err = s.tradeService.SendPlacementStream(placement); err != nil {
@@ -183,11 +246,11 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 		if askUnitPrice.GreaterThan(bidUnitPrice) {
 			// Push ask order
 			// Update market price or not
-			s.repository.PushAsk(ask)
+			s.orderBookRepository.PushAsk(ask)
 
 			// Push bid order
 			// Update market price or not
-			s.repository.PushBid(bid)
+			s.orderBookRepository.PushBid(bid)
 
 			// Send placement event
 			placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, bidUnitPrice, quantity, bid.OrderType, bid.Symbol)
@@ -208,7 +271,7 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 
 			// Push ask order
 			// Update market price or not
-			s.repository.PushAsk(ask)
+			s.orderBookRepository.PushAsk(ask)
 
 			if err = s.tradeService.SendMatchStream(trade.CaseLimitBidBigger, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
 				return status.Errorf(codes.Internal, "failed to send match stream: %v", err)
@@ -236,8 +299,8 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 
 func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 	defer func() {
-		s.askMarketPrice = s.repository.AskMarketPrice()
-		s.bidMarketPrice = s.repository.BidMarketPrice()
+		s.askMarketPrice = s.orderBookRepository.AskMarketPrice()
+		s.bidMarketPrice = s.orderBookRepository.BidMarketPrice()
 	}()
 	// Set quantity to decimal for safe math
 	quantity := decimal.NewFromFloat(ask.Quantity)
@@ -248,7 +311,7 @@ func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 		ask.Quantity = quantity.InexactFloat64()
 
 		// Get ask order to match
-		bid := s.repository.PopBid()
+		bid := s.orderBookRepository.PopBid()
 
 		// If there is no bid order, refund market ask order
 		if bid == nil {
@@ -272,7 +335,7 @@ func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 			bid.Quantity = bidQuantity.Sub(actualAskQuantity).InexactFloat64()
 
 			// Push bid order
-			s.repository.PushBid(bid)
+			s.orderBookRepository.PushBid(bid)
 
 			// End loop
 			if err = s.tradeService.SendMatchStream(trade.CaseMarketAskBigger, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
@@ -301,8 +364,8 @@ func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 
 func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
 	defer func() {
-		s.askMarketPrice = s.repository.AskMarketPrice()
-		s.bidMarketPrice = s.repository.BidMarketPrice()
+		s.askMarketPrice = s.orderBookRepository.AskMarketPrice()
+		s.bidMarketPrice = s.orderBookRepository.BidMarketPrice()
 	}()
 	// Set quantity to decimal for safe math
 	quantity := decimal.NewFromFloat(bid.Quantity)
@@ -313,7 +376,7 @@ func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
 		bid.Quantity = quantity.InexactFloat64()
 
 		// Get ask order to match
-		ask := s.repository.PopAsk()
+		ask := s.orderBookRepository.PopAsk()
 
 		// If there is no ask order, refund order
 		if ask == nil {
@@ -342,7 +405,7 @@ func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
 			ask.Quantity = askQuantity.Sub(quantity.Div(askUnitPrice)).InexactFloat64()
 
 			// Push ask order
-			s.repository.PushAsk(ask)
+			s.orderBookRepository.PushAsk(ask)
 
 			// End loop
 			if err = s.tradeService.SendMatchStream(trade.CaseMarketBidBigger, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
@@ -371,8 +434,8 @@ func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
 
 func (s *service) CancelOrder(uuid string) (order *grpc_order.Order, err error) {
 	defer func() {
-		s.askMarketPrice = s.repository.AskMarketPrice()
-		s.bidMarketPrice = s.repository.BidMarketPrice()
+		s.askMarketPrice = s.orderBookRepository.AskMarketPrice()
+		s.bidMarketPrice = s.orderBookRepository.BidMarketPrice()
 	}()
 
 	var pushFunc func(*grpc_order.Order)
@@ -384,18 +447,18 @@ func (s *service) CancelOrder(uuid string) (order *grpc_order.Order, err error) 
 
 	switch order.OrderType {
 	case grpc_order.OrderType_BID:
-		order = s.repository.RemoveBid(uuid)
+		order = s.orderBookRepository.RemoveBid(uuid)
 		if order == nil {
 			return nil, ErrOrderCancelFailed
 		}
-		pushFunc = s.repository.PushBid
+		pushFunc = s.orderBookRepository.PushBid
 
 	case grpc_order.OrderType_ASK:
-		order = s.repository.RemoveAsk(uuid)
+		order = s.orderBookRepository.RemoveAsk(uuid)
 		if order == nil {
 			return nil, ErrOrderCancelFailed
 		}
-		pushFunc = s.repository.PushAsk
+		pushFunc = s.orderBookRepository.PushAsk
 	default:
 		return nil, ErrOrderTypeNotFound
 	}
@@ -412,15 +475,15 @@ func (s *service) CancelOrder(uuid string) (order *grpc_order.Order, err error) 
 }
 
 func (s *service) BidOrder() (bids []*grpc_order.Order, err error) {
-	if len(s.repository.BidOrder()) == 0 {
+	if len(s.orderBookRepository.BidOrder()) == 0 {
 		return nil, ErrOrderBookEmpty
 	}
-	return s.repository.BidOrder(), nil
+	return s.orderBookRepository.BidOrder(), nil
 }
 
 func (s *service) AskOrder() (asks []*grpc_order.Order, err error) {
-	if len(s.repository.AskOrder()) == 0 {
+	if len(s.orderBookRepository.AskOrder()) == 0 {
 		return nil, ErrOrderBookEmpty
 	}
-	return s.repository.AskOrder(), nil
+	return s.orderBookRepository.AskOrder(), nil
 }

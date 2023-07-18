@@ -10,5 +10,5 @@ type engine struct {
 }
 
 func newEngine(cluster *redis.ClusterClient) *engine {
-	return &engine{tradeManager: trade.NewManager(cluster)}
+	return &engine{tradeManager: trade.New(cluster)}
 }

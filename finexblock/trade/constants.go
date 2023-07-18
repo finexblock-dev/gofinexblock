@@ -23,45 +23,52 @@ var (
 )
 
 const (
-	MatchStream             types.Stream = "STREAM:MATCH"          // MatchStream for each match case
-	ErrorStream             types.Stream = "STREAM:ERROR"          // ErrorStream for log error
-	OrderCancellationStream types.Stream = "STREAM:CANCELLATION"   // OrderCancellationStream for send OrderCancellation event
-	OrderPlacementStream    types.Stream = "STREAM:PLACEMENT"      // OrderPlacementStream for send OrderPlacement event
-	OrderInitializeStream   types.Stream = "STREAM:INITIALIZE"     // OrderInitializeStream for send OrderInitialize event
-	OrderFulfillmentStream  types.Stream = "STREAM:FULFILLMENT"    // OrderFulfillmentStream for send OrderFulfillment event
-	OrderPartialFillStream  types.Stream = "STREAM:PARTIAL_FILL"   // OrderPartialFillStream for send OrderPartialFill event
-	BalanceUpdateStream     types.Stream = "STREAM:BALANCE_UPDATE" // BalanceUpdateStream for send BalanceUpdate event
-	OrderMatchingStream     types.Stream = "STREAM:ORDER_MATCHING" // OrderMatchingStream for send OrderMatching event
+	MatchStream               types.Stream = "STREAM:MATCH"                 // MatchStream for each match case
+	ErrorStream               types.Stream = "STREAM:ERROR"                 // ErrorStream for log error
+	OrderCancellationStream   types.Stream = "STREAM:CANCELLATION"          // OrderCancellationStream for send OrderCancellation event
+	OrderPlacementStream      types.Stream = "STREAM:PLACEMENT"             // OrderPlacementStream for send OrderPlacement event
+	OrderInitializeStream     types.Stream = "STREAM:INITIALIZE"            // OrderInitializeStream for send OrderInitialize event
+	OrderFulfillmentStream    types.Stream = "STREAM:FULFILLMENT"           // OrderFulfillmentStream for send OrderFulfillment event
+	OrderPartialFillStream    types.Stream = "STREAM:PARTIAL_FILL"          // OrderPartialFillStream for send OrderPartialFill event
+	BalanceUpdateStream       types.Stream = "STREAM:BALANCE_UPDATE"        // BalanceUpdateStream for send BalanceUpdate event
+	OrderMatchingStream       types.Stream = "STREAM:ORDER_MATCHING"        // OrderMatchingStream for send OrderMatching event
+	MarketOrderMatchingStream types.Stream = "STREAM:MARKET_ORDER_MATCHING" // MarketOrderMatchingStream for send MarketOrderMatching event
 
-	MatchGroup             types.Group = "GROUP:MATCH"
-	ErrorGroup             types.Group = "GROUP:ERROR"
-	OrderCancellationGroup types.Group = "GROUP:CANCELLATION"
-	OrderPlacementGroup    types.Group = "GROUP:PLACEMENT"
-	OrderInitializeGroup   types.Group = "GROUP:INITIALIZE"
-	OrderFulfillmentGroup  types.Group = "GROUP:FULFILLMENT"
-	OrderPartialFillGroup  types.Group = "GROUP:PARTIAL_FILL"
-	BalanceUpdateGroup     types.Group = "GROUP:BALANCE_UPDATE"
-	OrderMatchingGroup     types.Group = "GROUP:ORDER_MATCHING"
+	EventGroup               types.Group = "GROUP:EVENT"
+	MatchGroup               types.Group = "GROUP:MATCH"
+	ErrorGroup               types.Group = "GROUP:ERROR"
+	OrderCancellationGroup   types.Group = "GROUP:CANCELLATION"
+	OrderPlacementGroup      types.Group = "GROUP:PLACEMENT"
+	OrderInitializeGroup     types.Group = "GROUP:INITIALIZE"
+	OrderFulfillmentGroup    types.Group = "GROUP:FULFILLMENT"
+	OrderPartialFillGroup    types.Group = "GROUP:PARTIAL_FILL"
+	BalanceUpdateGroup       types.Group = "GROUP:BALANCE_UPDATE"
+	OrderMatchingGroup       types.Group = "GROUP:ORDER_MATCHING"
+	MarketOrderMatchingGroup types.Group = "GROUP:MARKET_ORDER_MATCHING"
 
-	MatchConsumer             types.Consumer = "CONSUMER:MATCH"
-	ErrorConsumer             types.Consumer = "CONSUMER:ERROR"
-	OrderCancellationConsumer types.Consumer = "CONSUMER:CANCELLATION"
-	OrderPlacementConsumer    types.Consumer = "CONSUMER:PLACEMENT"
-	OrderInitializeConsumer   types.Consumer = "CONSUMER:INITIALIZE"
-	OrderFulfillmentConsumer  types.Consumer = "CONSUMER:FULFILLMENT"
-	OrderPartialFillConsumer  types.Consumer = "CONSUMER:PARTIAL_FILL"
-	BalanceUpdateConsumer     types.Consumer = "CONSUMER:BALANCE_UPDATE"
-	OrderMatchingConsumer     types.Consumer = "CONSUMER:ORDER_MATCHING"
+	EventConsumer               types.Consumer = "CONSUMER:EVENT"
+	MatchConsumer               types.Consumer = "CONSUMER:MATCH"
+	ErrorConsumer               types.Consumer = "CONSUMER:ERROR"
+	OrderCancellationConsumer   types.Consumer = "CONSUMER:CANCELLATION"
+	OrderPlacementConsumer      types.Consumer = "CONSUMER:PLACEMENT"
+	OrderInitializeConsumer     types.Consumer = "CONSUMER:INITIALIZE"
+	OrderFulfillmentConsumer    types.Consumer = "CONSUMER:FULFILLMENT"
+	OrderPartialFillConsumer    types.Consumer = "CONSUMER:PARTIAL_FILL"
+	BalanceUpdateConsumer       types.Consumer = "CONSUMER:BALANCE_UPDATE"
+	OrderMatchingConsumer       types.Consumer = "CONSUMER:ORDER_MATCHING"
+	MarketOrderMatchingConsumer types.Consumer = "CONSUMER:MARKET_ORDER_MATCHING"
 
-	MatchClaimer             types.Claimer = "CLAIMER:MATCH"
-	ErrorClaimer             types.Claimer = "CLAIMER:ERROR"
-	OrderCancellationClaimer types.Claimer = "CLAIMER:CANCELLATION"
-	OrderPlacementClaimer    types.Claimer = "CLAIMER:PLACEMENT"
-	OrderInitializeClaimer   types.Claimer = "CLAIMER:INITIALIZE"
-	OrderFulfillmentClaimer  types.Claimer = "CLAIMER:FULFILLMENT"
-	OrderPartialFillClaimer  types.Claimer = "CLAIMER:PARTIAL_FILL"
-	BalanceUpdateClaimer     types.Claimer = "CLAIMER:BALANCE_UPDATE"
-	OrderMatchingClaimer     types.Claimer = "CLAIMER:ORDER_MATCHING"
+	EventClaimer               types.Claimer = "CLAIMER:EVENT"
+	MatchClaimer               types.Claimer = "CLAIMER:MATCH"
+	ErrorClaimer               types.Claimer = "CLAIMER:ERROR"
+	OrderCancellationClaimer   types.Claimer = "CLAIMER:CANCELLATION"
+	OrderPlacementClaimer      types.Claimer = "CLAIMER:PLACEMENT"
+	OrderInitializeClaimer     types.Claimer = "CLAIMER:INITIALIZE"
+	OrderFulfillmentClaimer    types.Claimer = "CLAIMER:FULFILLMENT"
+	OrderPartialFillClaimer    types.Claimer = "CLAIMER:PARTIAL_FILL"
+	BalanceUpdateClaimer       types.Claimer = "CLAIMER:BALANCE_UPDATE"
+	OrderMatchingClaimer       types.Claimer = "CLAIMER:ORDER_MATCHING"
+	MarketOrderMatchingClaimer types.Claimer = "CLAIMER:MARKET_ORDER_MATCHING"
 )
 
 const (

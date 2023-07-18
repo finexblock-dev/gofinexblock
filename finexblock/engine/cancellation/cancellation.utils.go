@@ -12,7 +12,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func (e *engine) ParseMessage(message redis.XMessage) (_event *grpc_order.OrderCancelled, err error) {
+func (e *engine) ParseMessage(message redis.XMessage) (event *grpc_order.OrderCancelled, err error) {
 	var bytes []byte
 	var data = make(map[string]string)
 
@@ -25,11 +25,13 @@ func (e *engine) ParseMessage(message redis.XMessage) (_event *grpc_order.OrderC
 		return nil, err
 	}
 
-	if err = protojson.Unmarshal([]byte(data["_event"]), _event); err != nil {
+	event = new(grpc_order.OrderCancelled)
+
+	if err = protojson.Unmarshal([]byte(data["event"]), event); err != nil {
 		return nil, err
 	}
 
-	return _event, nil
+	return event, nil
 }
 
 func (e *engine) Do(event *grpc_order.OrderCancelled) (err error) {

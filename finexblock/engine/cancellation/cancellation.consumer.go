@@ -37,7 +37,7 @@ func (e *engine) Consume() {
 						return
 					}
 					// FIXME: error handling
-					_ = e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID)
+					_ = e.tradeManager.AckStream(trade.OrderCancellationStream, trade.OrderCancellationGroup, message.ID)
 				}(message)
 			}
 		}

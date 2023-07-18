@@ -1,4 +1,4 @@
-package cancellation
+package event
 
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
@@ -8,10 +8,10 @@ import (
 )
 
 type engine struct {
-	tradeManager trade.Manager
 	eventManager grpc_order.EventClient
+	tradeManager trade.Manager
 }
 
 func newEngine(cluster *redis.ClusterClient, conn *grpc.ClientConn) *engine {
-	return &engine{tradeManager: trade.New(cluster), eventManager: grpc_order.NewEventClient(conn)}
+	return &engine{eventManager: grpc_order.NewEventClient(conn), tradeManager: trade.New(cluster)}
 }
