@@ -11,6 +11,7 @@ import (
 type Repository interface {
 	types.Repository
 	InsertSnapshot(tx *gorm.DB, _snapshot *entity.SnapshotOrderBook) (result *entity.SnapshotOrderBook, err error)
+	FindSnapshotByOrderSymbolID(tx *gorm.DB, symbolID uint) (result *entity.SnapshotOrderBook, err error)
 
 	FindSymbolByName(tx *gorm.DB, name string) (result *entity.OrderSymbol, err error)
 	FindSymbolByID(tx *gorm.DB, id uint) (result *entity.OrderSymbol, err error)
@@ -40,6 +41,7 @@ type Service interface {
 	types.Service
 
 	InsertSnapshot(symbolID uint, bid, ask []*grpc_order.Order) (result *entity.SnapshotOrderBook, err error)
+	FindSnapshotByOrderSymbolID(symbolID uint) (result *entity.SnapshotOrderBook, err error)
 	FindSymbolByName(name string) (result *entity.OrderSymbol, err error)
 	FindSymbolByID(id uint) (result *entity.OrderSymbol, err error)
 	FindManyOrderByUUID(uuids []string) (result []*entity.OrderBook, err error)

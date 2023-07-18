@@ -7,9 +7,9 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-// Queue is interface for order book queue, use Service, and Service use Repository.
+// Manager is interface for order book manager, use Service, and Service use Repository.
 // Receive request and control order book
-type Queue interface {
+type Manager interface {
 	safety.Subscriber
 	LimitAskInsert(ask *grpc_order.Order) (order *grpc_order.Order, err error)
 	LimitBidInsert(bid *grpc_order.Order) (order *grpc_order.Order, err error)
@@ -18,9 +18,10 @@ type Queue interface {
 	CancelOrder(uuid string) (order *grpc_order.Order, err error)
 	BidOrder() (bids []*grpc_order.Order, err error)
 	AskOrder() (asks []*grpc_order.Order, err error)
+	LoadOrderBook() (err error)
 }
 
-// Service is interface for order book service, control repository.
+// Service is interface for order book service, control Repository.
 // Also has market price for each order book(ask/bid).
 type Service interface {
 	LimitAsk(ask *grpc_order.Order) error                         // 지정가 매도 주문
@@ -30,9 +31,10 @@ type Service interface {
 	CancelOrder(uuid string) (order *grpc_order.Order, err error) // 주문 취소 요청
 	BidOrder() (bids []*grpc_order.Order, err error)              // 매수 주문 리스트
 	AskOrder() (asks []*grpc_order.Order, err error)              // 매도 주문 리스트
+	LoadOrderBook() (err error)                                   // 주문서 로드
 }
 
-// Repository is interface for order book repository
+// Repository is interface for order book
 type Repository interface {
 	PushAsk(order *grpc_order.Order)
 	PushBid(order *grpc_order.Order)
@@ -46,6 +48,8 @@ type Repository interface {
 
 	BidOrder() []*grpc_order.Order
 	AskOrder() []*grpc_order.Order
+
+	LoadOrderBook(bid, ask []*grpc_order.Order) (err error)
 }
 
 func NewRepository() Repository {
@@ -56,6 +60,6 @@ func NewService(cluster *redis.ClusterClient) Service {
 	return newService(cluster)
 }
 
-func NewQueue(cluster *redis.ClusterClient) Queue {
-	return newQueue(cluster)
+func New(cluster *redis.ClusterClient) Manager {
+	return newManager(cluster)
 }

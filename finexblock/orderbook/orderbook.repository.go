@@ -12,6 +12,18 @@ type repository struct {
 	bidOrderBook *bidOrderBook
 }
 
+func (r *repository) LoadOrderBook(bid, ask []*grpc_order.Order) (err error) {
+	for _, v := range bid {
+		r.PushBid(v)
+	}
+
+	for _, v := range ask {
+		r.PushAsk(v)
+	}
+
+	return nil
+}
+
 func (r *repository) BidMarketPrice() decimal.Decimal {
 	if r.bidOrderBook.Len() > 0 {
 		order := r.PopBid()

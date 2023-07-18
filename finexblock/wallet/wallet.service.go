@@ -134,6 +134,16 @@ func (w *walletService) ScanWalletByUserID(userID uint) (result []*entity.Wallet
 	return result, err
 }
 
+func (w *walletService) GetContractAddressByCoinID(coinID uint) (result *entity.SmartContract, err error) {
+	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = w.repo.GetContractAddressByCoinID(tx, coinID)
+		return err
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
+		return nil, err
+	}
+	return result, err
+}
+
 func (w *walletService) InsertWallet(wallet *entity.Wallet) (result *entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.InsertWallet(tx, wallet)

@@ -11,8 +11,8 @@ type repository struct {
 	cluster *redis.ClusterClient
 }
 
-func newRepository(cluster *redis.ClusterClient) *repository {
-	return &repository{cluster: cluster}
+func (r *repository) XAddPipeline(tx redis.Pipeliner, ctx context.Context, args *redis.XAddArgs) error {
+	return tx.XAdd(ctx, args).Err()
 }
 
 func (r *repository) XClaim(ctx context.Context, args *redis.XClaimArgs) ([]redis.XMessage, error) {
@@ -87,4 +87,8 @@ func (r *repository) SetNX(ctx context.Context, key string, value interface{}, e
 
 func (r *repository) Del(ctx context.Context, key string) (err error) {
 	return r.cluster.Del(ctx, key).Err()
+}
+
+func newRepository(cluster *redis.ClusterClient) *repository {
+	return &repository{cluster: cluster}
 }
