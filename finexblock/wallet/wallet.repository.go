@@ -111,6 +111,18 @@ func (w *walletRepository) ScanWalletByCoinID(tx *gorm.DB, coinID uint) ([]*enti
 	return _wallet, nil
 }
 
+func (w *walletRepository) GetContractAddressByCoinID(tx *gorm.DB, coinID uint) (*entity.SmartContract, error) {
+	var _smartContract *entity.SmartContract
+	var _table *entity.SmartContract
+	var err error
+
+	if err = tx.Table(_table.TableName()).Where("coin_id = ?", coinID).Find(&_smartContract).Error; err != nil {
+		return nil, err
+	}
+
+	return _smartContract, nil
+}
+
 func (w *walletRepository) ScanWalletByUserID(tx *gorm.DB, userID uint) ([]*entity.Wallet, error) {
 	var _wallet []*entity.Wallet
 	var _table *entity.Wallet
