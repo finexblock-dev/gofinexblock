@@ -5,6 +5,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/safety"
 	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
+	"gorm.io/gorm"
 )
 
 // Manager is interface for order book manager, use Service, and Service use Repository.
@@ -56,10 +57,10 @@ func NewRepository() Repository {
 	return newRepository()
 }
 
-func NewService(cluster *redis.ClusterClient) Service {
-	return newService(cluster)
+func NewService(cluster *redis.ClusterClient, db *gorm.DB) Service {
+	return newService(cluster, db)
 }
 
-func New(cluster *redis.ClusterClient) Manager {
-	return newManager(cluster)
+func New(cluster *redis.ClusterClient, db *gorm.DB) Manager {
+	return newManager(cluster, db)
 }

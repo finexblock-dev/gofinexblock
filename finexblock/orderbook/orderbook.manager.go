@@ -4,6 +4,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/redis/go-redis/v9"
+	"gorm.io/gorm"
 )
 
 type manager struct {
@@ -17,9 +18,9 @@ type manager struct {
 	cancel chan *types.ResultReceiveContext[string, *grpc_order.Order] // cancel is channel for cancel order
 }
 
-func newManager(cluster *redis.ClusterClient) *manager {
+func newManager(cluster *redis.ClusterClient, db *gorm.DB) *manager {
 	return &manager{
-		service:   NewService(cluster),
+		service:   NewService(cluster, db),
 		limitAsk:  make(chan *types.ErrReceiveContext[*grpc_order.Order]),
 		marketAsk: make(chan *types.ErrReceiveContext[*grpc_order.Order]),
 		limitBid:  make(chan *types.ErrReceiveContext[*grpc_order.Order]),
