@@ -111,8 +111,8 @@ func (w *walletRepository) ScanWalletByCoinID(tx *gorm.DB, coinID uint) ([]*enti
 	return _wallet, nil
 }
 
-func (w *walletRepository) GetContractAddressByCoinID(tx *gorm.DB, coinID uint) ([]*entity.SmartContract, error) {
-	var _smartContract []*entity.SmartContract
+func (w *walletRepository) GetContractAddressByCoinID(tx *gorm.DB, coinID uint) (*entity.SmartContract, error) {
+	var _smartContract *entity.SmartContract
 	var _table *entity.SmartContract
 	var err error
 

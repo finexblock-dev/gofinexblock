@@ -23,7 +23,7 @@ type Repository interface {
 	FindAllWallet(tx *gorm.DB, coinID uint) (result []*entity.Wallet, err error)
 	ScanWalletByCoinID(tx *gorm.DB, coinID uint) (result []*entity.Wallet, err error)
 	ScanWalletByUserID(tx *gorm.DB, userID uint) (result []*entity.Wallet, err error)
-	GetContractAddressByCoinID(tx *gorm.DB, coinID uint) (result []*entity.SmartContract, err error)
+	GetContractAddressByCoinID(tx *gorm.DB, coinID uint) (result *entity.SmartContract, err error)
 
 	InsertWallet(tx *gorm.DB, wallet *entity.Wallet) (result *entity.Wallet, err error)
 	UpdateWallet(tx *gorm.DB, id uint, address string) (result *entity.Wallet, err error)
@@ -60,7 +60,7 @@ type Service interface {
 	FindAllWallet(coinID uint) (result []*entity.Wallet, err error)
 	ScanWalletByCoinID(coinID uint) (result []*entity.Wallet, err error)
 	ScanWalletByUserID(userID uint) (result []*entity.Wallet, err error)
-	GetContractAddressByCoinID(coinID uint) (result []*entity.SmartContract, err error)
+	GetContractAddressByCoinID(coinID uint) (result *entity.SmartContract, err error)
 
 	InsertWallet(wallet *entity.Wallet) (result *entity.Wallet, err error)
 	UpdateWallet(id uint, address string) (result *entity.Wallet, err error)

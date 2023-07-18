@@ -134,7 +134,7 @@ func (w *walletService) ScanWalletByUserID(userID uint) (result []*entity.Wallet
 	return result, err
 }
 
-func (w *walletService) GetContractAddressByCoinID(coinID uint) (result []*entity.SmartContract, err error) {
+func (w *walletService) GetContractAddressByCoinID(coinID uint) (result *entity.SmartContract, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.repo.GetContractAddressByCoinID(tx, coinID)
 		return err
