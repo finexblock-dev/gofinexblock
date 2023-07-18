@@ -18,10 +18,10 @@ type Service interface {
 	Log(v ...any)
 }
 
-func NewRepository(db *gorm.DB, instanceRepo instance.Repository) Repository {
-	return newRepository(db, instanceRepo)
+func NewRepository(db *gorm.DB) Repository {
+	return newRepository(db, instance.NewRepository(db))
 }
 
-func NewService(db *gorm.DB, instanceRepo instance.Repository) Service {
-	return newService(NewRepository(db, instanceRepo))
+func NewService(db *gorm.DB) Service {
+	return newService(NewRepository(db))
 }
