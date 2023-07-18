@@ -15,6 +15,6 @@ type Engine interface {
 	Do(event *grpc_order.BalanceUpdate) (err error)
 }
 
-func New(cluster *redis.ClusterClient, conn *grpc.ClientConn) Engine {
-	return newEngine(cluster, conn)
+func New(cluster *redis.ClusterClient, eventSubscriber, chartServer *grpc.ClientConn) Engine {
+	return newEngine(cluster, eventSubscriber, chartServer)
 }

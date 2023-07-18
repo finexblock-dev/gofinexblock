@@ -53,7 +53,11 @@ func (e *engine) Do(event *grpc_order.BalanceUpdate) (err error) {
 		return status.Errorf(status.Code(err), "plus balance failed: %v", err)
 	}
 
-	if _, err = e.eventManager.BalanceUpdateEvent(ctx, event); err != nil {
+	if _, err = e.eventSubscriber.BalanceUpdateEvent(ctx, event); err != nil {
+		return status.Errorf(status.Code(err), "send balance update event failed: %v", err)
+	}
+
+	if _, err = e.chartServer.BalanceUpdateEvent(ctx, event); err != nil {
 		return status.Errorf(status.Code(err), "send balance update event failed: %v", err)
 	}
 

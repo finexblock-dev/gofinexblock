@@ -62,7 +62,12 @@ func (e *engine) Do(event *grpc_order.OrderCancelled) (err error) {
 		return err
 	}
 
-	if _, err = e.eventManager.OrderCancellationEvent(ctx, event); err != nil {
+	if _, err = e.eventSubscriber.OrderCancellationEvent(ctx, event); err != nil {
+		// FIXME: How to fix this?
+		return err
+	}
+
+	if _, err = e.chartServer.OrderCancellationEvent(ctx, event); err != nil {
 		// FIXME: How to fix this?
 		return err
 	}

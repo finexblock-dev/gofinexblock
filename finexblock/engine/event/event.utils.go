@@ -55,37 +55,41 @@ func (e *engine) Do(stream types.Stream, message proto.Message) (err error) {
 	switch stream {
 	case trade.OrderInitializeStream:
 		if event, ok := message.(*grpc_order.OrderInitialize); ok {
-			_, err = e.eventManager.OrderInitializeEvent(ctx, event)
+			_, err = e.eventSubscriber.OrderInitializeEvent(ctx, event)
 			return err
 		}
 		return status.Errorf(codes.InvalidArgument, "invalid message: %s, %v", stream)
 	case trade.OrderPlacementStream:
 		if event, ok := message.(*grpc_order.OrderPlacement); ok {
-			_, err = e.eventManager.OrderPlacementEvent(ctx, event)
+			_, err = e.chartServer.OrderPlacementEvent(ctx, event)
+			_, err = e.eventSubscriber.OrderPlacementEvent(ctx, event)
 			return err
 		}
 		return status.Errorf(codes.InvalidArgument, "invalid message: %s, %v", stream)
 	case trade.OrderFulfillmentStream:
 		if event, ok := message.(*grpc_order.OrderFulfillment); ok {
-			_, err = e.eventManager.OrderFulfillmentEvent(ctx, event)
+			_, err = e.chartServer.OrderFulfillmentEvent(ctx, event)
+			_, err = e.eventSubscriber.OrderFulfillmentEvent(ctx, event)
 			return err
 		}
 		return status.Errorf(codes.InvalidArgument, "invalid message: %s, %v", stream)
 	case trade.OrderPartialFillStream:
 		if event, ok := message.(*grpc_order.OrderPartialFill); ok {
-			_, err = e.eventManager.OrderPartialFillEvent(ctx, event)
+			_, err = e.chartServer.OrderPartialFillEvent(ctx, event)
+			_, err = e.eventSubscriber.OrderPartialFillEvent(ctx, event)
 			return err
 		}
 		return status.Errorf(codes.InvalidArgument, "invalid message: %s, %v", stream)
 	case trade.OrderMatchingStream:
 		if event, ok := message.(*grpc_order.OrderMatching); ok {
-			_, err = e.eventManager.OrderMatchingEvent(ctx, event)
+			_, err = e.chartServer.OrderMatchingEvent(ctx, event)
+			_, err = e.eventSubscriber.OrderMatchingEvent(ctx, event)
 			return err
 		}
 		return status.Errorf(codes.InvalidArgument, "invalid message: %s, %v", stream)
 	case trade.MarketOrderMatchingStream:
 		if event, ok := message.(*grpc_order.MarketOrderMatching); ok {
-			_, err = e.eventManager.MarketOrderMatchingEvent(ctx, event)
+			_, err = e.eventSubscriber.MarketOrderMatchingEvent(ctx, event)
 			return err
 		}
 		return status.Errorf(codes.InvalidArgument, "invalid message: %s, %v", stream)

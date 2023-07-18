@@ -8,10 +8,10 @@ import (
 )
 
 type engine struct {
-	tradeManager trade.Manager
-	eventManager grpc_order.EventClient
+	tradeManager                 trade.Manager
+	eventSubscriber, chartServer grpc_order.EventClient
 }
 
-func newEngine(cluster *redis.ClusterClient, conn *grpc.ClientConn) *engine {
-	return &engine{tradeManager: trade.New(cluster), eventManager: grpc_order.NewEventClient(conn)}
+func newEngine(cluster *redis.ClusterClient, eventSubscriber, chartServer *grpc.ClientConn) *engine {
+	return &engine{tradeManager: trade.New(cluster), eventSubscriber: grpc_order.NewEventClient(eventSubscriber), chartServer: grpc_order.NewEventClient(chartServer)}
 }
