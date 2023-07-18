@@ -127,7 +127,7 @@ func (o *orderRepository) InsertSnapshot(tx *gorm.DB, _snapshot *entity.Snapshot
 }
 
 func (o *orderRepository) FindSnapshotByOrderSymbolID(tx *gorm.DB, symbolID uint) (result *entity.SnapshotOrderBook, err error) {
-	if err = tx.Table(result.TableName()).Where("order_symbol_id = ?", symbolID).Order("created_at DESC").Find(&result).Error; err != nil {
+	if err = tx.Table(result.TableName()).Where("order_symbol_id = ?", symbolID).Order("created_at DESC").Limit(1).Find(&result).Error; err != nil {
 		return nil, err
 	}
 

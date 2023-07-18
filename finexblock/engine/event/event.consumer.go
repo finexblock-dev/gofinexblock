@@ -30,27 +30,52 @@ func (e *engine) Consume() {
 		var group = trade.EventGroup
 		var consumer = e.Consumer(trade.EventConsumer)
 
-		xStreams, err = e.ReadStreams(streams, group, consumer, 1, 0)
-		if err != nil {
-			panic(err)
-		}
-		for _, stream := range xStreams {
-			for _, message := range stream.Messages {
-				go func(message redis.XMessage) {
-					event, err = e.ParseMessage(types.Stream(stream.Stream), message)
-					if err != nil {
-						// FIXME: error handling
-						return
-					}
-					if err = e.Do(types.Stream(stream.Stream), event); err != nil {
-						// FIXME: error handling
-						return
-					}
+		for _, s := range streams {
+			xStreams, err = e.ReadStreams([]types.Stream{s}, group, consumer, 1, 0)
+			if err != nil {
+				continue
+			}
 
-					_ = e.tradeManager.AckStream(types.Stream(stream.Stream), group, message.ID)
-				}(message)
+			for _, stream := range xStreams {
+				for _, message := range stream.Messages {
+					go func(message redis.XMessage) {
+						event, err = e.ParseMessage(types.Stream(stream.Stream), message)
+						if err != nil {
+							// FIXME: error handling
+							return
+						}
+						if err = e.Do(types.Stream(stream.Stream), event); err != nil {
+							// FIXME: error handling
+							return
+						}
+
+						_ = e.tradeManager.AckStream(types.Stream(stream.Stream), group, message.ID)
+					}(message)
+				}
 			}
 		}
+		//
+		//xStreams, err = e.ReadStreams(streams, group, consumer, 1, 0)
+		//if err != nil {
+		//	continue
+		//}
+		//for _, stream := range xStreams {
+		//	for _, message := range stream.Messages {
+		//		go func(message redis.XMessage) {
+		//			event, err = e.ParseMessage(types.Stream(stream.Stream), message)
+		//			if err != nil {
+		//				// FIXME: error handling
+		//				return
+		//			}
+		//			if err = e.Do(types.Stream(stream.Stream), event); err != nil {
+		//				// FIXME: error handling
+		//				return
+		//			}
+		//
+		//			_ = e.tradeManager.AckStream(types.Stream(stream.Stream), group, message.ID)
+		//		}(message)
+		//	}
+		//}
 	}
 }
 
