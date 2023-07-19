@@ -6,6 +6,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
+	"time"
 )
 
 // Manager is interface for order book manager, use Service, and Service use Repository.
@@ -20,6 +21,7 @@ type Manager interface {
 	BidOrder() (bids []*grpc_order.Order, err error)
 	AskOrder() (asks []*grpc_order.Order, err error)
 	LoadOrderBook() (err error)
+	SnapshotCron(duration time.Duration)
 }
 
 // Service is interface for order book service, control Repository.
@@ -33,6 +35,7 @@ type Service interface {
 	BidOrder() (bids []*grpc_order.Order, err error)              // 매수 주문 리스트
 	AskOrder() (asks []*grpc_order.Order, err error)              // 매도 주문 리스트
 	LoadOrderBook() (err error)                                   // 주문서 로드
+	Snapshot() (err error)                                        // 주문서 스냅샷
 }
 
 // Repository is interface for order book

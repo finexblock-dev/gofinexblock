@@ -40,6 +40,65 @@ func newService(cluster *redis.ClusterClient, db *gorm.DB) *service {
 	}
 }
 
+func (s *service) Snapshot() (err error) {
+	var privateIP string
+	var ipModel *entity.FinexblockServerIP
+	var serverModel *entity.FinexblockServer
+	var symbol *entity.OrderSymbol
+	var askOrderList, bidOrderList []*grpc_order.Order
+	var ask, bid []byte
+
+	privateIP, err = goaws.OwnPrivateIP()
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to get private ip: %v", err)
+	}
+
+	return s.instanceRepository.Conn().Transaction(func(tx *gorm.DB) error {
+		ipModel, err = s.instanceRepository.FindServerByIP(tx, privateIP)
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to find server by ip: %v", err)
+		}
+
+		// Find server by id
+		serverModel, err = s.instanceRepository.FindServerByID(tx, ipModel.ServerID)
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to find server by id: %v", err)
+		}
+
+		if serverModel.Name[:3] != "BTC" {
+			return status.Errorf(codes.Internal, "server name is not valid: %v", serverModel.Name)
+		}
+
+		// Find order symbol
+		symbol, err = s.orderRepository.FindSymbolByName(tx, serverModel.Name)
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to find order symbol: %v", err)
+		}
+
+		// Find snapshot by server order symbol id
+		askOrderList = s.orderBookRepository.AskOrder()
+		bidOrderList = s.orderBookRepository.BidOrder()
+
+		if ask, err = json.Marshal(askOrderList); err != nil {
+			return status.Errorf(codes.Internal, "failed to marshal ask order list: %v", err)
+		}
+
+		if bid, err = json.Marshal(bidOrderList); err != nil {
+			return status.Errorf(codes.Internal, "failed to marshal bid order list: %v", err)
+		}
+
+		if _, err = s.orderRepository.InsertSnapshot(tx, &entity.SnapshotOrderBook{
+			OrderSymbolID: symbol.ID,
+			AskOrderList:  string(ask),
+			BidOrderList:  string(bid),
+		}); err != nil {
+			return status.Errorf(codes.Internal, "failed to insert snapshot: %v", err)
+		}
+
+		return nil
+	})
+}
+
 func (s *service) LoadOrderBook() (err error) {
 	var privateIP string
 	var ipModel *entity.FinexblockServerIP

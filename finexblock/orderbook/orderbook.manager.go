@@ -5,6 +5,8 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
+	"log"
+	"time"
 )
 
 type manager struct {
@@ -28,9 +30,7 @@ func newManager(cluster *redis.ClusterClient, db *gorm.DB) *manager {
 		cancel:    make(chan *types.ResultReceiveContext[string, *grpc_order.Order], 1000000),
 	}
 }
-
 func (m *manager) Subscribe() {
-
 	for {
 		select {
 		case ctx := <-m.limitAsk:
@@ -44,6 +44,20 @@ func (m *manager) Subscribe() {
 		case ctx := <-m.cancel:
 			order, _ := m.service.CancelOrder(ctx.Value)
 			ctx.Tunnel <- order
+		}
+	}
+}
+
+func (m *manager) SnapshotCron(duration time.Duration) {
+	var err error
+	var tick <-chan time.Time
+
+	tick = time.Tick(duration)
+
+	for range tick {
+		if err = m.service.Snapshot(); err != nil {
+			// FIXME: error handling
+			log.Println("snapshot error: ", err)
 		}
 	}
 }

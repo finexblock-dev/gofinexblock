@@ -37,7 +37,15 @@ import (
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/user"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/utils"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/wallet"
+	"log"
+	"time"
 )
 
 func main() {
+
+	tick := time.Tick(time.Second)
+
+	for range tick {
+		log.Println("TICK")
+	}
 }
