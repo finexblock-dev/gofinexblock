@@ -7,6 +7,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/trade"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/redis/go-redis/v9"
+	"log"
 	"time"
 )
 
@@ -18,8 +19,9 @@ func (e *engine) Consume() {
 
 		var pair = new(grpc_order.BidAsk)
 
-		xStreams, err = e.ReadStream(trade.MatchStream, trade.MatchGroup, trade.MatchConsumer, 1, 0)
+		xStreams, err = e.ReadStream(trade.MatchStream, trade.MatchGroup, trade.MatchConsumer, 1000, 0)
 		if err != nil {
+			log.Printf("failed to read stream: %v", err)
 			// FIXME: error handling
 			continue
 		}
@@ -29,11 +31,13 @@ func (e *engine) Consume() {
 				go func(message redis.XMessage) {
 					_case, pair, err = e.ParseMessage(message)
 					if err != nil {
+						log.Printf("failed to parse message: %v", err)
 						// FIXME: error handling
 						return
 					}
 
 					if err = e.Do(_case, pair); err != nil {
+						log.Printf("failed to do: %v", err)
 						// FIXME: error handling
 						return
 					}

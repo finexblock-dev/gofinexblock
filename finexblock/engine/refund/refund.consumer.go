@@ -18,7 +18,7 @@ func (e *engine) Consume() {
 		var event = new(grpc_order.BalanceUpdate)
 		var consumer = e.Consumer(trade.BalanceUpdateConsumer)
 
-		xStreams, err = e.ReadStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, consumer, 1, 0)
+		xStreams, err = e.ReadStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, consumer, 1000, 0)
 		if err != nil {
 			// FIXME: error handling
 			continue

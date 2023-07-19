@@ -31,7 +31,7 @@ func (e *engine) Consume() {
 		var consumer = e.Consumer(trade.EventConsumer)
 
 		for _, s := range streams {
-			xStreams, err = e.ReadStreams([]types.Stream{s}, group, consumer, 1, 0)
+			xStreams, err = e.ReadStreams([]types.Stream{s}, group, consumer, 1000, 0)
 			if err != nil {
 				continue
 			}

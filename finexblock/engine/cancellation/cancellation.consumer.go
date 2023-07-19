@@ -18,7 +18,7 @@ func (e *engine) Consume() {
 		var event = new(grpc_order.OrderCancelled)
 		var consumer = e.Consumer(trade.OrderCancellationConsumer)
 
-		xStreams, err = e.ReadStream(trade.OrderCancellationStream, trade.OrderCancellationGroup, consumer, 1, 0)
+		xStreams, err = e.ReadStream(trade.OrderCancellationStream, trade.OrderCancellationGroup, consumer, 1000, 0)
 		if err != nil {
 			// FIXME: error handling
 			continue
