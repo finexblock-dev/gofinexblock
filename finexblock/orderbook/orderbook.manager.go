@@ -21,11 +21,11 @@ type manager struct {
 func newManager(cluster *redis.ClusterClient, db *gorm.DB) *manager {
 	return &manager{
 		service:   NewService(cluster, db),
-		limitAsk:  make(chan *types.ErrReceiveContext[*grpc_order.Order]),
-		marketAsk: make(chan *types.ErrReceiveContext[*grpc_order.Order]),
-		limitBid:  make(chan *types.ErrReceiveContext[*grpc_order.Order]),
-		marketBid: make(chan *types.ErrReceiveContext[*grpc_order.Order]),
-		cancel:    make(chan *types.ResultReceiveContext[string, *grpc_order.Order]),
+		limitAsk:  make(chan *types.ErrReceiveContext[*grpc_order.Order], 1000000),
+		marketAsk: make(chan *types.ErrReceiveContext[*grpc_order.Order], 1000000),
+		limitBid:  make(chan *types.ErrReceiveContext[*grpc_order.Order], 1000000),
+		marketBid: make(chan *types.ErrReceiveContext[*grpc_order.Order], 1000000),
+		cancel:    make(chan *types.ResultReceiveContext[string, *grpc_order.Order], 1000000),
 	}
 }
 

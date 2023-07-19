@@ -210,7 +210,6 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 	defer func() {
 		s.askMarketPrice = s.orderBookRepository.AskMarketPrice()
 		s.bidMarketPrice = s.orderBookRepository.BidMarketPrice()
-
 	}()
 
 	// Cache order information
@@ -247,6 +246,7 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 
 		// Get ask order to match
 		ask := s.orderBookRepository.PopAsk()
+		askUnitPrice := decimal.NewFromFloat(ask.UnitPrice)
 
 		// If there is no ask order, just place order
 		if ask == nil {
@@ -261,7 +261,6 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 			return nil
 		}
 
-		askUnitPrice := decimal.NewFromFloat(ask.UnitPrice)
 		// When case of ask unit price is greater than bid unit price
 		if askUnitPrice.GreaterThan(bidUnitPrice) {
 			// Push ask order

@@ -35,8 +35,10 @@ func (e *engine) Consume() {
 
 					if err = e.Do(_case, pair); err != nil {
 						// FIXME: error handling
-						_ = e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID)
+						return
 					}
+
+					_ = e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID)
 				}(message)
 			}
 		}
