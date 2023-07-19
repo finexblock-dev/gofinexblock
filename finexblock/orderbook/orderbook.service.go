@@ -180,7 +180,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 	// case if ask market price is less than ordered unit price
 	if askUnitPrice.GreaterThan(s.bidMarketPrice) {
 		s.orderBookRepository.PushAsk(ask)
-		placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, askUnitPrice, quantity, ask.OrderType, ask.Symbol)
+		placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, quantity, askUnitPrice, ask.OrderType, ask.Symbol)
 		if err = s.tradeService.SendPlacementStream(placement); err != nil {
 			return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
 		}
@@ -200,7 +200,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 			// Push ask order
 			s.orderBookRepository.PushAsk(ask)
 			// Place order (Send Redis Stream)
-			placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, askUnitPrice, quantity, ask.OrderType, ask.Symbol)
+			placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, quantity, askUnitPrice, ask.OrderType, ask.Symbol)
 			if err = s.tradeService.SendPlacementStream(placement); err != nil {
 				return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
 			}
@@ -219,7 +219,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 			s.orderBookRepository.PushBid(bid)
 
 			// Place order (Send Redis Stream)
-			placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, askUnitPrice, quantity, ask.OrderType, ask.Symbol)
+			placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, quantity, askUnitPrice, ask.OrderType, ask.Symbol)
 			if err = s.tradeService.SendPlacementStream(placement); err != nil {
 				return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
 			}
@@ -294,7 +294,7 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 		s.orderBookRepository.PushBid(bid)
 
 		// Send placement event
-		placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, bidUnitPrice, quantity, bid.OrderType, bid.Symbol)
+		placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, quantity, bidUnitPrice, bid.OrderType, bid.Symbol)
 		if err = s.tradeService.SendPlacementStream(placement); err != nil {
 			return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
 		}
@@ -316,7 +316,7 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 			// Place order
 			s.orderBookRepository.PushBid(bid)
 
-			placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, bidUnitPrice, quantity, bid.OrderType, bid.Symbol)
+			placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, quantity, bidUnitPrice, bid.OrderType, bid.Symbol)
 			if err = s.tradeService.SendPlacementStream(placement); err != nil {
 				return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
 			}
@@ -335,7 +335,7 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 			s.orderBookRepository.PushBid(bid)
 
 			// Send placement event
-			placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, bidUnitPrice, quantity, bid.OrderType, bid.Symbol)
+			placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, quantity, bidUnitPrice, bid.OrderType, bid.Symbol)
 
 			if err = s.tradeService.SendPlacementStream(placement); err != nil {
 				return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
