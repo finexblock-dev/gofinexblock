@@ -154,7 +154,7 @@ func (s *service) LoadOrderBook() (err error) {
 		}
 
 		// Load order book
-		return s.orderBookRepository.LoadOrderBook(askOrderList, bidOrderList)
+		return s.orderBookRepository.LoadOrderBook(bidOrderList, askOrderList)
 	})
 }
 
