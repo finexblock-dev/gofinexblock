@@ -154,7 +154,14 @@ func (s *service) LoadOrderBook() (err error) {
 		}
 
 		// Load order book
-		return s.orderBookRepository.LoadOrderBook(bidOrderList, askOrderList)
+		if err = s.orderBookRepository.LoadOrderBook(bidOrderList, askOrderList); err != nil {
+			return status.Errorf(codes.Internal, "failed to load order book: %v", err)
+		}
+
+		s.askMarketPrice = s.orderBookRepository.AskMarketPrice()
+		s.bidMarketPrice = s.orderBookRepository.BidMarketPrice()
+
+		return nil
 	})
 }
 
