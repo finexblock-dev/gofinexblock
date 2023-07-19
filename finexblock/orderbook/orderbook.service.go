@@ -137,8 +137,12 @@ func (s *service) LoadOrderBook() (err error) {
 
 		// Find snapshot by server order symbol id
 		snapshot, err = s.orderRepository.FindSnapshotByOrderSymbolID(tx, symbol.ID)
-		if err != nil {
+		if err != nil && err != gorm.ErrRecordNotFound {
 			return status.Errorf(codes.Internal, "failed to find snapshot: %v", err)
+		}
+
+		if err == gorm.ErrRecordNotFound {
+			return nil
 		}
 
 		if err = json.Unmarshal([]byte(snapshot.AskOrderList), &askOrderList); err != nil {
