@@ -39,18 +39,20 @@ func (e *engine) Do(event *grpc_order.BalanceUpdate) (err error) {
 	var ctx = context.Background()
 	var lock bool
 
-	if lock, err = e.tradeManager.AcquireLock(user, currency.String()); err != nil || !lock {
-		return status.Errorf(status.Code(err), "acquire lock failed: %v", err)
-	}
-
-	defer func() {
-		if err = e.tradeManager.ReleaseLock(user, currency.String()); err != nil {
-			err = status.Errorf(status.Code(err), "release lock failed: %v", err)
+	if event.Reason != grpc_order.Reason_ADVANCE_PAYMENT {
+		if lock, err = e.tradeManager.AcquireLock(user, currency.String()); err != nil || !lock {
+			return status.Errorf(status.Code(err), "acquire lock failed: %v", err)
 		}
-	}()
 
-	if err = e.tradeManager.PlusBalance(user, currency.String(), amount); err != nil {
-		return status.Errorf(status.Code(err), "plus balance failed: %v", err)
+		defer func() {
+			if err = e.tradeManager.ReleaseLock(user, currency.String()); err != nil {
+				err = status.Errorf(status.Code(err), "release lock failed: %v", err)
+			}
+		}()
+
+		if err = e.tradeManager.PlusBalance(user, currency.String(), amount); err != nil {
+			return status.Errorf(status.Code(err), "plus balance failed: %v", err)
+		}
 	}
 
 	if _, err = e.eventSubscriber.BalanceUpdateEvent(ctx, event); err != nil {
