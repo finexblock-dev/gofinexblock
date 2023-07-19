@@ -471,7 +471,7 @@ func (e *engine) LimitBidSmaller(pair *grpc_order.BidAsk) (err error) {
 func (e *engine) MarketAskBigger(pair *grpc_order.BidAsk) (err error) {
 	var bidQuantity, askQuantity, mul, filledQuantity, unitPrice decimal.Decimal
 	var bidPartialFill *grpc_order.OrderPartialFill
-	var askFulfillment *grpc_order.OrderFulfillment
+	var askFulfillment *grpc_order.MarketOrderMatching
 	var orderMatching *grpc_order.OrderMatching
 	var bidIncrease *grpc_order.BalanceUpdate
 	var askIncrease *grpc_order.BalanceUpdate
@@ -502,7 +502,7 @@ func (e *engine) MarketAskBigger(pair *grpc_order.BidAsk) (err error) {
 	bidPartialFill = utils.NewOrderPartialFill(bid.UserUUID, bid.OrderUUID, bidQuantity, filledQuantity, unitPrice, bid.Symbol, bid.OrderType, bid.MakeTime, fee)
 
 	// ask fulfillment
-	askFulfillment = utils.NewOrderFulfillment(ask.UserUUID, ask.OrderUUID, filledQuantity, unitPrice, ask.Symbol, ask.OrderType, ask.MakeTime, fee)
+	askFulfillment = utils.NewMarketOrderMatching(ask.UserUUID, ask.OrderUUID, filledQuantity, unitPrice, ask.OrderType, ask.Symbol, ask.MakeTime, fee)
 
 	// matched order
 	orderMatching = utils.NewOrderMatching(unitPrice, filledQuantity, ask.OrderType, ask.Symbol)
@@ -534,7 +534,7 @@ func (e *engine) MarketAskBigger(pair *grpc_order.BidAsk) (err error) {
 		return status.Errorf(codes.Internal, "%v: failed to send order partial fill stream, %v", prefix, err)
 	}
 
-	if err = e.tradeManager.SendOrderFulfillmentStreamPipeline(tx, ctx, askFulfillment); err != nil {
+	if err = e.tradeManager.SendMarketOrderMatchingStreamPipeline(tx, ctx, askFulfillment); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to send order fulfillment stream, %v", prefix, err)
 	}
 
@@ -548,7 +548,7 @@ func (e *engine) MarketAskBigger(pair *grpc_order.BidAsk) (err error) {
 func (e *engine) MarketAskEqual(pair *grpc_order.BidAsk) (err error) {
 	var bidQuantity, askQuantity, filledQuantity, unitPrice decimal.Decimal
 	var bidFulfillment *grpc_order.OrderFulfillment
-	var askFulfillment *grpc_order.OrderFulfillment
+	var askFulfillment *grpc_order.MarketOrderMatching
 	var orderMatching *grpc_order.OrderMatching
 	var bidIncrease *grpc_order.BalanceUpdate
 	var askIncrease *grpc_order.BalanceUpdate
@@ -578,7 +578,7 @@ func (e *engine) MarketAskEqual(pair *grpc_order.BidAsk) (err error) {
 	bidFulfillment = utils.NewOrderFulfillment(bid.UserUUID, bid.OrderUUID, filledQuantity, unitPrice, bid.Symbol, bid.OrderType, bid.MakeTime, fee)
 
 	// ask fulfillment
-	askFulfillment = utils.NewOrderFulfillment(ask.UserUUID, ask.OrderUUID, filledQuantity, unitPrice, ask.Symbol, ask.OrderType, ask.MakeTime, fee)
+	askFulfillment = utils.NewMarketOrderMatching(ask.UserUUID, ask.OrderUUID, filledQuantity, unitPrice, ask.OrderType, ask.Symbol, ask.MakeTime, fee)
 
 	// matched order
 	orderMatching = utils.NewOrderMatching(unitPrice, filledQuantity, ask.OrderType, ask.Symbol)
@@ -609,7 +609,7 @@ func (e *engine) MarketAskEqual(pair *grpc_order.BidAsk) (err error) {
 		return status.Errorf(codes.Internal, "%v: failed to send order fulfillment stream, %v", prefix, err)
 	}
 
-	if err = e.tradeManager.SendOrderFulfillmentStreamPipeline(tx, ctx, askFulfillment); err != nil {
+	if err = e.tradeManager.SendMarketOrderMatchingStreamPipeline(tx, ctx, askFulfillment); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to send order fulfillment stream, %v", prefix, err)
 	}
 
@@ -623,9 +623,9 @@ func (e *engine) MarketAskEqual(pair *grpc_order.BidAsk) (err error) {
 }
 
 func (e *engine) MarketAskSmaller(pair *grpc_order.BidAsk) (err error) {
-	var mul, bidQuantity, askQuantity, filledQuantity, unitPrice decimal.Decimal
+	var mul, bidQuantity, filledQuantity, unitPrice decimal.Decimal
 	var bidFulfillment *grpc_order.OrderFulfillment
-	var askPartialFill *grpc_order.OrderPartialFill
+	var askPartialFill *grpc_order.MarketOrderMatching
 	var orderMatching *grpc_order.OrderMatching
 	var bidIncrease *grpc_order.BalanceUpdate
 	var askIncrease *grpc_order.BalanceUpdate
@@ -641,7 +641,6 @@ func (e *engine) MarketAskSmaller(pair *grpc_order.BidAsk) (err error) {
 	mul = utils.CoinDecimal(currency)
 
 	bidQuantity = decimal.NewFromFloat(bid.Quantity)
-	askQuantity = decimal.NewFromFloat(ask.Quantity)
 
 	// filled quantity = bid.Quantity
 	filledQuantity = bidQuantity
@@ -656,7 +655,7 @@ func (e *engine) MarketAskSmaller(pair *grpc_order.BidAsk) (err error) {
 	bidFulfillment = utils.NewOrderFulfillment(bid.UserUUID, bid.OrderUUID, filledQuantity, unitPrice, bid.Symbol, bid.OrderType, bid.MakeTime, fee)
 
 	// ask partial fill
-	askPartialFill = utils.NewOrderPartialFill(ask.UserUUID, ask.OrderUUID, askQuantity, filledQuantity, unitPrice, ask.Symbol, ask.OrderType, ask.MakeTime, fee)
+	askPartialFill = utils.NewMarketOrderMatching(ask.UserUUID, ask.OrderUUID, filledQuantity, unitPrice, ask.OrderType, ask.Symbol, ask.MakeTime, fee)
 
 	// matched order
 	orderMatching = utils.NewOrderMatching(unitPrice, filledQuantity, ask.OrderType, ask.Symbol)
@@ -687,7 +686,7 @@ func (e *engine) MarketAskSmaller(pair *grpc_order.BidAsk) (err error) {
 		return status.Errorf(codes.Internal, "%v: failed to send order fulfillment stream, %v", prefix, err)
 	}
 
-	if err = e.tradeManager.SendOrderPartialFillStreamPipeline(tx, ctx, askPartialFill); err != nil {
+	if err = e.tradeManager.SendMarketOrderMatchingStreamPipeline(tx, ctx, askPartialFill); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to send order partial fill stream, %v", prefix, err)
 	}
 
@@ -702,7 +701,7 @@ func (e *engine) MarketAskSmaller(pair *grpc_order.BidAsk) (err error) {
 
 func (e *engine) MarketBidBigger(pair *grpc_order.BidAsk) (err error) {
 	var mul, bidQuantity, askQuantity, filledQuantity, unitPrice decimal.Decimal
-	var bidFulfillment *grpc_order.OrderFulfillment
+	var bidFulfillment *grpc_order.MarketOrderMatching
 	var askPartialFill *grpc_order.OrderPartialFill
 	var orderMatching *grpc_order.OrderMatching
 	var bidIncrease *grpc_order.BalanceUpdate
@@ -731,7 +730,7 @@ func (e *engine) MarketBidBigger(pair *grpc_order.BidAsk) (err error) {
 	fee = &grpc_order.Fee{Amount: bidQuantity.Mul(unitPrice).Mul(constant.FeeRatio).InexactFloat64()}
 
 	// bid fulfillment
-	bidFulfillment = utils.NewOrderFulfillment(bid.UserUUID, bid.OrderUUID, filledQuantity, unitPrice, bid.Symbol, bid.OrderType, bid.MakeTime, fee)
+	bidFulfillment = utils.NewMarketOrderMatching(bid.UserUUID, bid.OrderUUID, filledQuantity, unitPrice, bid.OrderType, bid.Symbol, bid.MakeTime, fee)
 
 	// ask partial fill
 	askPartialFill = utils.NewOrderPartialFill(ask.UserUUID, ask.OrderUUID, askQuantity, filledQuantity, unitPrice, ask.Symbol, ask.OrderType, ask.MakeTime, fee)
@@ -761,7 +760,7 @@ func (e *engine) MarketBidBigger(pair *grpc_order.BidAsk) (err error) {
 		return status.Errorf(codes.Internal, "%v: failed to send order matching stream, %v", prefix, err)
 	}
 
-	if err = e.tradeManager.SendOrderFulfillmentStreamPipeline(tx, ctx, bidFulfillment); err != nil {
+	if err = e.tradeManager.SendMarketOrderMatchingStreamPipeline(tx, ctx, bidFulfillment); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to send order fulfillment stream, %v", prefix, err)
 	}
 
@@ -778,7 +777,7 @@ func (e *engine) MarketBidBigger(pair *grpc_order.BidAsk) (err error) {
 
 func (e *engine) MarketBidEqual(pair *grpc_order.BidAsk) (err error) {
 	var mul, bidQuantity, askQuantity, filledQuantity, unitPrice decimal.Decimal
-	var bidFulfillment *grpc_order.OrderFulfillment
+	var bidFulfillment *grpc_order.MarketOrderMatching
 	var askFulfillment *grpc_order.OrderFulfillment
 	var orderMatching *grpc_order.OrderMatching
 	var bidIncrease *grpc_order.BalanceUpdate
@@ -807,7 +806,7 @@ func (e *engine) MarketBidEqual(pair *grpc_order.BidAsk) (err error) {
 	fee = &grpc_order.Fee{Amount: filledQuantity.Mul(unitPrice).Mul(constant.FeeRatio).InexactFloat64()}
 
 	// bid fulfillment
-	bidFulfillment = utils.NewOrderFulfillment(bid.UserUUID, bid.OrderUUID, filledQuantity, unitPrice, bid.Symbol, bid.OrderType, bid.MakeTime, fee)
+	bidFulfillment = utils.NewMarketOrderMatching(bid.UserUUID, bid.OrderUUID, filledQuantity, unitPrice, bid.OrderType, bid.Symbol, bid.MakeTime, fee)
 
 	// ask fulfillment
 	askFulfillment = utils.NewOrderFulfillment(ask.UserUUID, ask.OrderUUID, filledQuantity, unitPrice, ask.Symbol, ask.OrderType, ask.MakeTime, fee)
@@ -837,7 +836,7 @@ func (e *engine) MarketBidEqual(pair *grpc_order.BidAsk) (err error) {
 		return status.Errorf(codes.Internal, "%v: failed to send order matching stream, %v", prefix, err)
 	}
 
-	if err = e.tradeManager.SendOrderFulfillmentStreamPipeline(tx, ctx, bidFulfillment); err != nil {
+	if err = e.tradeManager.SendMarketOrderMatchingStreamPipeline(tx, ctx, bidFulfillment); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to send order fulfillment stream, %v", prefix, err)
 	}
 
@@ -855,8 +854,8 @@ func (e *engine) MarketBidEqual(pair *grpc_order.BidAsk) (err error) {
 }
 
 func (e *engine) MarketBidSmaller(pair *grpc_order.BidAsk) (err error) {
-	var mul, bidQuantity, askQuantity, filledQuantity, unitPrice decimal.Decimal
-	var bidPartialFill *grpc_order.OrderPartialFill
+	var mul, askQuantity, filledQuantity, unitPrice decimal.Decimal
+	var bidPartialFill *grpc_order.MarketOrderMatching
 	var askFulfillment *grpc_order.OrderFulfillment
 	var orderMatching *grpc_order.OrderMatching
 	var bidIncrease *grpc_order.BalanceUpdate
@@ -872,7 +871,6 @@ func (e *engine) MarketBidSmaller(pair *grpc_order.BidAsk) (err error) {
 	currency = utils.OpponentCurrency(bid.Symbol)
 	mul = utils.CoinDecimal(currency)
 
-	bidQuantity = decimal.NewFromFloat(bid.Quantity)
 	askQuantity = decimal.NewFromFloat(ask.Quantity)
 
 	// unit price = ask.UnitPrice
@@ -885,7 +883,7 @@ func (e *engine) MarketBidSmaller(pair *grpc_order.BidAsk) (err error) {
 	fee = &grpc_order.Fee{Amount: filledQuantity.Mul(unitPrice).Mul(constant.FeeRatio).InexactFloat64()}
 
 	// bid partial fill
-	bidPartialFill = utils.NewOrderPartialFill(bid.UserUUID, bid.OrderUUID, bidQuantity, filledQuantity, unitPrice, bid.Symbol, bid.OrderType, bid.MakeTime, fee)
+	bidPartialFill = utils.NewMarketOrderMatching(bid.UserUUID, bid.OrderUUID, filledQuantity, unitPrice, bid.OrderType, bid.Symbol, bid.MakeTime, fee)
 
 	// ask fulfillment
 	askFulfillment = utils.NewOrderFulfillment(ask.UserUUID, ask.OrderUUID, filledQuantity, unitPrice, ask.Symbol, ask.OrderType, ask.MakeTime, fee)
@@ -915,7 +913,7 @@ func (e *engine) MarketBidSmaller(pair *grpc_order.BidAsk) (err error) {
 		return status.Errorf(codes.Internal, "%v: failed to send order matching stream, %v", prefix, err)
 	}
 
-	if err = e.tradeManager.SendOrderPartialFillStreamPipeline(tx, ctx, bidPartialFill); err != nil {
+	if err = e.tradeManager.SendMarketOrderMatchingStreamPipeline(tx, ctx, bidPartialFill); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to send order partial fill stream, %v", prefix, err)
 	}
 

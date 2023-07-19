@@ -41,8 +41,10 @@ func (e *engine) Do(event *grpc_order.BalanceUpdate) (_err error) {
 	var lock bool
 
 	if event.Reason != grpc_order.Reason_ADVANCE_PAYMENT {
-		if lock, _err = e.tradeManager.AcquireLock(user, currency.String()); _err != nil || !lock {
-			return status.Errorf(codes.ResourceExhausted, "acquire lock failed: %v", _err)
+		for {
+			if lock, _err = e.tradeManager.AcquireLock(user, currency.String()); _err == nil && lock {
+				break
+			}
 		}
 
 		defer func() {
