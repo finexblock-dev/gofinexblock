@@ -14,7 +14,6 @@ import (
 func (e *engine) Claim() {
 	var xMessages []redis.XMessage
 	var xPending *redis.XPending
-	var event proto.Message
 	var err error
 
 	var group = trade.EventGroup
@@ -38,18 +37,21 @@ func (e *engine) Claim() {
 
 			for _, xMessage := range xMessages {
 				go func(message redis.XMessage) {
-					event, err = e.ParseMessage(stream, message)
-					if err != nil {
-						// FIXME: error handling
+					var event proto.Message
+					var _err error
+
+					event, _err = e.ParseMessage(stream, message)
+					if _err != nil {
+						// FIXME: _error handling
 						return
 					}
 
-					if err = e.Do(stream, event); err != nil {
-						log.Println("DO ERROR:", stream, err)
+					if _err = e.Do(stream, event); _err != nil {
+						log.Println("DO ERROR:", stream, _err)
 						return
 					}
 
-					log.Println("ACK:", e.tradeManager.AckStream(stream, group, message.ID))
+					log.Println(stream.String(), "ACK:", e.tradeManager.AckStream(stream, group, message.ID))
 				}(xMessage)
 			}
 		}

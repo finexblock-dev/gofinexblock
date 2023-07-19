@@ -13,11 +13,8 @@ import (
 
 func (e *engine) Consume() {
 	for {
-		var _case types.Case
 		var xStreams []redis.XStream
 		var err error
-
-		var pair = new(grpc_order.BidAsk)
 
 		xStreams, err = e.ReadStream(trade.MatchStream, trade.MatchGroup, e.Consumer(trade.MatchConsumer), 1000, 0)
 		if err != nil {
@@ -29,18 +26,22 @@ func (e *engine) Consume() {
 		for _, xStream := range xStreams {
 			for _, message := range xStream.Messages {
 				go func(message redis.XMessage) {
-					_case, pair, err = e.ParseMessage(message)
-					if err != nil {
-						log.Printf("failed to parse message: %v", err)
+					var _case types.Case
+					var pair = new(grpc_order.BidAsk)
+					var _err error
+
+					_case, pair, _err = e.ParseMessage(message)
+					if _err != nil {
+						log.Printf("failed to parse message: %v", _err)
 						return
 					}
 
-					if err = e.Do(_case, pair); err != nil {
-						log.Printf("failed to do: %v", err)
+					if _err = e.Do(_case, pair); _err != nil {
+						log.Printf("failed to do: %v", _err)
 						return
 					}
 
-					log.Println("ACK:", e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID))
+					log.Println(xStream.Stream, "ACK:", e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID))
 				}(message)
 			}
 		}

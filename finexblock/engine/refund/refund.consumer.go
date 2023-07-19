@@ -16,7 +16,6 @@ func (e *engine) Consume() {
 		var xStreams []redis.XStream
 		var err error
 
-		var event = new(grpc_order.BalanceUpdate)
 		var consumer = e.Consumer(trade.BalanceUpdateConsumer)
 
 		xStreams, err = e.ReadStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, consumer, 1000, 0)
@@ -27,20 +26,23 @@ func (e *engine) Consume() {
 
 		for _, xStream := range xStreams {
 			for _, message := range xStream.Messages {
-				go func(message redis.XMessage) {
-					event, err = e.ParseMessage(message)
-					if err != nil {
+				go func(stream string, message redis.XMessage) {
+					var _event = new(grpc_order.BalanceUpdate)
+					var _err error
+
+					_event, _err = e.ParseMessage(message)
+					if _err != nil {
 						// FIXME: error handling
 						return
 					}
 
-					if err = e.Do(event); err != nil {
+					if _err = e.Do(_event); _err != nil {
 						log.Println("DO ERROR:", trade.BalanceUpdateStream, err)
 						return
 					}
 
-					log.Println("ACK:", e.tradeManager.AckStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, message.ID))
-				}(message)
+					log.Println(stream, "ACK:", e.tradeManager.AckStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, message.ID))
+				}(xStream.Stream, message)
 			}
 		}
 	}

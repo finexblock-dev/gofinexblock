@@ -23,7 +23,6 @@ var (
 )
 
 func (e *engine) Consume() {
-	var event proto.Message
 	var xStreams []redis.XStream
 	var err error
 
@@ -40,17 +39,19 @@ func (e *engine) Consume() {
 			for _, stream := range xStreams {
 				for _, message := range stream.Messages {
 					go func(message redis.XMessage) {
-						event, err = e.ParseMessage(types.Stream(stream.Stream), message)
-						if err != nil {
-							// FIXME: error handling
+						var event proto.Message
+						var _err error
+						event, _err = e.ParseMessage(types.Stream(stream.Stream), message)
+						if _err != nil {
+							// FIXME: _error handling
 							return
 						}
-						if err = e.Do(types.Stream(stream.Stream), event); err != nil {
-							log.Println("DO ERROR:", stream.Stream, err)
+						if _err = e.Do(types.Stream(stream.Stream), event); _err != nil {
+							log.Println("DO ERROR:", stream.Stream, _err)
 							return
 						}
 
-						log.Println("ACK:", e.tradeManager.AckStream(types.Stream(stream.Stream), group, message.ID))
+						log.Println(stream.Stream, "ACK:", e.tradeManager.AckStream(types.Stream(stream.Stream), group, message.ID))
 					}(message)
 				}
 			}

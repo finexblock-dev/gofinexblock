@@ -16,7 +16,6 @@ func (e *engine) Consume() {
 		var xStreams []redis.XStream
 		var err error
 
-		var event = new(grpc_order.OrderCancelled)
 		var consumer = e.Consumer(trade.OrderCancellationConsumer)
 
 		xStreams, err = e.ReadStream(trade.OrderCancellationStream, trade.OrderCancellationGroup, consumer, 1000, 0)
@@ -28,18 +27,20 @@ func (e *engine) Consume() {
 		for _, xStream := range xStreams {
 			for _, message := range xStream.Messages {
 				go func(message redis.XMessage) {
-					event, err = e.ParseMessage(message)
-					if err != nil {
+					var _err error
+					var event = new(grpc_order.OrderCancelled)
+					event, _err = e.ParseMessage(message)
+					if _err != nil {
 						// FIXME: error handling
 						return
 					}
 
-					if err = e.Do(event); err != nil {
-						log.Println("DO ERROR:", trade.OrderCancellationStream, err)
+					if _err = e.Do(event); _err != nil {
+						log.Println("DO ERROR:", trade.OrderCancellationStream, _err)
 						return
 					}
 
-					log.Println("ACK:", e.tradeManager.AckStream(trade.OrderCancellationStream, trade.OrderCancellationGroup, message.ID))
+					log.Println(xStream.Stream, "ACK:", e.tradeManager.AckStream(trade.OrderCancellationStream, trade.OrderCancellationGroup, message.ID))
 				}(message)
 			}
 		}

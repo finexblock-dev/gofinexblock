@@ -17,7 +17,6 @@ func (e *engine) Claim() {
 		var xPending *redis.XPending
 		var err error
 
-		var event = new(grpc_order.OrderCancelled)
 		var claimer = e.Claimer(trade.OrderCancellationClaimer)
 
 		xPending, err = e.ReadPendingStream(trade.OrderCancellationStream, trade.OrderCancellationGroup)
@@ -36,17 +35,20 @@ func (e *engine) Claim() {
 
 		for _, xMessage := range xMessages {
 			go func(message redis.XMessage) {
-				event, err = e.ParseMessage(message)
-				if err != nil {
+				var _event = new(grpc_order.OrderCancelled)
+				var _err error
+				_event, _err = e.ParseMessage(message)
+				if _err != nil {
 					// FIXME: error handling
 					return
 				}
 
-				if err = e.Do(event); err != nil {
-					log.Println("DO ERROR:", trade.OrderCancellationStream, err)
+				if _err = e.Do(_event); _err != nil {
+					log.Println("DO ERROR:", trade.OrderCancellationStream, _err)
 					return
 				}
-				log.Println("ACK:", e.tradeManager.AckStream(trade.OrderCancellationStream, trade.OrderCancellationGroup, message.ID))
+
+				log.Println(trade.OrderCancellationStream, "ACK:", e.tradeManager.AckStream(trade.OrderCancellationStream, trade.OrderCancellationGroup, message.ID))
 			}(xMessage)
 		}
 	}

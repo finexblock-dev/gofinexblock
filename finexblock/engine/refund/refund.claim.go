@@ -17,7 +17,6 @@ func (e *engine) Claim() {
 		var xPending *redis.XPending
 		var err error
 
-		var event = new(grpc_order.BalanceUpdate)
 		var claimer = e.Claimer(trade.BalanceUpdateClaimer)
 
 		xPending, err = e.ReadPendingStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup)
@@ -36,19 +35,21 @@ func (e *engine) Claim() {
 
 		for _, xMessage := range xMessages {
 			go func(message redis.XMessage) {
-				event, err = e.ParseMessage(message)
-				if err != nil {
-					// FIXME: error handling
+				var _err error
+				var event = new(grpc_order.BalanceUpdate)
+				event, _err = e.ParseMessage(message)
+				if _err != nil {
+					// FIXME: _error handling
 					return
 				}
 
-				if err = e.Do(event); err != nil {
-					log.Println("DO ERROR:", trade.BalanceUpdateStream, err)
+				if _err = e.Do(event); _err != nil {
+					log.Println("DO ERROR:", trade.BalanceUpdateStream, _err)
 					return
 				}
 
 				// FIXME: error handling
-				_ = e.tradeManager.AckStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, message.ID)
+				log.Println(trade.BalanceUpdateStream, "ACK:", e.tradeManager.AckStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, message.ID))
 			}(xMessage)
 		}
 	}

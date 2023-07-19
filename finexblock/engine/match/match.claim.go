@@ -13,10 +13,8 @@ import (
 
 func (e *engine) Claim() {
 	for {
-		var event *grpc_order.BidAsk
 		var xMessages []redis.XMessage
 		var xPending *redis.XPending
-		var _case types.Case
 		var err error
 
 		var claimer = e.Claimer(trade.OrderMatchingClaimer)
@@ -37,18 +35,21 @@ func (e *engine) Claim() {
 
 		for _, xMessage := range xMessages {
 			go func(message redis.XMessage) {
-				_case, event, err = e.ParseMessage(message)
-				if err != nil {
+				var event *grpc_order.BidAsk
+				var _case types.Case
+				var _err error
+				_case, event, _err = e.ParseMessage(message)
+				if _err != nil {
 					// FIXME: error handling
 					return
 				}
 
-				if err = e.Do(_case, event); err != nil {
-					log.Println("DO ERROR:", _case, err)
+				if _err = e.Do(_case, event); _err != nil {
+					log.Println("DO ERROR:", _case, _err)
 					return
 				}
 
-				log.Println("ACK:", e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID))
+				log.Println(trade.OrderMatchingStream, "ACK:", e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID))
 			}(xMessage)
 		}
 	}

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	"fmt"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/admin"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/announcement"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/auth"
@@ -38,38 +38,30 @@ import (
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/user"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/utils"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/wallet"
-	"golang.org/x/sync/errgroup"
 	"log"
 	"time"
 )
 
+func test(i int) (err error) {
+
+	if i == 0 {
+		return nil
+	}
+
+	return fmt.Errorf("test error %d", i)
+}
+
 func main() {
-	g, _ := errgroup.WithContext(context.Background())
 
-	g.Go(func() error {
-		log.Println("FIRST")
-		return nil
-	})
+	var err error = nil
 
-	g.Go(func() error {
-		log.Println("SECOND")
-		return nil
-	})
+	for i := 0; i < 10; i++ {
+		go func(i int) {
+			if err = test(i); err != nil {
+				log.Println(err)
+			}
+		}(i)
+	}
 
-	g.Go(func() error {
-		log.Println("THIRD")
-		return nil
-	})
-
-	g.Go(func() error {
-		log.Println("FOURTH")
-		return nil
-	})
-
-	g.Go(func() error {
-		log.Println("FIFTH")
-		return nil
-	})
-
-	time.Sleep(time.Second)
+	time.Sleep(time.Hour)
 }
