@@ -19,7 +19,7 @@ func (e *engine) Consume() {
 
 		var pair = new(grpc_order.BidAsk)
 
-		xStreams, err = e.ReadStream(trade.MatchStream, trade.MatchGroup, trade.MatchConsumer, 1000, 0)
+		xStreams, err = e.ReadStream(trade.MatchStream, trade.MatchGroup, e.Consumer(trade.MatchConsumer), 1000, 0)
 		if err != nil {
 			log.Printf("failed to read stream: %v", err)
 			// FIXME: error handling
@@ -32,17 +32,15 @@ func (e *engine) Consume() {
 					_case, pair, err = e.ParseMessage(message)
 					if err != nil {
 						log.Printf("failed to parse message: %v", err)
-						// FIXME: error handling
 						return
 					}
 
 					if err = e.Do(_case, pair); err != nil {
 						log.Printf("failed to do: %v", err)
-						// FIXME: error handling
 						return
 					}
 
-					_ = e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID)
+					log.Println("ACK:", e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID))
 				}(message)
 			}
 		}

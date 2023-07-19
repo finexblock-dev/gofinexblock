@@ -7,6 +7,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/trade"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/redis/go-redis/v9"
+	"log"
 	"time"
 )
 
@@ -34,10 +35,11 @@ func (e *engine) Consume() {
 					}
 
 					if err = e.Do(event); err != nil {
+						log.Println("DO ERROR:", trade.BalanceUpdateStream, err)
 						return
 					}
-					// FIXME: error handling
-					_ = e.tradeManager.AckStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, message.ID)
+
+					log.Println("ACK:", e.tradeManager.AckStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, message.ID))
 				}(message)
 			}
 		}

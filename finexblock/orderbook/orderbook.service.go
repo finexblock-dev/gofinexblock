@@ -1,6 +1,7 @@
 package orderbook
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/finexblock-dev/gofinexblock/finexblock/cache"
@@ -13,6 +14,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/utils"
 	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
@@ -181,6 +183,8 @@ func (s *service) LoadOrderBook() (err error) {
 }
 
 func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
+	var group *errgroup.Group
+
 	defer func() {
 		s.askMarketPrice = s.orderBookRepository.AskMarketPrice()
 		s.bidMarketPrice = s.orderBookRepository.BidMarketPrice()
@@ -209,6 +213,8 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 		return nil
 	}
 
+	group, _ = errgroup.WithContext(context.Background())
+
 	// Loop while quantity is greater than zero
 	// Break if there is no ask order to match or ask order has fulfilled
 	for quantity.GreaterThan(decimal.Zero) {
@@ -219,19 +225,34 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 
 		// If there is no bid order, just place order
 		if bid == nil {
+			group.Go(func() error {
+				// Place order (Send Redis Stream)
+				placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, quantity, askUnitPrice, ask.OrderType, ask.Symbol)
+				if err = s.tradeService.SendPlacementStream(placement); err != nil {
+					return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
+				}
+
+				return nil
+			})
+
 			// Push ask order
 			s.orderBookRepository.PushAsk(ask)
-			// Place order (Send Redis Stream)
-			placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, quantity, askUnitPrice, ask.OrderType, ask.Symbol)
-			if err = s.tradeService.SendPlacementStream(placement); err != nil {
-				return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
-			}
-			return nil
+
+			return group.Wait()
 		}
 
 		bidUnitPrice := decimal.NewFromFloat(bid.UnitPrice)
 		// When case of ask unit price is greater than bid unit price
 		if askUnitPrice.GreaterThan(bidUnitPrice) {
+			group.Go(func() error {
+				// Place order (Send Redis Stream)
+				placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, quantity, askUnitPrice, ask.OrderType, ask.Symbol)
+				if err = s.tradeService.SendPlacementStream(placement); err != nil {
+					return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
+				}
+				return nil
+			})
+
 			// Push ask order
 			// Update market price or not
 			s.orderBookRepository.PushAsk(ask)
@@ -240,13 +261,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 			// Update market price or not
 			s.orderBookRepository.PushBid(bid)
 
-			// Place order (Send Redis Stream)
-			placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, quantity, askUnitPrice, ask.OrderType, ask.Symbol)
-			if err = s.tradeService.SendPlacementStream(placement); err != nil {
-				return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
-			}
-
-			return nil
+			return group.Wait()
 		}
 
 		// Quantity of opponent bid order
@@ -256,31 +271,42 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 		// Case of bid order quantity is greater than ask order quantity.
 		// Ask order : Fulfilled, Bid order : Partial filled
 		case bidQuantity.GreaterThan(quantity):
+			// Place order (Send Redis Stream)
+			group.Go(func() error {
+				if err = s.tradeService.SendMatchStream(trade.CaseLimitAskBigger, &grpc_order.BidAsk{Ask: ask, Bid: bid}); err != nil {
+					return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
+				}
+				return nil
+			})
+
 			// Minus bid order quantity
 			bid.Quantity = bidQuantity.Sub(quantity).InexactFloat64()
 			s.orderBookRepository.PushBid(bid)
-			// Place order (Send Redis Stream)
-			if err = s.tradeService.SendMatchStream(trade.CaseLimitAskBigger, &grpc_order.BidAsk{Ask: ask, Bid: bid}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
-			}
 
 			s.orderCache.Del(ask.OrderUUID)
-			return nil
+			return group.Wait()
 		// Case of bid order quantity is equal to ask order quantity.
 		// Ask order : Fulfilled, Bid order : Fulfilled
 		case bidQuantity.Equal(quantity):
-			if err = s.tradeService.SendMatchStream(trade.CaseLimitAskEqual, &grpc_order.BidAsk{Ask: ask, Bid: bid}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
-			}
+			group.Go(func() error {
+				if err = s.tradeService.SendMatchStream(trade.CaseLimitAskEqual, &grpc_order.BidAsk{Ask: ask, Bid: bid}); err != nil {
+					return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
+				}
+				return nil
+			})
 			s.orderCache.Del(ask.OrderUUID)
 			s.orderCache.Del(bid.OrderUUID)
-			return nil
+			return group.Wait()
 		// Case of bid order quantity is less than ask order quantity.
 		// Ask order : Partial filled, Bid order : Fulfilled
 		case bidQuantity.LessThan(quantity):
-			if err = s.tradeService.SendMatchStream(trade.CaseLimitAskSmaller, &grpc_order.BidAsk{Ask: ask, Bid: bid}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
-			}
+			group.Go(func() error {
+				if err = s.tradeService.SendMatchStream(trade.CaseLimitAskSmaller, &grpc_order.BidAsk{Ask: ask, Bid: bid}); err != nil {
+					return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
+				}
+				return nil
+			})
+
 			// Minus quantity and continue process...
 			quantity = quantity.Sub(bidQuantity)
 
@@ -288,7 +314,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 		}
 	}
 
-	return nil
+	return group.Wait()
 }
 
 func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
@@ -324,6 +350,10 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 		return nil
 	}
 
+	var group *errgroup.Group
+
+	group, _ = errgroup.WithContext(context.Background())
+
 	// Loop while quantity is greater than zero
 	// Break if there is no ask order to match or bid order has fulfilled
 	for quantity.GreaterThan(decimal.Zero) {
@@ -338,12 +368,16 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 			// Place order
 			s.orderBookRepository.PushBid(bid)
 
-			placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, quantity, bidUnitPrice, bid.OrderType, bid.Symbol)
-			if err = s.tradeService.SendPlacementStream(placement); err != nil {
-				return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
-			}
+			group.Go(func() error {
+				placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, quantity, bidUnitPrice, bid.OrderType, bid.Symbol)
+				if err = s.tradeService.SendPlacementStream(placement); err != nil {
+					return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
+				}
 
-			return nil
+				return nil
+			})
+
+			return group.Wait()
 		}
 
 		// When case of ask unit price is greater than bid unit price
@@ -357,13 +391,18 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 			s.orderBookRepository.PushBid(bid)
 
 			// Send placement event
-			placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, quantity, bidUnitPrice, bid.OrderType, bid.Symbol)
 
-			if err = s.tradeService.SendPlacementStream(placement); err != nil {
-				return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
-			}
+			group.Go(func() error {
+				placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, quantity, bidUnitPrice, bid.OrderType, bid.Symbol)
 
-			return nil
+				if err = s.tradeService.SendPlacementStream(placement); err != nil {
+					return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
+				}
+
+				return nil
+			})
+
+			return group.Wait()
 		}
 
 		// Quantity of opponent ask order
@@ -372,6 +411,14 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 		// Case of ask order quantity is greater than bid order quantity.
 		// Bid order : Fulfilled, Ask order : Partial filled
 		case opQuantity.GreaterThan(quantity):
+			group.Go(func() error {
+				if err = s.tradeService.SendMatchStream(trade.CaseLimitBidBigger, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
+					return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
+				}
+
+				return nil
+			})
+
 			// Minus ask order quantity
 			ask.Quantity = opQuantity.Sub(quantity).InexactFloat64()
 
@@ -379,47 +426,55 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 			// Update market price or not
 			s.orderBookRepository.PushAsk(ask)
 
-			if err = s.tradeService.SendMatchStream(trade.CaseLimitBidBigger, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
-			}
-
 			s.orderCache.Del(bid.OrderUUID)
 
-			return nil
+			return group.Wait()
 		// Case of ask order quantity is equal to bid order quantity.
 		// Bid order : Fulfilled, Ask order : Fulfilled
 		case opQuantity.Equal(quantity):
-			if err = s.tradeService.SendMatchStream(trade.CaseLimitBidEqual, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
-			}
+			group.Go(func() error {
+				if err = s.tradeService.SendMatchStream(trade.CaseLimitBidEqual, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
+					return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
+				}
+
+				return nil
+			})
 
 			s.orderCache.Del(ask.OrderUUID)
 			s.orderCache.Del(bid.OrderUUID)
-			return nil
+			return group.Wait()
 		// Case of ask order quantity is less than bid order quantity.
 		// Bid order : Partial filled, Ask order : Fulfilled
 		case opQuantity.LessThan(quantity):
+			group.Go(func() error {
+				if err = s.tradeService.SendMatchStream(trade.CaseLimitBidSmaller, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
+					return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
+				}
+
+				return nil
+			})
+
 			// Minus quantity and continue process...
 			quantity = quantity.Sub(opQuantity)
-
-			if err = s.tradeService.SendMatchStream(trade.CaseLimitBidSmaller, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
-			}
 
 			s.orderCache.Del(ask.OrderUUID)
 		}
 	}
 
-	return nil
+	return group.Wait()
 }
 
 func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
+	var group *errgroup.Group
+
 	defer func() {
 		s.askMarketPrice = s.orderBookRepository.AskMarketPrice()
 		s.bidMarketPrice = s.orderBookRepository.BidMarketPrice()
 	}()
 	// Set quantity to decimal for safe math
 	quantity := decimal.NewFromFloat(ask.Quantity)
+
+	group, _ = errgroup.WithContext(context.Background())
 
 	// Loop while quantity is greater than zero
 	// Break if there is no ask order to match
@@ -431,12 +486,16 @@ func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 
 		// If there is no bid order, refund market ask order
 		if bid == nil {
-			event := utils.NewBalanceUpdate(ask.UserUUID, quantity, utils.OpponentCurrency(ask.Symbol), grpc_order.Reason_REFUND)
-			if err = s.tradeService.SendBalanceUpdateStream(event); err != nil {
-				return status.Errorf(codes.Internal, "failed to send refund stream: [%v]", err)
-			}
+			group.Go(func() error {
+				event := utils.NewBalanceUpdate(ask.UserUUID, quantity, utils.OpponentCurrency(ask.Symbol), grpc_order.Reason_REFUND)
+				if err = s.tradeService.SendBalanceUpdateStream(event); err != nil {
+					return status.Errorf(codes.Internal, "failed to send refund stream: [%v]", err)
+				}
 
-			return nil
+				return nil
+			})
+
+			return group.Wait()
 		}
 
 		mul := utils.CoinDecimal(utils.OpponentCurrency(ask.Symbol))
@@ -447,6 +506,14 @@ func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 		// Case of bid order quantity is greater than ask order quantity.
 		// Ask order : Fulfilled, Bid order : Partial filled
 		case bidQuantity.GreaterThan(actualAskQuantity):
+			group.Go(func() error {
+				// End loop
+				if err = s.tradeService.SendMatchStream(trade.CaseMarketAskBigger, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
+					return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
+				}
+				return nil
+			})
+
 			// Minus bid quantity,
 			// bid.Quantity represents coin quantity (decimal)
 			// actualAskQuantity = filled quantity
@@ -455,29 +522,33 @@ func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 			// Push bid order
 			s.orderBookRepository.PushBid(bid)
 
-			// End loop
-			if err = s.tradeService.SendMatchStream(trade.CaseMarketAskBigger, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
-			}
-
-			return nil
+			return group.Wait()
 		// Case of bid order quantity is equal to ask order quantity.
 		// Ask order : Fulfilled, Bid order : Fulfilled
 		case bidQuantity.Equal(actualAskQuantity):
-			// End loop
-			if err = s.tradeService.SendMatchStream(trade.CaseMarketAskEqual, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
-			}
+
+			group.Go(func() error {
+				// End loop
+				if err = s.tradeService.SendMatchStream(trade.CaseMarketAskEqual, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
+					return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
+				}
+
+				return nil
+			})
 
 			s.orderCache.Del(bid.OrderUUID)
 
-			return nil
+			return group.Wait()
 		// Case of bid order quantity is less than ask order quantity.
 		// Ask order : Partial filled, Bid order : Fulfilled
 		case bidQuantity.LessThan(actualAskQuantity):
-			if err = s.tradeService.SendMatchStream(trade.CaseMarketAskSmaller, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
-			}
+			group.Go(func() error {
+				if err = s.tradeService.SendMatchStream(trade.CaseMarketAskSmaller, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
+					return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
+				}
+				return nil
+			})
+
 			// Minus quantity and continue process...
 			quantity = quantity.Sub(bidQuantity.Mul(mul))
 
@@ -485,16 +556,20 @@ func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 		}
 	}
 
-	return nil
+	return group.Wait()
 }
 
 func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
+	var group *errgroup.Group
+
 	defer func() {
 		s.askMarketPrice = s.orderBookRepository.AskMarketPrice()
 		s.bidMarketPrice = s.orderBookRepository.BidMarketPrice()
 	}()
 	// Set quantity to decimal for safe math
 	quantity := decimal.NewFromFloat(bid.Quantity)
+
+	group, _ = errgroup.WithContext(context.Background())
 
 	// Loop while quantity is greater than zero
 	// Break if there is no ask order to match
@@ -506,13 +581,17 @@ func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
 
 		// If there is no ask order, refund order
 		if ask == nil {
-			// Refund order
-			event := utils.NewBalanceUpdate(bid.UserUUID, quantity, grpc_order.Currency_BTC, grpc_order.Reason_REFUND)
-			if err = s.tradeService.SendBalanceUpdateStream(event); err != nil {
-				return status.Errorf(codes.Internal, "failed to send refund stream: [%v]", err)
-			}
+			group.Go(func() error {
+				// Refund order
+				event := utils.NewBalanceUpdate(bid.UserUUID, quantity, grpc_order.Currency_BTC, grpc_order.Reason_REFUND)
+				if err = s.tradeService.SendBalanceUpdateStream(event); err != nil {
+					return status.Errorf(codes.Internal, "failed to send refund stream: [%v]", err)
+				}
 
-			return nil
+				return nil
+			})
+
+			return group.Wait()
 		}
 
 		// convert ask order quantity to satoshi(1 => 1e8)
@@ -526,6 +605,14 @@ func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
 		// Case of ask order quantity is greater than bid order quantity.
 		// Bid order : Fulfilled, Ask order : Partial filled
 		case btcQuantity.GreaterThan(quantity):
+			group.Go(func() error {
+				// End loop
+				if err = s.tradeService.SendMatchStream(trade.CaseMarketBidBigger, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
+					return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
+				}
+				return nil
+			})
+
 			// Minus ask quantity,
 			// bid.Quantity represents coin quantity (decimal)
 			// ask.UnitPrice represents price meets the deal (decimal)
@@ -535,35 +622,37 @@ func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
 			// Push ask order
 			s.orderBookRepository.PushAsk(ask)
 
-			// End loop
-			if err = s.tradeService.SendMatchStream(trade.CaseMarketBidBigger, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
-			}
-
-			return nil
+			return group.Wait()
 		// Case of ask order quantity is equal to bid order quantity.
 		// Bid order : Fulfilled, Ask order : Fulfilled
 		case btcQuantity.Equal(quantity):
-			// End loop
-			if err = s.tradeService.SendMatchStream(trade.CaseMarketBidEqual, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
-			}
+			group.Go(func() error {
+				// End loop
+				if err = s.tradeService.SendMatchStream(trade.CaseMarketBidEqual, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
+					return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
+				}
+				return nil
+			})
 
 			s.orderCache.Del(ask.OrderUUID)
-			return nil
+			return group.Wait()
 		// Case of ask order quantity is less than bid order quantity.
 		// Bid order : Partial filled, Ask order : Fulfilled
 		case btcQuantity.LessThan(quantity):
-			if err = s.tradeService.SendMatchStream(trade.CaseMarketBidSmaller, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
-			}
+			group.Go(func() error {
+				if err = s.tradeService.SendMatchStream(trade.CaseMarketBidSmaller, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
+					return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
+				}
+
+				return nil
+			})
 			// Minus quantity and continue process...
 			quantity = quantity.Sub(askQuantity.Mul(askUnitPrice))
 			s.orderCache.Del(ask.OrderUUID)
 		}
 	}
 
-	return nil
+	return group.Wait()
 }
 
 func (s *service) CancelOrder(uuid string) (order *grpc_order.Order, err error) {

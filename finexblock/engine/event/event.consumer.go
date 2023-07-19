@@ -7,6 +7,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/protobuf/proto"
+	"log"
 	"time"
 )
 
@@ -45,11 +46,11 @@ func (e *engine) Consume() {
 							return
 						}
 						if err = e.Do(types.Stream(stream.Stream), event); err != nil {
-							// FIXME: error handling
+							log.Println("DO ERROR:", stream.Stream, err)
 							return
 						}
 
-						_ = e.tradeManager.AckStream(types.Stream(stream.Stream), group, message.ID)
+						log.Println("ACK:", e.tradeManager.AckStream(types.Stream(stream.Stream), group, message.ID))
 					}(message)
 				}
 			}

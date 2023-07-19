@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/admin"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/announcement"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/auth"
@@ -37,15 +38,38 @@ import (
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/user"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/utils"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/wallet"
+	"golang.org/x/sync/errgroup"
 	"log"
 	"time"
 )
 
 func main() {
+	g, _ := errgroup.WithContext(context.Background())
 
-	tick := time.Tick(time.Second)
+	g.Go(func() error {
+		log.Println("FIRST")
+		return nil
+	})
 
-	for range tick {
-		log.Println("TICK")
-	}
+	g.Go(func() error {
+		log.Println("SECOND")
+		return nil
+	})
+
+	g.Go(func() error {
+		log.Println("THIRD")
+		return nil
+	})
+
+	g.Go(func() error {
+		log.Println("FOURTH")
+		return nil
+	})
+
+	g.Go(func() error {
+		log.Println("FIFTH")
+		return nil
+	})
+
+	time.Sleep(time.Second)
 }

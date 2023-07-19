@@ -7,6 +7,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/trade"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/redis/go-redis/v9"
+	"log"
 	"time"
 )
 
@@ -42,6 +43,7 @@ func (e *engine) Claim() {
 				}
 
 				if err = e.Do(event); err != nil {
+					log.Println("DO ERROR:", trade.BalanceUpdateStream, err)
 					return
 				}
 
