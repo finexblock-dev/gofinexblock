@@ -584,7 +584,7 @@ func (e *engine) MarketAskEqual(pair *grpc_order.BidAsk) (err error) {
 	orderMatching = utils.NewOrderMatching(unitPrice, filledQuantity, ask.OrderType, ask.Symbol)
 
 	// bid increase
-	bidIncrease = utils.NewBalanceUpdate(bid.UserUUID, constant.ReverseFeeRatio.Mul(askQuantity).Mul(unitPrice), currency, grpc_order.Reason_MAKE)
+	bidIncrease = utils.NewBalanceUpdate(bid.UserUUID, constant.ReverseFeeRatio.Mul(askQuantity), currency, grpc_order.Reason_MAKE)
 
 	// ask increase
 	askIncrease = utils.NewBalanceUpdate(ask.UserUUID, filledQuantity.Mul(unitPrice).Mul(constant.ReverseFeeRatio), grpc_order.Currency_BTC, grpc_order.Reason_TAKE)
@@ -623,7 +623,7 @@ func (e *engine) MarketAskEqual(pair *grpc_order.BidAsk) (err error) {
 }
 
 func (e *engine) MarketAskSmaller(pair *grpc_order.BidAsk) (err error) {
-	var mul, bidQuantity, filledQuantity, unitPrice decimal.Decimal
+	var bidQuantity, filledQuantity, unitPrice decimal.Decimal
 	var bidFulfillment *grpc_order.OrderFulfillment
 	var askPartialFill *grpc_order.MarketOrderMatching
 	var orderMatching *grpc_order.OrderMatching
@@ -638,7 +638,6 @@ func (e *engine) MarketAskSmaller(pair *grpc_order.BidAsk) (err error) {
 	var bid, ask = pair.Bid, pair.Ask
 
 	currency = utils.OpponentCurrency(bid.Symbol)
-	mul = utils.CoinDecimal(currency)
 
 	bidQuantity = decimal.NewFromFloat(bid.Quantity)
 
@@ -664,7 +663,7 @@ func (e *engine) MarketAskSmaller(pair *grpc_order.BidAsk) (err error) {
 	bidIncrease = utils.NewBalanceUpdate(bid.UserUUID, filledQuantity.Mul(unitPrice).Mul(constant.ReverseFeeRatio), currency, grpc_order.Reason_MAKE)
 
 	// ask increase
-	askIncrease = utils.NewBalanceUpdate(ask.UserUUID, filledQuantity.Mul(constant.ReverseFeeRatio).Mul(mul), grpc_order.Currency_BTC, grpc_order.Reason_TAKE)
+	askIncrease = utils.NewBalanceUpdate(ask.UserUUID, filledQuantity.Mul(constant.ReverseFeeRatio), grpc_order.Currency_BTC, grpc_order.Reason_TAKE)
 
 	// Send stream
 	tx = e.tradeManager.Pipeliner()
