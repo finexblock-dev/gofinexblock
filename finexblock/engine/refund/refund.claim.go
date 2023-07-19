@@ -28,7 +28,7 @@ func (e *engine) Claim() {
 			continue
 		}
 
-		xMessages, err = e.ClaimStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, claimer, time.Minute, []string{xPending.Lower})
+		xMessages, err = e.ClaimStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, claimer, time.Second*2, []string{xPending.Lower})
 		if err != nil {
 			continue
 		}
