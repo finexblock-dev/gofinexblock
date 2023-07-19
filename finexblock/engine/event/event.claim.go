@@ -30,7 +30,7 @@ func (e *engine) Claim() {
 				continue
 			}
 
-			xMessages, err = e.ClaimStream(stream, group, claimer, 0, []string{xPending.Lower})
+			xMessages, err = e.ClaimStream(stream, group, claimer, time.Minute, []string{xPending.Lower})
 			if err != nil {
 				continue
 			}
