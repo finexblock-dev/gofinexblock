@@ -4,6 +4,8 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/redis/go-redis/v9"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 	"log"
 	"time"
@@ -42,8 +44,9 @@ func (m *manager) Subscribe() {
 		case ctx := <-m.marketBid:
 			ctx.Tunnel <- m.service.MarketBid(ctx.Value)
 		case ctx := <-m.cancel:
-			order, _ := m.service.CancelOrder(ctx.Value)
-			ctx.Tunnel <- order
+			order, err := m.service.CancelOrder(ctx.Value)
+			ctx.Result <- order
+			ctx.Err <- err
 		}
 	}
 }
@@ -116,13 +119,20 @@ func (m *manager) MarketBidInsert(bid *grpc_order.Order) (order *grpc_order.Orde
 
 func (m *manager) CancelOrder(uuid string) (order *grpc_order.Order, err error) {
 	ctx := &types.ResultReceiveContext[string, *grpc_order.Order]{
-		Tunnel: make(chan *grpc_order.Order),
+		Result: make(chan *grpc_order.Order),
+		Err:    make(chan error),
 		Value:  uuid,
 	}
 	m.cancel <- ctx
-	order = <-ctx.Tunnel
+	order = <-ctx.Result
+	err = <-ctx.Err
+
+	if err != nil {
+		return nil, err
+	}
+
 	if order == nil {
-		return nil, ErrOrderCancelFailed
+		return nil, status.Error(codes.Unknown, ErrOrderCancelFailed.Error())
 	}
 	return order, nil
 }

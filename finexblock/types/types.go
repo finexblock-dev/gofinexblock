@@ -6,6 +6,7 @@ type ErrReceiveContext[param any] struct {
 }
 
 type ResultReceiveContext[param any, result any] struct {
-	Tunnel chan result
+	Result chan result
+	Err    chan error
 	Value  param
 }

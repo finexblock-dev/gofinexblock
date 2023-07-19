@@ -63,15 +63,8 @@ func (r *repository) Get(ctx context.Context, key string) (value string, err err
 	return r.cluster.Get(ctx, key).Result()
 }
 
-func (r *repository) Set(ctx context.Context, key string, value interface{}, exp time.Duration) (err error) {
-	var bytes []byte
-
-	bytes, err = json.Marshal(value)
-	if err != nil {
-		return err
-	}
-
-	return r.cluster.Set(ctx, key, string(bytes), exp).Err()
+func (r *repository) Set(ctx context.Context, key string, value string, exp time.Duration) (err error) {
+	return r.cluster.Set(ctx, key, value, exp).Err()
 }
 
 func (r *repository) SetNX(ctx context.Context, key string, value interface{}, exp time.Duration) (ok bool, err error) {

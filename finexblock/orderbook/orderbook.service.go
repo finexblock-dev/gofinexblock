@@ -2,6 +2,7 @@ package orderbook
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/finexblock-dev/gofinexblock/finexblock/cache"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
@@ -50,19 +51,19 @@ func (s *service) Snapshot() (err error) {
 
 	privateIP, err = goaws.OwnPrivateIP()
 	if err != nil {
-		return status.Errorf(codes.Internal, "failed to get private ip: %v", err)
+		return status.Errorf(codes.Internal, "failed to get private ip: [%v]", err)
 	}
 
 	return s.instanceRepository.Conn().Transaction(func(tx *gorm.DB) error {
 		ipModel, err = s.instanceRepository.FindServerByIP(tx, privateIP)
 		if err != nil {
-			return status.Errorf(codes.Internal, "failed to find server by ip: %v", err)
+			return status.Errorf(codes.Internal, "failed to find server by ip: [%v]", err)
 		}
 
 		// Find server by id
 		serverModel, err = s.instanceRepository.FindServerByID(tx, ipModel.ServerID)
 		if err != nil {
-			return status.Errorf(codes.Internal, "failed to find server by id: %v", err)
+			return status.Errorf(codes.Internal, "failed to find server by id: [%v]", err)
 		}
 
 		if serverModel.Name[:3] != "BTC" {
@@ -72,7 +73,7 @@ func (s *service) Snapshot() (err error) {
 		// Find order symbol
 		symbol, err = s.orderRepository.FindSymbolByName(tx, serverModel.Name)
 		if err != nil {
-			return status.Errorf(codes.Internal, "failed to find order symbol: %v", err)
+			return status.Errorf(codes.Internal, "failed to find order symbol: [%v]", err)
 		}
 
 		// Find snapshot by server order symbol id
@@ -80,11 +81,11 @@ func (s *service) Snapshot() (err error) {
 		bidOrderList = s.orderBookRepository.BidOrder()
 
 		if ask, err = json.Marshal(askOrderList); err != nil {
-			return status.Errorf(codes.Internal, "failed to marshal ask order list: %v", err)
+			return status.Errorf(codes.Internal, "failed to marshal ask order list: [%v]", err)
 		}
 
 		if bid, err = json.Marshal(bidOrderList); err != nil {
-			return status.Errorf(codes.Internal, "failed to marshal bid order list: %v", err)
+			return status.Errorf(codes.Internal, "failed to marshal bid order list: [%v]", err)
 		}
 
 		if _, err = s.orderRepository.InsertSnapshot(tx, &entity.SnapshotOrderBook{
@@ -92,7 +93,7 @@ func (s *service) Snapshot() (err error) {
 			AskOrderList:  string(ask),
 			BidOrderList:  string(bid),
 		}); err != nil {
-			return status.Errorf(codes.Internal, "failed to insert snapshot: %v", err)
+			return status.Errorf(codes.Internal, "failed to insert snapshot: [%v]", err)
 		}
 
 		return nil
@@ -110,19 +111,19 @@ func (s *service) LoadOrderBook() (err error) {
 
 	privateIP, err = goaws.OwnPrivateIP()
 	if err != nil {
-		return status.Errorf(codes.Internal, "failed to get private ip: %v", err)
+		return status.Errorf(codes.Internal, "failed to get private ip: [%v]", err)
 	}
 
 	return s.instanceRepository.Conn().Transaction(func(tx *gorm.DB) error {
 		ipModel, err = s.instanceRepository.FindServerByIP(tx, privateIP)
 		if err != nil {
-			return status.Errorf(codes.Internal, "failed to find server by ip: %v", err)
+			return status.Errorf(codes.Internal, "failed to find server by ip: [%v]", err)
 		}
 
 		// Find server by id
 		serverModel, err = s.instanceRepository.FindServerByID(tx, ipModel.ServerID)
 		if err != nil {
-			return status.Errorf(codes.Internal, "failed to find server by id: %v", err)
+			return status.Errorf(codes.Internal, "failed to find server by id: [%v]", err)
 		}
 
 		if serverModel.Name[:3] != "BTC" {
@@ -132,13 +133,13 @@ func (s *service) LoadOrderBook() (err error) {
 		// Find order symbol
 		symbol, err = s.orderRepository.FindSymbolByName(tx, serverModel.Name)
 		if err != nil {
-			return status.Errorf(codes.Internal, "failed to find order symbol: %v", err)
+			return status.Errorf(codes.Internal, "failed to find order symbol: [%v]", err)
 		}
 
 		// Find snapshot by server order symbol id
 		snapshot, err = s.orderRepository.FindSnapshotByOrderSymbolID(tx, symbol.ID)
 		if err != nil && err != gorm.ErrRecordNotFound {
-			return status.Errorf(codes.Internal, "failed to find snapshot: %v", err)
+			return status.Errorf(codes.Internal, "failed to find snapshot: [%v]", err)
 		}
 
 		if err == gorm.ErrRecordNotFound {
@@ -146,16 +147,30 @@ func (s *service) LoadOrderBook() (err error) {
 		}
 
 		if err = json.Unmarshal([]byte(snapshot.AskOrderList), &askOrderList); err != nil {
-			return status.Errorf(codes.Internal, "failed to unmarshal ask order list: %v", err)
+			return status.Errorf(codes.Internal, "failed to unmarshal ask order list: [%v]", err)
 		}
 
 		if err = json.Unmarshal([]byte(snapshot.BidOrderList), &bidOrderList); err != nil {
-			return status.Errorf(codes.Internal, "failed to unmarshal bid order list: %v", err)
+			return status.Errorf(codes.Internal, "failed to unmarshal bid order list: [%v]", err)
+		}
+
+		for _, ask := range askOrderList {
+			if err = s.orderCache.Set(ask.OrderUUID, ask); err == cache.ErrCacheFull {
+				_ = s.orderCache.Resize(s.orderCache.CurrentSize() * 2)
+				_ = s.orderCache.Set(ask.OrderUUID, ask)
+			}
+		}
+
+		for _, bid := range bidOrderList {
+			if err = s.orderCache.Set(bid.OrderUUID, bid); err == cache.ErrCacheFull {
+				_ = s.orderCache.Resize(s.orderCache.CurrentSize() * 2)
+				_ = s.orderCache.Set(bid.OrderUUID, bid)
+			}
 		}
 
 		// Load order book
 		if err = s.orderBookRepository.LoadOrderBook(bidOrderList, askOrderList); err != nil {
-			return status.Errorf(codes.Internal, "failed to load order book: %v", err)
+			return status.Errorf(codes.Internal, "failed to load order book: [%v]", err)
 		}
 
 		s.askMarketPrice = s.orderBookRepository.AskMarketPrice()
@@ -189,7 +204,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 		s.orderBookRepository.PushAsk(ask)
 		placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, quantity, askUnitPrice, ask.OrderType, ask.Symbol)
 		if err = s.tradeService.SendPlacementStream(placement); err != nil {
-			return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
+			return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
 		}
 		return nil
 	}
@@ -209,7 +224,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 			// Place order (Send Redis Stream)
 			placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, quantity, askUnitPrice, ask.OrderType, ask.Symbol)
 			if err = s.tradeService.SendPlacementStream(placement); err != nil {
-				return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
 			}
 			return nil
 		}
@@ -228,7 +243,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 			// Place order (Send Redis Stream)
 			placement := utils.NewOrderPlacement(ask.UserUUID, ask.OrderUUID, quantity, askUnitPrice, ask.OrderType, ask.Symbol)
 			if err = s.tradeService.SendPlacementStream(placement); err != nil {
-				return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
 			}
 
 			return nil
@@ -246,7 +261,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 			s.orderBookRepository.PushBid(bid)
 			// Place order (Send Redis Stream)
 			if err = s.tradeService.SendMatchStream(trade.CaseLimitAskBigger, &grpc_order.BidAsk{Ask: ask, Bid: bid}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
 			}
 
 			s.orderCache.Del(ask.OrderUUID)
@@ -255,7 +270,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 		// Ask order : Fulfilled, Bid order : Fulfilled
 		case bidQuantity.Equal(quantity):
 			if err = s.tradeService.SendMatchStream(trade.CaseLimitAskEqual, &grpc_order.BidAsk{Ask: ask, Bid: bid}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
 			}
 			s.orderCache.Del(ask.OrderUUID)
 			s.orderCache.Del(bid.OrderUUID)
@@ -264,7 +279,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 		// Ask order : Partial filled, Bid order : Fulfilled
 		case bidQuantity.LessThan(quantity):
 			if err = s.tradeService.SendMatchStream(trade.CaseLimitAskSmaller, &grpc_order.BidAsk{Ask: ask, Bid: bid}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
 			}
 			// Minus quantity and continue process...
 			quantity = quantity.Sub(bidQuantity)
@@ -303,7 +318,7 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 		// Send placement event
 		placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, quantity, bidUnitPrice, bid.OrderType, bid.Symbol)
 		if err = s.tradeService.SendPlacementStream(placement); err != nil {
-			return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
+			return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
 		}
 
 		return nil
@@ -325,7 +340,7 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 
 			placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, quantity, bidUnitPrice, bid.OrderType, bid.Symbol)
 			if err = s.tradeService.SendPlacementStream(placement); err != nil {
-				return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
 			}
 
 			return nil
@@ -345,7 +360,7 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 			placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, quantity, bidUnitPrice, bid.OrderType, bid.Symbol)
 
 			if err = s.tradeService.SendPlacementStream(placement); err != nil {
-				return status.Errorf(codes.Internal, "failed to send placement stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
 			}
 
 			return nil
@@ -365,7 +380,7 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 			s.orderBookRepository.PushAsk(ask)
 
 			if err = s.tradeService.SendMatchStream(trade.CaseLimitBidBigger, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
 			}
 
 			s.orderCache.Del(bid.OrderUUID)
@@ -375,7 +390,7 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 		// Bid order : Fulfilled, Ask order : Fulfilled
 		case opQuantity.Equal(quantity):
 			if err = s.tradeService.SendMatchStream(trade.CaseLimitBidEqual, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
 			}
 
 			s.orderCache.Del(ask.OrderUUID)
@@ -388,7 +403,7 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 			quantity = quantity.Sub(opQuantity)
 
 			if err = s.tradeService.SendMatchStream(trade.CaseLimitBidSmaller, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
 			}
 
 			s.orderCache.Del(ask.OrderUUID)
@@ -418,7 +433,7 @@ func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 		if bid == nil {
 			event := utils.NewBalanceUpdate(ask.UserUUID, quantity, utils.OpponentCurrency(ask.Symbol), grpc_order.Reason_REFUND)
 			if err = s.tradeService.SendBalanceUpdateStream(event); err != nil {
-				return status.Errorf(codes.Internal, "failed to send refund stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send refund stream: [%v]", err)
 			}
 
 			return nil
@@ -442,7 +457,7 @@ func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 
 			// End loop
 			if err = s.tradeService.SendMatchStream(trade.CaseMarketAskBigger, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
 			}
 
 			return nil
@@ -451,7 +466,7 @@ func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 		case bidQuantity.Equal(actualAskQuantity):
 			// End loop
 			if err = s.tradeService.SendMatchStream(trade.CaseMarketAskEqual, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
 			}
 
 			s.orderCache.Del(bid.OrderUUID)
@@ -461,7 +476,7 @@ func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 		// Ask order : Partial filled, Bid order : Fulfilled
 		case bidQuantity.LessThan(actualAskQuantity):
 			if err = s.tradeService.SendMatchStream(trade.CaseMarketAskSmaller, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
 			}
 			// Minus quantity and continue process...
 			quantity = quantity.Sub(bidQuantity.Mul(mul))
@@ -494,7 +509,7 @@ func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
 			// Refund order
 			event := utils.NewBalanceUpdate(bid.UserUUID, quantity, grpc_order.Currency_BTC, grpc_order.Reason_REFUND)
 			if err = s.tradeService.SendBalanceUpdateStream(event); err != nil {
-				return status.Errorf(codes.Internal, "failed to send refund stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send refund stream: [%v]", err)
 			}
 
 			return nil
@@ -522,7 +537,7 @@ func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
 
 			// End loop
 			if err = s.tradeService.SendMatchStream(trade.CaseMarketBidBigger, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
 			}
 
 			return nil
@@ -531,7 +546,7 @@ func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
 		case btcQuantity.Equal(quantity):
 			// End loop
 			if err = s.tradeService.SendMatchStream(trade.CaseMarketBidEqual, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
 			}
 
 			s.orderCache.Del(ask.OrderUUID)
@@ -540,7 +555,7 @@ func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
 		// Bid order : Partial filled, Ask order : Fulfilled
 		case btcQuantity.LessThan(quantity):
 			if err = s.tradeService.SendMatchStream(trade.CaseMarketBidSmaller, &grpc_order.BidAsk{Bid: bid, Ask: ask}); err != nil {
-				return status.Errorf(codes.Internal, "failed to send match stream: %v", err)
+				return status.Errorf(codes.Internal, "failed to send match stream: [%v]", err)
 			}
 			// Minus quantity and continue process...
 			quantity = quantity.Sub(askQuantity.Mul(askUnitPrice))
@@ -564,21 +579,21 @@ func (s *service) CancelOrder(uuid string) (order *grpc_order.Order, err error) 
 
 	order, err = s.orderCache.Get(uuid)
 	if err == cache.ErrKeyNotFound {
-		return nil, ErrOrderNotFound
+		return nil, errors.Join(ErrOrderNotFound, cache.ErrKeyNotFound)
 	}
 
 	switch order.OrderType {
 	case grpc_order.OrderType_BID:
 		order = s.orderBookRepository.RemoveBid(uuid)
 		if order == nil {
-			return nil, ErrOrderCancelFailed
+			return nil, errors.Join(ErrOrderCancelFailed, ErrOrderNotFound)
 		}
 		pushFunc = s.orderBookRepository.PushBid
 
 	case grpc_order.OrderType_ASK:
 		order = s.orderBookRepository.RemoveAsk(uuid)
 		if order == nil {
-			return nil, ErrOrderCancelFailed
+			return nil, errors.Join(ErrOrderCancelFailed, ErrOrderNotFound)
 		}
 		pushFunc = s.orderBookRepository.PushAsk
 	default:
@@ -591,7 +606,7 @@ func (s *service) CancelOrder(uuid string) (order *grpc_order.Order, err error) 
 	cancelled := utils.NewOrderCancelled(order.UserUUID, order.OrderUUID, quantity, unitPrice, order.OrderType, order.Symbol)
 	if err = s.tradeService.SendCancellationStream(cancelled); err != nil {
 		pushFunc(order)
-		return nil, ErrOrderCancelFailed
+		return nil, errors.Join(ErrOrderCancelFailed, err)
 	}
 	return order, nil
 }
