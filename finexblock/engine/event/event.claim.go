@@ -12,14 +12,14 @@ import (
 )
 
 func (e *engine) Claim() {
-	for {
-		var xMessages []redis.XMessage
-		var xPending *redis.XPending
-		var event proto.Message
-		var err error
+	var xMessages []redis.XMessage
+	var xPending *redis.XPending
+	var event proto.Message
+	var err error
 
-		var group = trade.EventGroup
-		var claimer = e.Claimer(trade.EventClaimer)
+	var group = trade.EventGroup
+	var claimer = e.Claimer(trade.EventClaimer)
+	for {
 
 		for _, stream := range streams {
 			xPending, err = e.ReadPendingStream(stream, group)

@@ -23,16 +23,16 @@ var (
 )
 
 func (e *engine) Consume() {
+	var event proto.Message
+	var xStreams []redis.XStream
+	var err error
+
+	var group = trade.EventGroup
+	var consumer = e.Consumer(trade.EventConsumer)
+
 	for {
-		var event proto.Message
-		var xStreams []redis.XStream
-		var err error
-
-		var group = trade.EventGroup
-		var consumer = e.Consumer(trade.EventConsumer)
-
 		for _, s := range streams {
-			xStreams, err = e.ReadStreams([]types.Stream{s}, group, consumer, 1000, 0)
+			xStreams, err = e.ReadStreams([]types.Stream{s}, group, consumer, 1000, -1)
 			if err != nil {
 				continue
 			}
@@ -55,28 +55,6 @@ func (e *engine) Consume() {
 				}
 			}
 		}
-		//
-		//xStreams, err = e.ReadStreams(streams, group, consumer, 1, 0)
-		//if err != nil {
-		//	continue
-		//}
-		//for _, stream := range xStreams {
-		//	for _, message := range stream.Messages {
-		//		go func(message redis.XMessage) {
-		//			event, err = e.ParseMessage(types.Stream(stream.Stream), message)
-		//			if err != nil {
-		//				// FIXME: error handling
-		//				return
-		//			}
-		//			if err = e.Do(types.Stream(stream.Stream), event); err != nil {
-		//				// FIXME: error handling
-		//				return
-		//			}
-		//
-		//			_ = e.tradeManager.AckStream(types.Stream(stream.Stream), group, message.ID)
-		//		}(message)
-		//	}
-		//}
 	}
 }
 
