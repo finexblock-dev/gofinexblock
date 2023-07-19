@@ -19,7 +19,6 @@ import (
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 	"math"
-	"time"
 )
 
 type service struct {
@@ -156,19 +155,19 @@ func (s *service) LoadOrderBook() (err error) {
 			return status.Errorf(codes.Internal, "failed to unmarshal bid order list: [%v]", err)
 		}
 
-		for _, ask := range askOrderList {
-			if err = s.orderCache.Set(ask.OrderUUID, ask); err == cache.ErrCacheFull {
-				_ = s.orderCache.Resize(s.orderCache.CurrentSize() * 2)
-				_ = s.orderCache.Set(ask.OrderUUID, ask)
-			}
-		}
-
-		for _, bid := range bidOrderList {
-			if err = s.orderCache.Set(bid.OrderUUID, bid); err == cache.ErrCacheFull {
-				_ = s.orderCache.Resize(s.orderCache.CurrentSize() * 2)
-				_ = s.orderCache.Set(bid.OrderUUID, bid)
-			}
-		}
+		//for _, ask := range askOrderList {
+		//	if err = s.orderCache.Set(ask.OrderUUID, ask); err == cache.ErrCacheFull {
+		//		_ = s.orderCache.Resize(s.orderCache.CurrentSize() * 2)
+		//		_ = s.orderCache.Set(ask.OrderUUID, ask)
+		//	}
+		//}
+		//
+		//for _, bid := range bidOrderList {
+		//	if err = s.orderCache.Set(bid.OrderUUID, bid); err == cache.ErrCacheFull {
+		//		_ = s.orderCache.Resize(s.orderCache.CurrentSize() * 2)
+		//		_ = s.orderCache.Set(bid.OrderUUID, bid)
+		//	}
+		//}
 
 		// Load order book
 		if err = s.orderBookRepository.LoadOrderBook(bidOrderList, askOrderList); err != nil {
@@ -193,10 +192,14 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 
 	// Cache order information
 	// FIXME: expiration time is 4 week now.
-	if err = s.orderCache.SetEX(ask.OrderUUID, ask, time.Hour*24*7*4); err == cache.ErrCacheFull {
-		_ = s.orderCache.Resize(s.orderCache.CurrentSize() * 2)
-		_ = s.orderCache.SetEX(ask.OrderUUID, ask, time.Hour*24*7*4)
+	if err = s.tradeService.SetOrder(ask.OrderUUID, ask.OrderType.String()); err != nil {
+		return status.Errorf(codes.Internal, "failed to set order: [%v]", err)
 	}
+
+	//if err = s.orderCache.SetEX(ask.OrderUUID, ask, time.Hour*24*7*4); err == cache.ErrCacheFull {
+	//	_ = s.orderCache.Resize(s.orderCache.CurrentSize() * 2)
+	//	_ = s.orderCache.SetEX(ask.OrderUUID, ask, time.Hour*24*7*4)
+	//}
 
 	askUnitPrice := decimal.NewFromFloat(ask.UnitPrice)
 
@@ -283,7 +286,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 			bid.Quantity = bidQuantity.Sub(quantity).InexactFloat64()
 			s.orderBookRepository.PushBid(bid)
 
-			s.orderCache.Del(ask.OrderUUID)
+			//s.orderCache.Del(ask.OrderUUID)
 			return group.Wait()
 		// Case of bid order quantity is equal to ask order quantity.
 		// Ask order : Fulfilled, Bid order : Fulfilled
@@ -294,8 +297,8 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 				}
 				return nil
 			})
-			s.orderCache.Del(ask.OrderUUID)
-			s.orderCache.Del(bid.OrderUUID)
+			//s.orderCache.Del(ask.OrderUUID)
+			//s.orderCache.Del(bid.OrderUUID)
 			return group.Wait()
 		// Case of bid order quantity is less than ask order quantity.
 		// Ask order : Partial filled, Bid order : Fulfilled
@@ -310,7 +313,7 @@ func (s *service) LimitAsk(ask *grpc_order.Order) (err error) {
 			// Minus quantity and continue process...
 			quantity = quantity.Sub(bidQuantity)
 
-			s.orderCache.Del(bid.OrderUUID)
+			//s.orderCache.Del(bid.OrderUUID)
 		}
 	}
 
@@ -325,10 +328,14 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 
 	// Cache order information
 	// FIXME: expiration time is 4 week now.
-	if err = s.orderCache.SetEX(bid.OrderUUID, bid, time.Hour*24*7*4); err == cache.ErrCacheFull {
-		_ = s.orderCache.Resize(s.orderCache.CurrentSize() * 2)
-		_ = s.orderCache.SetEX(bid.OrderUUID, bid, time.Hour*24*7*4)
+	if err = s.tradeService.SetOrder(bid.OrderUUID, bid.OrderType.String()); err != nil {
+		return status.Errorf(codes.Internal, "failed to set order: [%v]", err)
 	}
+
+	//if err = s.orderCache.SetEX(bid.OrderUUID, bid, time.Hour*24*7*4); err == cache.ErrCacheFull {
+	//	_ = s.orderCache.Resize(s.orderCache.CurrentSize() * 2)
+	//	_ = s.orderCache.SetEX(bid.OrderUUID, bid, time.Hour*24*7*4)
+	//}
 
 	bidUnitPrice := decimal.NewFromFloat(bid.UnitPrice)
 
@@ -361,7 +368,6 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 
 		// Get ask order to match
 		ask := s.orderBookRepository.PopAsk()
-		askUnitPrice := decimal.NewFromFloat(ask.UnitPrice)
 
 		// If there is no ask order, just place order
 		if ask == nil {
@@ -373,12 +379,13 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 				if err = s.tradeService.SendPlacementStream(placement); err != nil {
 					return status.Errorf(codes.Internal, "failed to send placement stream: [%v]", err)
 				}
-
 				return nil
 			})
 
 			return group.Wait()
 		}
+
+		askUnitPrice := decimal.NewFromFloat(ask.UnitPrice)
 
 		// When case of ask unit price is greater than bid unit price
 		if askUnitPrice.GreaterThan(bidUnitPrice) {
@@ -391,7 +398,6 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 			s.orderBookRepository.PushBid(bid)
 
 			// Send placement event
-
 			group.Go(func() error {
 				placement := utils.NewOrderPlacement(bid.UserUUID, bid.OrderUUID, quantity, bidUnitPrice, bid.OrderType, bid.Symbol)
 
@@ -426,7 +432,7 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 			// Update market price or not
 			s.orderBookRepository.PushAsk(ask)
 
-			s.orderCache.Del(bid.OrderUUID)
+			//s.orderCache.Del(bid.OrderUUID)
 
 			return group.Wait()
 		// Case of ask order quantity is equal to bid order quantity.
@@ -440,8 +446,8 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 				return nil
 			})
 
-			s.orderCache.Del(ask.OrderUUID)
-			s.orderCache.Del(bid.OrderUUID)
+			//s.orderCache.Del(ask.OrderUUID)
+			//s.orderCache.Del(bid.OrderUUID)
 			return group.Wait()
 		// Case of ask order quantity is less than bid order quantity.
 		// Bid order : Partial filled, Ask order : Fulfilled
@@ -457,7 +463,7 @@ func (s *service) LimitBid(bid *grpc_order.Order) (err error) {
 			// Minus quantity and continue process...
 			quantity = quantity.Sub(opQuantity)
 
-			s.orderCache.Del(ask.OrderUUID)
+			//s.orderCache.Del(ask.OrderUUID)
 		}
 	}
 
@@ -536,7 +542,7 @@ func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 				return nil
 			})
 
-			s.orderCache.Del(bid.OrderUUID)
+			//s.orderCache.Del(bid.OrderUUID)
 
 			return group.Wait()
 		// Case of bid order quantity is less than ask order quantity.
@@ -552,7 +558,7 @@ func (s *service) MarketAsk(ask *grpc_order.Order) (err error) {
 			// Minus quantity and continue process...
 			quantity = quantity.Sub(bidQuantity.Mul(mul))
 
-			s.orderCache.Del(bid.OrderUUID)
+			//s.orderCache.Del(bid.OrderUUID)
 		}
 	}
 
@@ -634,7 +640,7 @@ func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
 				return nil
 			})
 
-			s.orderCache.Del(ask.OrderUUID)
+			//s.orderCache.Del(ask.OrderUUID)
 			return group.Wait()
 		// Case of ask order quantity is less than bid order quantity.
 		// Bid order : Partial filled, Ask order : Fulfilled
@@ -648,7 +654,7 @@ func (s *service) MarketBid(bid *grpc_order.Order) (err error) {
 			})
 			// Minus quantity and continue process...
 			quantity = quantity.Sub(askQuantity.Mul(askUnitPrice))
-			s.orderCache.Del(ask.OrderUUID)
+			//s.orderCache.Del(ask.OrderUUID)
 		}
 	}
 
@@ -659,27 +665,34 @@ func (s *service) CancelOrder(uuid string) (order *grpc_order.Order, err error) 
 	defer func() {
 		s.askMarketPrice = s.orderBookRepository.AskMarketPrice()
 		s.bidMarketPrice = s.orderBookRepository.BidMarketPrice()
-		if err != nil {
-			s.orderCache.Del(uuid)
+		if err == nil {
+			//s.orderCache.Del(uuid)
+			_ = s.tradeService.DeleteOrder(uuid)
 		}
 	}()
 
 	var pushFunc func(*grpc_order.Order)
+	var value string
 
-	order, err = s.orderCache.Get(uuid)
-	if err == cache.ErrKeyNotFound {
-		return nil, errors.Join(ErrOrderNotFound, cache.ErrKeyNotFound)
+	value, err = s.tradeService.GetOrder(uuid)
+	if err != nil {
+		return nil, err
 	}
 
-	switch order.OrderType {
-	case grpc_order.OrderType_BID:
+	//order, err = s.orderCache.Get(uuid)
+	//if err == cache.ErrKeyNotFound {
+	//	return nil, errors.Join(ErrOrderNotFound, cache.ErrKeyNotFound)
+	//}
+
+	switch value {
+	case grpc_order.OrderType_BID.String():
 		order = s.orderBookRepository.RemoveBid(uuid)
 		if order == nil {
 			return nil, errors.Join(ErrOrderCancelFailed, ErrOrderNotFound)
 		}
 		pushFunc = s.orderBookRepository.PushBid
 
-	case grpc_order.OrderType_ASK:
+	case grpc_order.OrderType_ASK.String():
 		order = s.orderBookRepository.RemoveAsk(uuid)
 		if order == nil {
 			return nil, errors.Join(ErrOrderCancelFailed, ErrOrderNotFound)

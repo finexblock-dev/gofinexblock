@@ -78,6 +78,8 @@ func (e *engine) LimitAskBigger(pair *grpc_order.BidAsk) (err error) {
 		return status.Errorf(codes.Internal, "%v: failed to send order partial fill stream, %v", prefix, err)
 	}
 
+	_ = e.tradeManager.DeleteOrder(ask.OrderUUID)
+
 	if _, err = tx.Exec(ctx); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to execute pipeline, %v", prefix, err)
 	}
@@ -154,6 +156,9 @@ func (e *engine) LimitAskEqual(pair *grpc_order.BidAsk) (err error) {
 		return status.Errorf(codes.Internal, "%v: failed to execute pipeline, %v", prefix, err)
 	}
 
+	_ = e.tradeManager.DeleteOrder(ask.OrderUUID)
+	_ = e.tradeManager.DeleteOrder(bid.OrderUUID)
+
 	return nil
 }
 
@@ -223,6 +228,8 @@ func (e *engine) LimitAskSmaller(pair *grpc_order.BidAsk) (err error) {
 	if err = e.tradeManager.SendOrderFulfillmentStreamPipeline(tx, ctx, bidFulfillment); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to send order fulfillment stream, %v", prefix, err)
 	}
+
+	_ = e.tradeManager.DeleteOrder(bid.OrderUUID)
 
 	if _, err = tx.Exec(ctx); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to execute pipeline, %v", prefix, err)
@@ -297,6 +304,8 @@ func (e *engine) LimitBidBigger(pair *grpc_order.BidAsk) (err error) {
 	if err = e.tradeManager.SendOrderFulfillmentStreamPipeline(tx, ctx, bidFulfillment); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to send order fulfillment stream, %v", prefix, err)
 	}
+
+	_ = e.tradeManager.DeleteOrder(bid.OrderUUID)
 
 	if _, err = tx.Exec(ctx); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to execute pipeline, %v", prefix, err)
@@ -375,6 +384,9 @@ func (e *engine) LimitBidEqual(pair *grpc_order.BidAsk) (err error) {
 		return status.Errorf(codes.Internal, "%v: failed to execute pipeline, %v", prefix, err)
 	}
 
+	_ = e.tradeManager.DeleteOrder(ask.OrderUUID)
+	_ = e.tradeManager.DeleteOrder(bid.OrderUUID)
+
 	return nil
 }
 
@@ -446,6 +458,8 @@ func (e *engine) LimitBidSmaller(pair *grpc_order.BidAsk) (err error) {
 	if err = e.tradeManager.SendOrderFulfillmentStreamPipeline(tx, ctx, askFulfillment); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to send order fulfillment stream, %v", prefix, err)
 	}
+
+	_ = e.tradeManager.DeleteOrder(ask.OrderUUID)
 
 	if _, err = tx.Exec(ctx); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to execute pipeline, %v", prefix, err)
@@ -599,6 +613,8 @@ func (e *engine) MarketAskEqual(pair *grpc_order.BidAsk) (err error) {
 		return status.Errorf(codes.Internal, "%v: failed to send order fulfillment stream, %v", prefix, err)
 	}
 
+	_ = e.tradeManager.DeleteOrder(bid.OrderUUID)
+
 	if _, err = tx.Exec(ctx); err != nil {
 		return err
 	}
@@ -674,6 +690,8 @@ func (e *engine) MarketAskSmaller(pair *grpc_order.BidAsk) (err error) {
 	if err = e.tradeManager.SendOrderPartialFillStreamPipeline(tx, ctx, askPartialFill); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to send order partial fill stream, %v", prefix, err)
 	}
+
+	_ = e.tradeManager.DeleteOrder(bid.OrderUUID)
 
 	if _, err = tx.Exec(ctx); err != nil {
 		return err
@@ -827,6 +845,8 @@ func (e *engine) MarketBidEqual(pair *grpc_order.BidAsk) (err error) {
 		return status.Errorf(codes.Internal, "%v: failed to send order fulfillment stream, %v", prefix, err)
 	}
 
+	_ = e.tradeManager.DeleteOrder(ask.OrderUUID)
+
 	if _, err = tx.Exec(ctx); err != nil {
 		return err
 	}
@@ -902,6 +922,8 @@ func (e *engine) MarketBidSmaller(pair *grpc_order.BidAsk) (err error) {
 	if err = e.tradeManager.SendOrderFulfillmentStreamPipeline(tx, ctx, askFulfillment); err != nil {
 		return status.Errorf(codes.Internal, "%v: failed to send order fulfillment stream, %v", prefix, err)
 	}
+
+	_ = e.tradeManager.DeleteOrder(ask.OrderUUID)
 
 	if _, err = tx.Exec(ctx); err != nil {
 		return err
