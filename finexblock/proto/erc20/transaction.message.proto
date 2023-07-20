@@ -3,8 +3,9 @@ package erc20;
 option go_package = "/erc20";
 
 message TransferInput {
-  string To = 1 [json_name = "to"];
-  string Amount = 2 [json_name = "amount"];
+  string From = 1 [json_name = "from"];
+  string To = 2 [json_name = "to"];
+  string Amount = 3 [json_name = "amount"];
 }
 
 message TransferOutput {
