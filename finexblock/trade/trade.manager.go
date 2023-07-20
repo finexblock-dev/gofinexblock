@@ -41,7 +41,7 @@ func (m *manager) MinusBalanceWithTx(tx redis.Pipeliner, ctx context.Context, uu
 
 	decimalValue = decimalValue.Sub(amount)
 	if decimalValue.LessThan(decimal.Zero) {
-		return wrapErr(ErrNegativeBalance, err)
+		return ErrNegativeBalance
 	}
 	return m.SetBalanceWithTx(tx, ctx, uuid, currency, decimalValue)
 }
@@ -112,7 +112,7 @@ func (m *manager) MinusBalance(uuid, currency string, amount decimal.Decimal) er
 
 	decimalValue = decimalValue.Sub(amount)
 	if decimalValue.LessThan(decimal.Zero) {
-		return wrapErr(ErrNegativeBalance, err)
+		return ErrNegativeBalance
 	}
 	return m.SetBalance(uuid, currency, decimalValue)
 }

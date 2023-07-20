@@ -33,13 +33,14 @@ import (
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/secure"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/stream"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/structure"
+	"github.com/finexblock-dev/gofinexblock/finexblock/trade"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/trade"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/types"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/user"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/utils"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/wallet"
+	"github.com/shopspring/decimal"
 	"log"
-	"time"
 )
 
 func test(i int) (err error) {
@@ -53,15 +54,15 @@ func test(i int) (err error) {
 
 func main() {
 
-	var err error = nil
-
-	for i := 0; i < 10; i++ {
-		go func(i int) {
-			if err = test(i); err != nil {
-				log.Println(err)
-			}
-		}(i)
+	decimalValue, err := decimal.NewFromString("6363000")
+	if err != nil {
+		log.Panicln(trade.ErrDecimalParse)
 	}
 
-	time.Sleep(time.Hour)
+	amount := decimal.NewFromFloat(6363000)
+
+	decimalValue = decimalValue.Sub(amount)
+	if decimalValue.LessThan(decimal.Zero) {
+		log.Panicln(trade.ErrNegativeBalance)
+	}
 }
