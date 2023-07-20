@@ -9,5 +9,6 @@ message TransferInput {
 }
 
 message TransferOutput {
-
+  bool Success = 1 [json_name = "success"];
+  string TxHash = 2 [json_name = "tx_hash"];
 }
