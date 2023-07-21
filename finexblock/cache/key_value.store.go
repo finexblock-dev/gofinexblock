@@ -1,11 +1,62 @@
 package cache
 
-import "time"
+import (
+	"github.com/finexblock-dev/gofinexblock/finexblock/types"
+	"time"
+)
 
 type DefaultKeyValueStore[T any] struct {
 	size  int
 	store map[string]*T
 	exp   map[string]time.Time
+	get   chan types.GetKeyValueContext[string, *T]
+	set   chan types.SetKeyValueContext[string, *T]
+	del   chan string
+}
+
+func (k *DefaultKeyValueStore[T]) ConcurrentRead(key string) (*T, error) {
+	ctx := types.GetKeyValueContext[string, *T]{
+		Key:    key,
+		Result: make(chan *T),
+	}
+	k.get <- ctx
+	value := <-ctx.Result
+
+	if value == nil {
+		return nil, ErrKeyNotFound
+	}
+
+	return value, nil
+}
+
+func (k *DefaultKeyValueStore[T]) ConcurrentWrite(key string, value *T) error {
+	ctx := types.SetKeyValueContext[string, *T]{
+		Key:   key,
+		Value: value,
+	}
+
+	k.set <- ctx
+	return <-ctx.Err
+}
+
+func (k *DefaultKeyValueStore[T]) ConcurrentDelete(key string) {
+	if k.IsExist(key) {
+		k.del <- key
+	}
+}
+
+func (k *DefaultKeyValueStore[T]) Subscribe() {
+	for {
+		select {
+		case ctx := <-k.get:
+			value, _ := k.Get(ctx.Key)
+			ctx.Result <- value
+		case ctx := <-k.set:
+			ctx.Err <- k.Set(ctx.Key, ctx.Value)
+		case key := <-k.del:
+			k.Del(key)
+		}
+	}
 }
 
 func (k *DefaultKeyValueStore[T]) IsExist(key string) (exist bool) {
@@ -78,5 +129,5 @@ func (k *DefaultKeyValueStore[T]) Resize(size int) (err error) {
 }
 
 func NewDefaultKeyValueStore[T any](size int) *DefaultKeyValueStore[T] {
-	return &DefaultKeyValueStore[T]{size: 0, store: make(map[string]*T, size)}
+	return &DefaultKeyValueStore[T]{size: size, store: make(map[string]*T, size)}
 }

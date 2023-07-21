@@ -21,6 +21,8 @@ type orderService struct {
 	orderRepository Repository
 	userRepository  user.Repository
 	userCache       *cache.DefaultKeyValueStore[entity.User]
+	orderCache      *cache.DefaultKeyValueStore[entity.OrderBook]
+	symbolCache     *cache.DefaultKeyValueStore[entity.OrderSymbol]
 }
 
 func (o *orderService) MarketOrderMatchingInBatch(event []*grpc_order.MarketOrderMatching) (err error) {
@@ -37,22 +39,17 @@ func (o *orderService) MarketOrderMatchingInBatch(event []*grpc_order.MarketOrde
 		var matchingHistories []*entity.OrderMatchingHistory
 		var _matchingHistory *entity.OrderMatchingHistory
 
-		// Mapping for cache user
-		var userCache = cache.NewDefaultKeyValueStore[entity.User](len(event))
-		// Mapping for cache symbol
-		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
-
 		for _, v := range event {
 			// Memoize user uuid
-			if _user, err = userCache.Get(v.UserUUID); err != nil {
+			if _user, err = o.userCache.ConcurrentRead(v.UserUUID); err != nil {
 				userUUIDs = append(userUUIDs, v.UserUUID)
-				_ = userCache.Set(v.UserUUID, new(entity.User))
+				_ = o.userCache.ConcurrentWrite(v.UserUUID, new(entity.User))
 			}
 
 			// Memoize symbol name
-			if _symbol, err = symbolCache.Get(v.Symbol.String()); err != nil {
+			if _symbol, err = o.symbolCache.ConcurrentRead(v.Symbol.String()); err != nil {
 				symbolNames = append(symbolNames, v.Symbol.String())
-				_ = symbolCache.Set(v.Symbol.String(), new(entity.OrderSymbol))
+				_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), new(entity.OrderSymbol))
 			}
 		}
 
@@ -63,7 +60,7 @@ func (o *orderService) MarketOrderMatchingInBatch(event []*grpc_order.MarketOrde
 
 		// Memoize user
 		for _, v := range users {
-			_ = userCache.Set(v.UUID, v)
+			_ = o.userCache.ConcurrentWrite(v.UUID, v)
 		}
 
 		// SELECT * FROM order_symbol WHERE name IN (...)
@@ -73,16 +70,16 @@ func (o *orderService) MarketOrderMatchingInBatch(event []*grpc_order.MarketOrde
 
 		// Memoize symbol
 		for _, v := range symbols {
-			_ = symbolCache.Set(v.Name, v)
+			_ = o.symbolCache.ConcurrentWrite(v.Name, v)
 		}
 
 		for _, v := range event {
-			_symbol, err = symbolCache.Get(v.GetSymbol().String())
+			_symbol, err = o.symbolCache.ConcurrentRead(v.GetSymbol().String())
 			if err == cache.ErrKeyNotFound {
 				continue
 			}
 
-			_user, err = userCache.Get(v.GetUserUUID())
+			_user, err = o.userCache.ConcurrentRead(v.GetUserUUID())
 			if err == cache.ErrKeyNotFound {
 				continue
 			}
@@ -191,8 +188,6 @@ func (o *orderService) FindRecentIntervalByDuration(duration types.Duration) (re
 
 func (o *orderService) OrderMatchingEventInBatch(event []*grpc_order.OrderMatching) (err error) {
 	return o.Conn().Transaction(func(tx *gorm.DB) error {
-		// symbol cache for memoization
-		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
 		// symbols
 		var symbols []*entity.OrderSymbol
 		// symbol
@@ -205,10 +200,10 @@ func (o *orderService) OrderMatchingEventInBatch(event []*grpc_order.OrderMatchi
 		var orderMatchingEvents []*entity.OrderMatchingEvent
 
 		for _, v := range event {
-			if _, err = symbolCache.Get(v.Symbol.String()); err == cache.ErrKeyNotFound {
+			if _, err = o.symbolCache.ConcurrentRead(v.Symbol.String()); err == cache.ErrKeyNotFound {
 				symbolNames = append(symbolNames, v.Symbol.String())
 				// absolute ignore error
-				_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+				_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
 			}
 		}
 
@@ -220,7 +215,7 @@ func (o *orderService) OrderMatchingEventInBatch(event []*grpc_order.OrderMatchi
 
 		for _, symbol := range symbols {
 			// absolute ignore error
-			_ = symbolCache.Set(symbol.Name, symbol)
+			_ = o.symbolCache.ConcurrentWrite(symbol.Name, symbol)
 		}
 
 		recentInterval, err = o.orderRepository.FindRecentIntervalByDuration(tx, types.OneMinute)
@@ -229,7 +224,7 @@ func (o *orderService) OrderMatchingEventInBatch(event []*grpc_order.OrderMatchi
 		}
 
 		for _, v := range event {
-			_symbol, err = symbolCache.Get(v.Symbol.String())
+			_symbol, err = o.symbolCache.ConcurrentRead(v.Symbol.String())
 			if err == cache.ErrKeyNotFound {
 				continue
 			}
@@ -250,10 +245,6 @@ func (o *orderService) OrderMatchingEventInBatch(event []*grpc_order.OrderMatchi
 func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFulfillment) (remain []*grpc_order.OrderFulfillment, err error) {
 	// case of failed to handle order fulfillment event
 	if err = o.orderRepository.Conn().Transaction(func(tx *gorm.DB) error {
-		var userCache = cache.NewDefaultKeyValueStore[entity.User](len(event))
-		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
-		var orderCache = cache.NewDefaultKeyValueStore[entity.OrderBook](len(event))
-
 		var orderBookDifferences []*entity.OrderBookDifference
 
 		var orderMatchingHistories []*entity.OrderMatchingHistory
@@ -272,19 +263,19 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 
 		// Cache all data for select and batch insert
 		for _, v := range event {
-			if _, err = userCache.Get(v.UserUUID); err == cache.ErrKeyNotFound {
+			if _, err = o.userCache.ConcurrentRead(v.UserUUID); err == cache.ErrKeyNotFound {
 				userUUIDs = append(userUUIDs, v.UserUUID)
-				_ = userCache.Set(v.UserUUID, &entity.User{UUID: v.UserUUID})
+				_ = o.userCache.ConcurrentWrite(v.UserUUID, &entity.User{UUID: v.UserUUID})
 			}
 
-			if _, err = symbolCache.Get(v.Symbol.String()); err == cache.ErrKeyNotFound {
+			if _, err = o.symbolCache.ConcurrentRead(v.Symbol.String()); err == cache.ErrKeyNotFound {
 				symbolNames = append(symbolNames, v.Symbol.String())
-				_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+				_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
 			}
 
-			if _, err = orderCache.Get(v.OrderUUID); err == cache.ErrKeyNotFound {
+			if _, err = o.orderCache.ConcurrentRead(v.OrderUUID); err == cache.ErrKeyNotFound {
 				orderUUIDs = append(orderUUIDs, v.OrderUUID)
-				_ = orderCache.Set(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
+				_ = o.orderCache.ConcurrentWrite(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
 			}
 		}
 
@@ -294,8 +285,8 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 			return err
 		}
 
-		for _, _user := range users {
-			_ = userCache.Set(_user.UUID, _user)
+		for _, _user = range users {
+			_ = o.userCache.ConcurrentWrite(_user.UUID, _user)
 		}
 
 		// find all symbols
@@ -304,8 +295,8 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 			return err
 		}
 
-		for _, _symbol := range symbols {
-			_ = symbolCache.Set(_symbol.Name, _symbol)
+		for _, _symbol = range symbols {
+			_ = o.symbolCache.ConcurrentWrite(_symbol.Name, _symbol)
 		}
 
 		// find all orders
@@ -319,24 +310,24 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 			return err
 		}
 
-		for _, _order := range orders {
-			_ = orderCache.Set(_order.OrderUUID, _order)
+		for _, _order = range orders {
+			_ = o.orderCache.ConcurrentWrite(_order.OrderUUID, _order)
 		}
 
 		for _, v := range event {
-			_symbol, err = symbolCache.Get(v.Symbol.String())
+			_symbol, err = o.symbolCache.ConcurrentRead(v.Symbol.String())
 			if err == cache.ErrKeyNotFound {
 				remain = append(remain, v)
 				continue
 			}
 
-			_user, err = userCache.Get(v.UserUUID)
+			_user, err = o.userCache.ConcurrentRead(v.UserUUID)
 			if err == cache.ErrKeyNotFound {
 				remain = append(remain, v)
 				continue
 			}
 
-			_order, err = orderCache.Get(v.OrderUUID)
+			_order, err = o.orderCache.ConcurrentRead(v.OrderUUID)
 			if err == cache.ErrKeyNotFound {
 				remain = append(remain, v)
 				continue
@@ -357,6 +348,8 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 				Fee:            decimal.NewFromFloat(v.Fee.Amount),
 				OrderType:      _order.OrderType,
 			})
+
+			o.orderCache.ConcurrentDelete(_order.OrderUUID)
 		}
 
 		if err = o.orderRepository.BatchInsertOrderBookDifference(tx, orderBookDifferences); err != nil {
@@ -374,10 +367,6 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPartialFill) (remain []*grpc_order.OrderPartialFill, err error) {
 	// case of failed to handle order partial fill event
 	if err = o.orderRepository.Conn().Transaction(func(tx *gorm.DB) error {
-		var userCache = cache.NewDefaultKeyValueStore[entity.User](len(event))
-		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
-		var orderCache = cache.NewDefaultKeyValueStore[entity.OrderBook](len(event))
-
 		var orderBookDifferences []*entity.OrderBookDifference
 
 		var orderMatchingHistories []*entity.OrderMatchingHistory
@@ -396,19 +385,19 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 
 		// Cache all data for select and batch insert
 		for _, v := range event {
-			if _, err = userCache.Get(v.UserUUID); err == cache.ErrKeyNotFound {
+			if _, err = o.userCache.ConcurrentRead(v.UserUUID); err == cache.ErrKeyNotFound {
 				userUUIDs = append(userUUIDs, v.UserUUID)
-				_ = userCache.Set(v.UserUUID, &entity.User{UUID: v.UserUUID})
+				_ = o.userCache.ConcurrentWrite(v.UserUUID, &entity.User{UUID: v.UserUUID})
 			}
 
-			if _, err = symbolCache.Get(v.Symbol.String()); err == cache.ErrKeyNotFound {
+			if _, err = o.symbolCache.ConcurrentRead(v.Symbol.String()); err == cache.ErrKeyNotFound {
 				symbolNames = append(symbolNames, v.Symbol.String())
-				_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+				_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
 			}
 
-			if _, err = orderCache.Get(v.OrderUUID); err == cache.ErrKeyNotFound {
+			if _, err = o.orderCache.ConcurrentRead(v.OrderUUID); err == cache.ErrKeyNotFound {
 				orderUUIDs = append(orderUUIDs, v.OrderUUID)
-				_ = orderCache.Set(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
+				_ = o.orderCache.ConcurrentWrite(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
 			}
 		}
 
@@ -419,7 +408,7 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 		}
 
 		for _, _user := range users {
-			_ = userCache.Set(_user.UUID, _user)
+			_ = o.userCache.ConcurrentWrite(_user.UUID, _user)
 		}
 
 		// find all symbols
@@ -429,7 +418,7 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 		}
 
 		for _, _symbol := range symbols {
-			_ = symbolCache.Set(_symbol.Name, _symbol)
+			_ = o.symbolCache.ConcurrentWrite(_symbol.Name, _symbol)
 		}
 
 		// find all orders
@@ -445,23 +434,23 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 		//}
 
 		for _, _order := range orders {
-			_ = orderCache.Set(_order.OrderUUID, _order)
+			_ = o.orderCache.ConcurrentWrite(_order.OrderUUID, _order)
 		}
 
 		for _, v := range event {
-			_symbol, err = symbolCache.Get(v.Symbol.String())
+			_symbol, err = o.symbolCache.ConcurrentRead(v.Symbol.String())
 			if err == cache.ErrKeyNotFound {
 				remain = append(remain, v)
 				continue
 			}
 
-			_user, err = userCache.Get(v.UserUUID)
+			_user, err = o.userCache.ConcurrentRead(v.UserUUID)
 			if err == cache.ErrKeyNotFound {
 				remain = append(remain, v)
 				continue
 			}
 
-			_order, err = orderCache.Get(v.OrderUUID)
+			_order, err = o.orderCache.ConcurrentRead(v.OrderUUID)
 			if err == cache.ErrKeyNotFound {
 				remain = append(remain, v)
 				continue
@@ -508,18 +497,15 @@ func (o *orderService) LimitOrderInitializeInBatch(event []*grpc_order.OrderInit
 
 		var orders []*entity.OrderBook
 
-		var userCache = cache.NewDefaultKeyValueStore[entity.User](len(event))
-		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
-
 		for _, v := range event {
-			if _, err = userCache.Get(v.UserUUID); err == cache.ErrKeyNotFound {
+			if _, err = o.userCache.ConcurrentRead(v.UserUUID); err == cache.ErrKeyNotFound {
 				userUUIDs = append(userUUIDs, v.UserUUID)
-				_ = userCache.Set(v.UserUUID, &entity.User{UUID: v.UserUUID})
+				_ = o.userCache.ConcurrentWrite(v.UserUUID, &entity.User{UUID: v.UserUUID})
 			}
 
-			if _, err = symbolCache.Get(v.Symbol.String()); err == cache.ErrKeyNotFound {
+			if _, err = o.symbolCache.ConcurrentRead(v.Symbol.String()); err == cache.ErrKeyNotFound {
 				symbolNames = append(symbolNames, v.Symbol.String())
-				_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+				_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
 			}
 		}
 
@@ -530,7 +516,7 @@ func (o *orderService) LimitOrderInitializeInBatch(event []*grpc_order.OrderInit
 		}
 
 		for _, _user = range users {
-			_ = userCache.Set(_user.UUID, _user)
+			_ = o.userCache.ConcurrentWrite(_user.UUID, _user)
 		}
 
 		symbols, err = o.orderRepository.FindManySymbolByName(tx, symbolNames)
@@ -539,16 +525,16 @@ func (o *orderService) LimitOrderInitializeInBatch(event []*grpc_order.OrderInit
 		}
 
 		for _, _symbol = range symbols {
-			_ = symbolCache.Set(_symbol.Name, _symbol)
+			_ = o.symbolCache.ConcurrentWrite(_symbol.Name, _symbol)
 		}
 
 		for _, v := range event {
-			_symbol, err = symbolCache.Get(v.Symbol.String())
+			_symbol, err = o.symbolCache.ConcurrentRead(v.Symbol.String())
 			if err == cache.ErrKeyNotFound {
 				continue
 			}
 
-			_user, err = userCache.Get(v.UserUUID)
+			_user, err = o.userCache.ConcurrentRead(v.UserUUID)
 			if err == cache.ErrKeyNotFound {
 				continue
 			}
@@ -584,9 +570,6 @@ func (o *orderService) ChartDraw(event []*grpc_order.OrderMatching) (err error) 
 		var recentPoles []*entity.Chart
 		var poleIDs []uint
 		var pole *entity.Chart
-
-		// cache symbol
-		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
 
 		// cache price for each symbol
 		var poleDataCache = cache.NewDefaultKeyValueStore[types.PoleData](len(event))
@@ -633,7 +616,7 @@ func (o *orderService) ChartDraw(event []*grpc_order.OrderMatching) (err error) 
 		}
 
 		for _, v := range symbols {
-			_ = symbolCache.Set(strconv.Itoa(int(v.ID)), v)
+			_ = o.symbolCache.ConcurrentWrite(strconv.Itoa(int(v.ID)), v)
 			symbolIDs = append(symbolIDs, v.ID)
 		}
 
@@ -653,7 +636,7 @@ func (o *orderService) ChartDraw(event []*grpc_order.OrderMatching) (err error) 
 
 		for _, pole = range recentPoles {
 			poleIDs = append(poleIDs, pole.ID)
-			_symbol, err = symbolCache.Get(strconv.Itoa(int(pole.OrderSymbolID)))
+			_symbol, err = o.symbolCache.ConcurrentRead(strconv.Itoa(int(pole.OrderSymbolID)))
 			if err == cache.ErrKeyNotFound {
 				continue
 			}
@@ -707,7 +690,6 @@ func (o *orderService) LimitOrderCancellationInBatch(event []*grpc_order.OrderCa
 	if err = o.Conn().Transaction(func(tx *gorm.DB) error {
 		var orderUUIDs []string
 		var orders []*entity.OrderBook
-		var orderCache = cache.NewDefaultKeyValueStore[entity.OrderBook](len(event))
 
 		for _, v := range event {
 			orderUUIDs = append(orderUUIDs, v.OrderUUID)
@@ -719,13 +701,17 @@ func (o *orderService) LimitOrderCancellationInBatch(event []*grpc_order.OrderCa
 		}
 
 		for _, v := range orders {
-			_ = orderCache.Set(v.OrderUUID, v)
+			_ = o.orderCache.ConcurrentWrite(v.OrderUUID, v)
 		}
 
 		for _, cancellation := range event {
-			if _, err = orderCache.Get(cancellation.OrderUUID); err == cache.ErrKeyNotFound {
+			if _, err = o.orderCache.ConcurrentRead(cancellation.OrderUUID); err == cache.ErrKeyNotFound {
 				remain = append(remain, cancellation)
 			}
+		}
+
+		for _, uuid := range orderUUIDs {
+			o.orderCache.ConcurrentDelete(uuid)
 		}
 
 		return o.orderRepository.BatchUpdateOrderBookStatus(tx, orderUUIDs, types.Cancelled)
@@ -797,5 +783,11 @@ func (o *orderService) CtxWithCancel(ctx context.Context) (context.Context, cont
 }
 
 func newOrderService(db *gorm.DB) *orderService {
-	return &orderService{orderRepository: newOrderRepository(db), userRepository: user.NewRepository(db), userCache: cache.NewDefaultKeyValueStore[entity.User](math.MaxInt)}
+	return &orderService{
+		orderRepository: newOrderRepository(db),
+		userRepository:  user.NewRepository(db),
+		userCache:       cache.NewDefaultKeyValueStore[entity.User](math.MaxInt),
+		orderCache:      cache.NewDefaultKeyValueStore[entity.OrderBook](math.MaxInt),
+		symbolCache:     cache.NewDefaultKeyValueStore[entity.OrderSymbol](math.MaxInt),
+	}
 }
