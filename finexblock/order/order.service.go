@@ -43,13 +43,13 @@ func (o *orderService) MarketOrderMatchingInBatch(event []*grpc_order.MarketOrde
 			// Memoize user uuid
 			if _user, err = o.userCache.ConcurrentRead(v.UserUUID); err != nil {
 				userUUIDs = append(userUUIDs, v.UserUUID)
-				_ = o.userCache.ConcurrentWrite(v.UserUUID, new(entity.User))
+				//_ = o.userCache.ConcurrentWrite(v.UserUUID, new(entity.User))
 			}
 
 			// Memoize symbol name
 			if _symbol, err = o.symbolCache.ConcurrentRead(v.Symbol.String()); err != nil {
 				symbolNames = append(symbolNames, v.Symbol.String())
-				_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), new(entity.OrderSymbol))
+				//_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), new(entity.OrderSymbol))
 			}
 		}
 
@@ -203,7 +203,7 @@ func (o *orderService) OrderMatchingEventInBatch(event []*grpc_order.OrderMatchi
 			if _, err = o.symbolCache.ConcurrentRead(v.Symbol.String()); err == cache.ErrKeyNotFound {
 				symbolNames = append(symbolNames, v.Symbol.String())
 				// absolute ignore error
-				_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+				//_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
 			}
 		}
 
@@ -265,17 +265,17 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 		for _, v := range event {
 			if _, err = o.userCache.ConcurrentRead(v.UserUUID); err == cache.ErrKeyNotFound {
 				userUUIDs = append(userUUIDs, v.UserUUID)
-				_ = o.userCache.ConcurrentWrite(v.UserUUID, &entity.User{UUID: v.UserUUID})
+				//_ = o.userCache.ConcurrentWrite(v.UserUUID, &entity.User{UUID: v.UserUUID})
 			}
 
 			if _, err = o.symbolCache.ConcurrentRead(v.Symbol.String()); err == cache.ErrKeyNotFound {
 				symbolNames = append(symbolNames, v.Symbol.String())
-				_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+				//_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
 			}
 
 			if _, err = o.orderCache.ConcurrentRead(v.OrderUUID); err == cache.ErrKeyNotFound {
 				orderUUIDs = append(orderUUIDs, v.OrderUUID)
-				_ = o.orderCache.ConcurrentWrite(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
+				//_ = o.orderCache.ConcurrentWrite(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
 			}
 		}
 
@@ -387,17 +387,17 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 		for _, v := range event {
 			if _, err = o.userCache.ConcurrentRead(v.UserUUID); err == cache.ErrKeyNotFound {
 				userUUIDs = append(userUUIDs, v.UserUUID)
-				_ = o.userCache.ConcurrentWrite(v.UserUUID, &entity.User{UUID: v.UserUUID})
+				//_ = o.userCache.ConcurrentWrite(v.UserUUID, &entity.User{UUID: v.UserUUID})
 			}
 
 			if _, err = o.symbolCache.ConcurrentRead(v.Symbol.String()); err == cache.ErrKeyNotFound {
 				symbolNames = append(symbolNames, v.Symbol.String())
-				_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+				//_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
 			}
 
 			if _, err = o.orderCache.ConcurrentRead(v.OrderUUID); err == cache.ErrKeyNotFound {
 				orderUUIDs = append(orderUUIDs, v.OrderUUID)
-				_ = o.orderCache.ConcurrentWrite(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
+				//_ = o.orderCache.ConcurrentWrite(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
 			}
 		}
 
@@ -407,7 +407,7 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 			return err
 		}
 
-		for _, _user := range users {
+		for _, _user = range users {
 			_ = o.userCache.ConcurrentWrite(_user.UUID, _user)
 		}
 
@@ -417,7 +417,7 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 			return err
 		}
 
-		for _, _symbol := range symbols {
+		for _, _symbol = range symbols {
 			_ = o.symbolCache.ConcurrentWrite(_symbol.Name, _symbol)
 		}
 
@@ -433,7 +433,7 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 		//	return err
 		//}
 
-		for _, _order := range orders {
+		for _, _order = range orders {
 			_ = o.orderCache.ConcurrentWrite(_order.OrderUUID, _order)
 		}
 
@@ -500,12 +500,12 @@ func (o *orderService) LimitOrderInitializeInBatch(event []*grpc_order.OrderInit
 		for _, v := range event {
 			if _, err = o.userCache.ConcurrentRead(v.UserUUID); err == cache.ErrKeyNotFound {
 				userUUIDs = append(userUUIDs, v.UserUUID)
-				_ = o.userCache.ConcurrentWrite(v.UserUUID, &entity.User{UUID: v.UserUUID})
+				//_ = o.userCache.ConcurrentWrite(v.UserUUID, &entity.User{UUID: v.UserUUID})
 			}
 
 			if _, err = o.symbolCache.ConcurrentRead(v.Symbol.String()); err == cache.ErrKeyNotFound {
 				symbolNames = append(symbolNames, v.Symbol.String())
-				_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+				//_ = o.symbolCache.ConcurrentWrite(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
 			}
 		}
 
