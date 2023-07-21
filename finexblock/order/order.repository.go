@@ -73,7 +73,7 @@ func (o *orderRepository) InsertOrderInterval(tx *gorm.DB, interval *entity.Orde
 func (o *orderRepository) FindChartByInterval(tx *gorm.DB, intervalID uint) (result []*entity.Chart, err error) {
 	var _table *entity.Chart
 
-	if err = tx.Table(_table.TableName()).Where("interval_id = ?", intervalID).Find(&result).Error; err != nil {
+	if err = tx.Table(_table.TableName()).Where("order_interval_id = ?", intervalID).Find(&result).Error; err != nil {
 		return nil, err
 	}
 
