@@ -38,7 +38,6 @@ import (
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/user"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/utils"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/wallet"
-	"net"
 )
 
 func test(i int) (err error) {
@@ -52,29 +51,4 @@ func test(i int) (err error) {
 
 func main() {
 
-	interfaces, err := net.Interfaces()
-	if err != nil {
-		panic(err)
-	}
-
-	for _, i := range interfaces {
-		addrs, err := i.Addrs()
-		if err != nil {
-			panic(err)
-		}
-
-		for _, addr := range addrs {
-			var ip net.IP
-			switch v := addr.(type) {
-			case *net.IPNet:
-				ip = v.IP
-			case *net.IPAddr:
-				ip = v.IP
-			}
-
-			if ip != nil && ip.IsPrivate() {
-				fmt.Println(ip)
-			}
-		}
-	}
 }
