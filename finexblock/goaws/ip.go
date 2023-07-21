@@ -16,8 +16,8 @@ func OwnPrivateIP() (ip string, err error) {
 	defer func(Body io.ReadCloser) {
 		_ = Body.Close()
 	}(response.Body)
-	bytes, err = io.ReadAll(response.Body)
 	if err != nil {
+		bytes, err = io.ReadAll(response.Body)
 		return "", err
 	}
 

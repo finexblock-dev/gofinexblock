@@ -12,11 +12,12 @@ import (
 )
 
 func (e *engine) Consume() {
+	var consumer = e.Consumer(trade.MatchConsumer)
 	for {
 		var xStreams []redis.XStream
 		var err error
 
-		xStreams, err = e.ReadStream(trade.MatchStream, trade.MatchGroup, e.Consumer(trade.MatchConsumer), 1000, 0)
+		xStreams, err = e.ReadStream(trade.MatchStream, trade.MatchGroup, consumer, 1000, 0)
 		if err != nil {
 			log.Printf("failed to read stream: %v", err)
 			// FIXME: error handling

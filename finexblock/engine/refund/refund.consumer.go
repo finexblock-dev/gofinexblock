@@ -12,11 +12,11 @@ import (
 )
 
 func (e *engine) Consume() {
-	for {
-		var xStreams []redis.XStream
-		var err error
+	var xStreams []redis.XStream
+	var err error
 
-		var consumer = e.Consumer(trade.BalanceUpdateConsumer)
+	var consumer = e.Consumer(trade.BalanceUpdateConsumer)
+	for {
 
 		xStreams, err = e.ReadStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, consumer, 1000, 0)
 		if err != nil {

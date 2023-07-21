@@ -15,9 +15,9 @@ func (e *engine) Claim() {
 	var xMessages []redis.XMessage
 	var xPending *redis.XPending
 	var err error
-
 	var group = trade.EventGroup
 	var claimer = e.Claimer(trade.EventClaimer)
+
 	for {
 
 		for _, stream := range streams {

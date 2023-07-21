@@ -12,12 +12,12 @@ import (
 )
 
 func (e *engine) Claim() {
-	for {
-		var xMessages []redis.XMessage
-		var xPending *redis.XPending
-		var err error
+	var xMessages []redis.XMessage
+	var xPending *redis.XPending
+	var err error
+	var claimer = e.Claimer(trade.BalanceUpdateClaimer)
 
-		var claimer = e.Claimer(trade.BalanceUpdateClaimer)
+	for {
 
 		xPending, err = e.ReadPendingStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup)
 		if err != nil {

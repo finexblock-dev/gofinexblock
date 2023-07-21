@@ -12,12 +12,11 @@ import (
 )
 
 func (e *engine) Claim() {
+	var claimer = e.Claimer(trade.OrderCancellationClaimer)
 	for {
 		var xMessages []redis.XMessage
 		var xPending *redis.XPending
 		var err error
-
-		var claimer = e.Claimer(trade.OrderCancellationClaimer)
 
 		xPending, err = e.ReadPendingStream(trade.OrderCancellationStream, trade.OrderCancellationGroup)
 		if err != nil {
