@@ -153,7 +153,7 @@ func (o *orderRepository) FindSymbolByID(tx *gorm.DB, id uint) (result *entity.O
 func (o *orderRepository) FindManyOrderByUUID(tx *gorm.DB, uuids []string) (result []*entity.OrderBook, err error) {
 	var _table = &entity.OrderBook{}
 
-	if err = tx.Table(_table.TableName()).Where("uuid IN ?", uuids).Find(&result).Error; err != nil {
+	if err = tx.Table(_table.TableName()).Where("order_uuid IN ?", uuids).Find(&result).Error; err != nil {
 		return nil, err
 	}
 	return result, nil

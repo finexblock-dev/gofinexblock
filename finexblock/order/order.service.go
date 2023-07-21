@@ -8,6 +8,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/cache"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
+	"github.com/finexblock-dev/gofinexblock/finexblock/safety"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/finexblock-dev/gofinexblock/finexblock/user"
 	"github.com/shopspring/decimal"
@@ -783,6 +784,14 @@ func (o *orderService) CtxWithCancel(ctx context.Context) (context.Context, cont
 }
 
 func newOrderService(db *gorm.DB) *orderService {
+	userCache := cache.NewDefaultKeyValueStore[entity.User](math.MaxInt)
+	orderCache := cache.NewDefaultKeyValueStore[entity.OrderBook](math.MaxInt)
+	symbolCache := cache.NewDefaultKeyValueStore[entity.OrderSymbol](math.MaxInt)
+
+	safety.InfinitySubscribe(userCache)
+	safety.InfinitySubscribe(orderCache)
+	safety.InfinitySubscribe(symbolCache)
+
 	return &orderService{
 		orderRepository: newOrderRepository(db),
 		userRepository:  user.NewRepository(db),

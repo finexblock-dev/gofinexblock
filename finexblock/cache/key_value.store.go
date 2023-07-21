@@ -129,5 +129,12 @@ func (k *DefaultKeyValueStore[T]) Resize(size int) (err error) {
 }
 
 func NewDefaultKeyValueStore[T any](size int) *DefaultKeyValueStore[T] {
-	return &DefaultKeyValueStore[T]{size: size, store: make(map[string]*T, size)}
+	return &DefaultKeyValueStore[T]{
+		size:  size,
+		store: make(map[string]*T, size),
+		exp:   make(map[string]time.Time, size),
+		get:   make(chan types.GetKeyValueContext[string, *T], size),
+		set:   make(chan types.SetKeyValueContext[string, *T], size),
+		del:   make(chan string, size),
+	}
 }
