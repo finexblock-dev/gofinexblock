@@ -11,7 +11,7 @@ type Coin struct {
 	CreatedAt    time.Time `gorm:"not null;comment:'생성일자';default:CURRENT_TIMESTAMP;type:timestamp"`
 	UpdatedAt    time.Time `gorm:"not null;comment:'수정일자';default:CURRENT_TIMESTAMP;type:timestamp"`
 
-	Wallet []Wallet `gorm:"foreignKey:WalletID;constraint:OnUpdate:CASCADE;"`
+	Wallet []*Wallet `gorm:"foreignKey:CoinID;constraint:OnUpdate:CASCADE;"`
 }
 
 func (c *Coin) Alias() string {
