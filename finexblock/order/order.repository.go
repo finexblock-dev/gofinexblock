@@ -32,7 +32,7 @@ func (o *orderRepository) BatchInsertOrderBook(tx *gorm.DB, orders []*entity.Ord
 func (o *orderRepository) BatchUpdateOrderBookStatus(tx *gorm.DB, orderUUIDs []string, status types.OrderStatus) (err error) {
 	var _table *entity.OrderBook
 
-	if err = tx.Table(_table.TableName()).Where("uuid IN ?", orderUUIDs).Update("status", status).Error; err != nil {
+	if err = tx.Table(_table.TableName()).Where("order_uuid IN ?", orderUUIDs).Update("status", status).Error; err != nil {
 		return err
 	}
 	return nil
