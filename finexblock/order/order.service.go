@@ -784,7 +784,7 @@ func (o *orderService) CtxWithCancel(ctx context.Context) (context.Context, cont
 
 func newOrderService(db *gorm.DB) *orderService {
 	userCache := cache.NewDefaultKeyValueStore[entity.User](10000)
-	orderCache := cache.NewDefaultKeyValueStore[entity.OrderBook](50000000)
+	orderCache := cache.NewDefaultKeyValueStore[entity.OrderBook](10000)
 	symbolCache := cache.NewDefaultKeyValueStore[entity.OrderSymbol](50)
 
 	safety.InfinitySubscribe(userCache)
