@@ -55,7 +55,7 @@ func (i *imageRepository) UploadFiles(tx *gorm.DB, f *multipart.Form, bucket, ba
 		result = append(result, img)
 	}
 
-	if err = tx.Table(table.TableName()).CreateInBatches(&result, len(result)).Error; err != nil {
+	if err = tx.Table(table.TableName()).CreateInBatches(&result, 100).Error; err != nil {
 		return nil, err
 	}
 

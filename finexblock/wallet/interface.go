@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
+	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
@@ -78,6 +79,8 @@ type Service interface {
 	ScanWithdrawalRequestByStatus(status entity.WithdrawalStatus) (result []*entity.WithdrawalRequest, err error)
 	ScanWithdrawalRequestByCond(coinID uint, status entity.WithdrawalStatus) (result []*entity.WithdrawalRequest, err error)
 	UpdateWithdrawalRequest(id uint, state entity.WithdrawalStatus) (result *entity.WithdrawalRequest, err error)
+
+	BalanceUpdateInBatch(event []*grpc_order.BalanceUpdate) (err error)
 }
 
 func NewRepository(db *gorm.DB) Repository {

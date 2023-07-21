@@ -3,13 +3,126 @@ package wallet
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"github.com/finexblock-dev/gofinexblock/finexblock/cache"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
+	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
 type walletService struct {
 	repo Repository
+}
+
+func (w *walletService) BalanceUpdateInBatch(event []*grpc_order.BalanceUpdate) (err error) {
+	return w.Conn().Transaction(func(tx *gorm.DB) error {
+		var _transfer *entity.CoinTransfer
+		var coinTransfers []*entity.CoinTransfer
+
+		var _user *entity.User
+		var users []*entity.User
+
+		var _coin *entity.Coin
+		var coins []*entity.Coin
+
+		var _wallet *entity.Wallet
+		var wallets []*entity.Wallet
+
+		var userUUIDs []string
+		var currencies []string
+
+		var userCache = cache.NewDefaultKeyValueStore[entity.User](len(event))
+		var coinCache = cache.NewDefaultKeyValueStore[entity.Coin](len(event))
+		var walletCache = cache.NewDefaultKeyValueStore[entity.Wallet](len(event))
+
+		for _, e := range event {
+			if _user, err = userCache.Get(e.GetUserUUID()); err != nil {
+				userUUIDs = append(userUUIDs, e.GetUserUUID())
+				_ = userCache.Set(e.GetUserUUID(), new(entity.User))
+			}
+
+			if _coin, err = coinCache.Get(e.GetCurrency().String()); err != nil {
+				currencies = append(currencies, e.GetCurrency().String())
+				_ = coinCache.Set(e.GetCurrency().String(), new(entity.Coin))
+			}
+		}
+
+		if err = tx.Table(_user.TableName()).Where("uuid IN ?", userUUIDs).Find(&users).Error; err != nil {
+			return fmt.Errorf("failed to find users: %w", err)
+		}
+
+		for _, u := range users {
+			_ = userCache.Set(u.UUID, u)
+		}
+
+		if err = tx.Table(_coin.TableName()).Where("name IN ?", currencies).Find(&coins).Error; err != nil {
+			return fmt.Errorf("failed to find coins: %w", err)
+		}
+
+		for _, c := range coins {
+			_ = coinCache.Set(c.Name, c)
+		}
+
+		queryBuilder := tx.Table(_wallet.TableName())
+
+		for i, v := range event {
+			_coin, err = coinCache.Get(v.GetCurrency().String())
+			if err != nil {
+				continue
+			}
+
+			_user, err = userCache.Get(v.GetUserUUID())
+			if err != nil {
+				continue
+			}
+
+			_wallet, err = walletCache.Get(fmt.Sprintf("%d-%d", _user.ID, _coin.ID))
+			if err != nil {
+				if i == 0 {
+					queryBuilder = queryBuilder.Where("user_id = ? AND coin_id = ?", _user.ID, _coin.ID)
+				} else {
+					queryBuilder = queryBuilder.Or("user_id = ? AND coin_id = ?", _user.ID, _coin.ID)
+				}
+				_ = walletCache.Set(fmt.Sprintf("%d-%d", _user.ID, _coin.ID), new(entity.Wallet))
+			}
+		}
+
+		if err = queryBuilder.Find(&wallets).Error; err != nil {
+			return fmt.Errorf("failed to find wallets: %w", err)
+		}
+
+		for _, w := range wallets {
+			_ = walletCache.Set(fmt.Sprintf("%d-%d", w.UserID, w.CoinID), w)
+		}
+
+		for _, e := range event {
+			_coin, err = coinCache.Get(e.GetCurrency().String())
+			if err != nil {
+				continue
+			}
+
+			_user, err = userCache.Get(e.GetUserUUID())
+			if err != nil {
+				continue
+			}
+
+			_wallet, err = walletCache.Get(fmt.Sprintf("%d-%d", _user.ID, _coin.ID))
+			if err != nil {
+				continue
+			}
+
+			_transfer = &entity.CoinTransfer{
+				WalletID:     _wallet.ID,
+				Amount:       decimal.NewFromFloat(e.GetDiff()),
+				TransferType: entity.Trade,
+			}
+
+			coinTransfers = append(coinTransfers, _transfer)
+		}
+
+		return tx.Table(_transfer.TableName()).CreateInBatches(coinTransfers, 100).Error
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
 
 func (w *walletService) FindBlockchainByName(name string) (result *entity.Blockchain, err error) {

@@ -51,6 +51,7 @@ func test(i int) (err error) {
 }
 
 func main() {
+
 	interfaces, err := net.Interfaces()
 	if err != nil {
 		panic(err)

@@ -23,6 +23,90 @@ type orderService struct {
 	userCache       *cache.DefaultKeyValueStore[entity.User]
 }
 
+func (o *orderService) MarketOrderMatchingInBatch(event []*grpc_order.MarketOrderMatching) (err error) {
+	return o.Conn().Transaction(func(tx *gorm.DB) error {
+		var userUUIDs []string
+		var symbolNames []string
+
+		var users []*entity.User
+		var _user *entity.User
+
+		var symbols []*entity.OrderSymbol
+		var _symbol *entity.OrderSymbol
+
+		var matchingHistories []*entity.OrderMatchingHistory
+		var _matchingHistory *entity.OrderMatchingHistory
+
+		// Mapping for cache user
+		var userCache = cache.NewDefaultKeyValueStore[entity.User](len(event))
+		// Mapping for cache symbol
+		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
+
+		for _, v := range event {
+			// Memoize user uuid
+			if _user, err = userCache.Get(v.UserUUID); err != nil {
+				userUUIDs = append(userUUIDs, v.UserUUID)
+				_ = userCache.Set(v.UserUUID, new(entity.User))
+			}
+
+			// Memoize symbol name
+			if _symbol, err = symbolCache.Get(v.Symbol.String()); err != nil {
+				symbolNames = append(symbolNames, v.Symbol.String())
+				_ = symbolCache.Set(v.Symbol.String(), new(entity.OrderSymbol))
+			}
+		}
+
+		// SELECT * FROM user WHERE uuid IN (...)
+		if err = tx.Table(_user.TableName()).Where("uuid IN ?", userUUIDs).Find(&users).Error; err != nil {
+			return fmt.Errorf("failed to get user : %v", err)
+		}
+
+		// Memoize user
+		for _, v := range users {
+			_ = userCache.Set(v.UUID, v)
+		}
+
+		// SELECT * FROM order_symbol WHERE name IN (...)
+		if err = tx.Table(_symbol.TableName()).Where("name IN ?", symbolNames).Find(&symbols).Error; err != nil {
+			return fmt.Errorf("failed to get symbol : %v", err)
+		}
+
+		// Memoize symbol
+		for _, v := range symbols {
+			_ = symbolCache.Set(v.Name, v)
+		}
+
+		for _, v := range event {
+			_symbol, err = symbolCache.Get(v.GetSymbol().String())
+			if err == cache.ErrKeyNotFound {
+				continue
+			}
+
+			_user, err = userCache.Get(v.GetUserUUID())
+			if err == cache.ErrKeyNotFound {
+				continue
+			}
+
+			if _symbol.ID == 0 || _user.ID == 0 {
+				continue
+			}
+
+			// order_matching_history (user_id, order_symbol_id, order_uuid, filled_quantity, unit_price, fee, order_type)
+			matchingHistories = append(matchingHistories, &entity.OrderMatchingHistory{
+				UserID:         _user.ID,
+				OrderSymbolID:  _symbol.ID,
+				OrderUUID:      v.OrderUUID,
+				FilledQuantity: decimal.NewFromFloat(v.Quantity),
+				UnitPrice:      decimal.NewFromFloat(v.UnitPrice),
+				Fee:            decimal.NewFromFloat(v.Fee.Amount),
+				OrderType:      types.OrderType(v.OrderType.String()),
+			})
+		}
+
+		return tx.Table(_matchingHistory.TableName()).CreateInBatches(matchingHistories, 100).Error
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
+}
+
 func (o *orderService) FindSnapshotByOrderSymbolID(symbolID uint) (result *entity.SnapshotOrderBook, err error) {
 	if err = o.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = o.orderRepository.FindSnapshotByOrderSymbolID(tx, symbolID)
@@ -653,7 +737,7 @@ func (o *orderService) LimitOrderCancellationInBatch(event []*grpc_order.OrderCa
 	return remain, err
 }
 
-func (o *orderService) HandleOrderInterval(name types.Duration, duration time.Duration) (err error) {
+func (o *orderService) InsertOrderInterval(name types.Duration, duration time.Duration) (err error) {
 	return o.Conn().Transaction(func(tx *gorm.DB) error {
 		var recentInterval *entity.OrderInterval
 		var recentPoles []*entity.Chart
