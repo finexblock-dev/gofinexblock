@@ -115,6 +115,10 @@ func (s *service) LoadOrderBook() (err error) {
 		return status.Errorf(codes.Internal, "failed to get private ip: [%v]", err)
 	}
 
+	if privateIP == "" {
+		return status.Errorf(codes.Internal, "private ip is empty")
+	}
+
 	return s.instanceRepository.Conn().Transaction(func(tx *gorm.DB) error {
 		ipModel, err = s.instanceRepository.FindServerByIP(tx, privateIP)
 		if err != nil {

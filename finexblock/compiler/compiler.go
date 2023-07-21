@@ -33,14 +33,12 @@ import (
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/secure"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/stream"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/structure"
-	"github.com/finexblock-dev/gofinexblock/finexblock/trade"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/trade"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/types"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/user"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/utils"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/wallet"
-	"github.com/shopspring/decimal"
-	"log"
+	"net"
 )
 
 func test(i int) (err error) {
@@ -53,16 +51,29 @@ func test(i int) (err error) {
 }
 
 func main() {
-
-	decimalValue, err := decimal.NewFromString("6363000")
+	interfaces, err := net.Interfaces()
 	if err != nil {
-		log.Panicln(trade.ErrDecimalParse)
+		panic(err)
 	}
 
-	amount := decimal.NewFromFloat(6363000)
+	for _, i := range interfaces {
+		addrs, err := i.Addrs()
+		if err != nil {
+			panic(err)
+		}
 
-	decimalValue = decimalValue.Sub(amount)
-	if decimalValue.LessThan(decimal.Zero) {
-		log.Panicln(trade.ErrNegativeBalance)
+		for _, addr := range addrs {
+			var ip net.IP
+			switch v := addr.(type) {
+			case *net.IPNet:
+				ip = v.IP
+			case *net.IPAddr:
+				ip = v.IP
+			}
+
+			if ip != nil && ip.IsPrivate() {
+				fmt.Println(ip)
+			}
+		}
 	}
 }
