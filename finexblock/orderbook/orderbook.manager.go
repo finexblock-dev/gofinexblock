@@ -128,7 +128,7 @@ func (m *manager) CancelOrder(uuid string) (order *grpc_order.Order, err error) 
 	err = <-ctx.Err
 
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Canceled, "failed to cancel order: [%v]", err)
 	}
 
 	if order == nil {
