@@ -13,7 +13,6 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/user"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
-	"math"
 	"strconv"
 	"time"
 )
@@ -784,9 +783,9 @@ func (o *orderService) CtxWithCancel(ctx context.Context) (context.Context, cont
 }
 
 func newOrderService(db *gorm.DB) *orderService {
-	userCache := cache.NewDefaultKeyValueStore[entity.User](math.MaxInt)
-	orderCache := cache.NewDefaultKeyValueStore[entity.OrderBook](math.MaxInt)
-	symbolCache := cache.NewDefaultKeyValueStore[entity.OrderSymbol](math.MaxInt)
+	userCache := cache.NewDefaultKeyValueStore[entity.User](10000)
+	orderCache := cache.NewDefaultKeyValueStore[entity.OrderBook](100000000)
+	symbolCache := cache.NewDefaultKeyValueStore[entity.OrderSymbol](50)
 
 	safety.InfinitySubscribe(userCache)
 	safety.InfinitySubscribe(orderCache)
@@ -795,8 +794,8 @@ func newOrderService(db *gorm.DB) *orderService {
 	return &orderService{
 		orderRepository: newOrderRepository(db),
 		userRepository:  user.NewRepository(db),
-		userCache:       cache.NewDefaultKeyValueStore[entity.User](math.MaxInt),
-		orderCache:      cache.NewDefaultKeyValueStore[entity.OrderBook](math.MaxInt),
-		symbolCache:     cache.NewDefaultKeyValueStore[entity.OrderSymbol](math.MaxInt),
+		userCache:       userCache,
+		orderCache:      orderCache,
+		symbolCache:     symbolCache,
 	}
 }
