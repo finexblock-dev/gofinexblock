@@ -2,14 +2,14 @@ package refund
 
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
-	"github.com/finexblock-dev/gofinexblock/finexblock/stream"
+	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 )
 
 type Engine interface {
-	stream.SingleStreamConsumer
-	stream.Claimer
+	types.SingleStreamConsumer
+	types.SingleStreamClaimer
 
 	ParseMessage(message redis.XMessage) (event *grpc_order.BalanceUpdate, err error)
 	Do(event *grpc_order.BalanceUpdate) (err error)

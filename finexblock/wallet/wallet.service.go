@@ -7,12 +7,14 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/cache"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
+	"github.com/finexblock-dev/gofinexblock/finexblock/user"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
 type walletService struct {
-	repo Repository
+	walletRepository Repository
+	userRepository   user.Repository
 }
 
 func (w *walletService) BalanceUpdateInBatch(event []*grpc_order.BalanceUpdate) (err error) {
@@ -48,7 +50,8 @@ func (w *walletService) BalanceUpdateInBatch(event []*grpc_order.BalanceUpdate) 
 			}
 		}
 
-		if err = tx.Table(_user.TableName()).Where("uuid IN ?", userUUIDs).Find(&users).Error; err != nil {
+		users, err = w.userRepository.FindManyUserByUUID(tx, userUUIDs)
+		if err != nil {
 			return fmt.Errorf("failed to find users: %w", err)
 		}
 
@@ -56,8 +59,10 @@ func (w *walletService) BalanceUpdateInBatch(event []*grpc_order.BalanceUpdate) 
 			_ = userCache.Set(u.UUID, u)
 		}
 
-		if err = tx.Table(_coin.TableName()).Where("name IN ?", currencies).Find(&coins).Error; err != nil {
+		coins, err = w.walletRepository.FindManyCoinByName(tx, currencies)
+		if err != nil {
 			return fmt.Errorf("failed to find coins: %w", err)
+
 		}
 
 		for _, c := range coins {
@@ -127,7 +132,7 @@ func (w *walletService) BalanceUpdateInBatch(event []*grpc_order.BalanceUpdate) 
 
 func (w *walletService) FindBlockchainByName(name string) (result *entity.Blockchain, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.FindBlockchainByName(tx, name)
+		result, err = w.walletRepository.FindBlockchainByName(tx, name)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -138,7 +143,7 @@ func (w *walletService) FindBlockchainByName(name string) (result *entity.Blockc
 
 func (w *walletService) FindBlockchainByID(id uint) (result *entity.Blockchain, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.FindBlockchainByID(tx, id)
+		result, err = w.walletRepository.FindBlockchainByID(tx, id)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -149,7 +154,7 @@ func (w *walletService) FindBlockchainByID(id uint) (result *entity.Blockchain, 
 
 func (w *walletService) FindCoinByID(id uint) (result *entity.Coin, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.FindCoinByID(tx, id)
+		result, err = w.walletRepository.FindCoinByID(tx, id)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -159,7 +164,7 @@ func (w *walletService) FindCoinByID(id uint) (result *entity.Coin, err error) {
 
 func (w *walletService) FindCoinByName(name string) (result *entity.Coin, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.FindCoinByName(tx, name)
+		result, err = w.walletRepository.FindCoinByName(tx, name)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -169,7 +174,7 @@ func (w *walletService) FindCoinByName(name string) (result *entity.Coin, err er
 
 func (w *walletService) FindBlockNumberByCoinID(coinID uint) (result *entity.BlockNumber, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.FindBlockNumberByCoinID(tx, coinID)
+		result, err = w.walletRepository.FindBlockNumberByCoinID(tx, coinID)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -179,7 +184,7 @@ func (w *walletService) FindBlockNumberByCoinID(coinID uint) (result *entity.Blo
 
 func (w *walletService) FindBlockNumberByID(id uint) (result *entity.BlockNumber, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.FindBlockNumberByID(tx, id)
+		result, err = w.walletRepository.FindBlockNumberByID(tx, id)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -189,7 +194,7 @@ func (w *walletService) FindBlockNumberByID(id uint) (result *entity.BlockNumber
 
 func (w *walletService) UpdateBlockNumber(coinID uint, fromBlockNumber, toBlockNumber decimal.Decimal) (result *entity.BlockNumber, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.UpdateBlockNumber(tx, coinID, fromBlockNumber, toBlockNumber)
+		result, err = w.walletRepository.UpdateBlockNumber(tx, coinID, fromBlockNumber, toBlockNumber)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -199,7 +204,7 @@ func (w *walletService) UpdateBlockNumber(coinID uint, fromBlockNumber, toBlockN
 
 func (w *walletService) FindWalletByID(id uint) (result *entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.FindWalletByID(tx, id)
+		result, err = w.walletRepository.FindWalletByID(tx, id)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -209,7 +214,7 @@ func (w *walletService) FindWalletByID(id uint) (result *entity.Wallet, err erro
 
 func (w *walletService) FindWalletByAddress(addr string) (result *entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.FindWalletByAddress(tx, addr)
+		result, err = w.walletRepository.FindWalletByAddress(tx, addr)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -219,7 +224,7 @@ func (w *walletService) FindWalletByAddress(addr string) (result *entity.Wallet,
 
 func (w *walletService) FindAllWallet(coinID uint) (result []*entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.FindAllWallet(tx, coinID)
+		result, err = w.walletRepository.FindAllWallet(tx, coinID)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -229,7 +234,7 @@ func (w *walletService) FindAllWallet(coinID uint) (result []*entity.Wallet, err
 
 func (w *walletService) ScanWalletByCoinID(coinID uint) (result []*entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.ScanWalletByCoinID(tx, coinID)
+		result, err = w.walletRepository.ScanWalletByCoinID(tx, coinID)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -239,7 +244,7 @@ func (w *walletService) ScanWalletByCoinID(coinID uint) (result []*entity.Wallet
 
 func (w *walletService) ScanWalletByUserID(userID uint) (result []*entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.ScanWalletByUserID(tx, userID)
+		result, err = w.walletRepository.ScanWalletByUserID(tx, userID)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -249,7 +254,7 @@ func (w *walletService) ScanWalletByUserID(userID uint) (result []*entity.Wallet
 
 func (w *walletService) GetContractAddressByCoinID(coinID uint) (result *entity.SmartContract, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.GetContractAddressByCoinID(tx, coinID)
+		result, err = w.walletRepository.GetContractAddressByCoinID(tx, coinID)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -259,7 +264,7 @@ func (w *walletService) GetContractAddressByCoinID(coinID uint) (result *entity.
 
 func (w *walletService) InsertWallet(wallet *entity.Wallet) (result *entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.InsertWallet(tx, wallet)
+		result, err = w.walletRepository.InsertWallet(tx, wallet)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -269,7 +274,7 @@ func (w *walletService) InsertWallet(wallet *entity.Wallet) (result *entity.Wall
 
 func (w *walletService) UpdateWallet(id uint, address string) (result *entity.Wallet, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.UpdateWallet(tx, id, address)
+		result, err = w.walletRepository.UpdateWallet(tx, id, address)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -279,7 +284,7 @@ func (w *walletService) UpdateWallet(id uint, address string) (result *entity.Wa
 
 func (w *walletService) InsertCoinTransfer(walletID uint, amount decimal.Decimal, transferType entity.TransferType) (result *entity.CoinTransfer, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.InsertCoinTransfer(tx, walletID, amount, transferType)
+		result, err = w.walletRepository.InsertCoinTransfer(tx, walletID, amount, transferType)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -289,7 +294,7 @@ func (w *walletService) InsertCoinTransfer(walletID uint, amount decimal.Decimal
 
 func (w *walletService) FindCoinTransactionByID(id uint) (result *entity.CoinTransaction, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.FindCoinTransactionByID(tx, id)
+		result, err = w.walletRepository.FindCoinTransactionByID(tx, id)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -299,7 +304,7 @@ func (w *walletService) FindCoinTransactionByID(id uint) (result *entity.CoinTra
 
 func (w *walletService) FindCoinTransactionByTxHash(txHash string) (result *entity.CoinTransaction, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.FindCoinTransactionByTxHash(tx, txHash)
+		result, err = w.walletRepository.FindCoinTransactionByTxHash(tx, txHash)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -309,7 +314,7 @@ func (w *walletService) FindCoinTransactionByTxHash(txHash string) (result *enti
 
 func (w *walletService) ScanCoinTransactionByTransferID(transferID uint) (result []*entity.CoinTransaction, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.ScanCoinTransactionByTransferID(tx, transferID)
+		result, err = w.walletRepository.ScanCoinTransactionByTransferID(tx, transferID)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -319,7 +324,7 @@ func (w *walletService) ScanCoinTransactionByTransferID(transferID uint) (result
 
 func (w *walletService) ScanCoinTransactionByCond(transferID uint, status entity.TransactionStatus) (result []*entity.CoinTransaction, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.ScanCoinTransactionByCond(tx, transferID, status)
+		result, err = w.walletRepository.ScanCoinTransactionByCond(tx, transferID, status)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -329,7 +334,7 @@ func (w *walletService) ScanCoinTransactionByCond(transferID uint, status entity
 
 func (w *walletService) InsertCoinTransaction(transferID uint, txHash string, txStatus entity.TransactionStatus) (result *entity.CoinTransaction, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.InsertCoinTransaction(tx, transferID, txHash, txStatus)
+		result, err = w.walletRepository.InsertCoinTransaction(tx, transferID, txHash, txStatus)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -339,7 +344,7 @@ func (w *walletService) InsertCoinTransaction(transferID uint, txHash string, tx
 
 func (w *walletService) UpdateCoinTransactionHash(id uint, hash string) (result *entity.CoinTransaction, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.UpdateCoinTransactionHash(tx, id, hash)
+		result, err = w.walletRepository.UpdateCoinTransactionHash(tx, id, hash)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -349,7 +354,7 @@ func (w *walletService) UpdateCoinTransactionHash(id uint, hash string) (result 
 
 func (w *walletService) UpdateCoinTransactionStatus(id uint, txStatus entity.TransactionStatus) (result *entity.CoinTransaction, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.UpdateCoinTransactionStatus(tx, id, txStatus)
+		result, err = w.walletRepository.UpdateCoinTransactionStatus(tx, id, txStatus)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -359,7 +364,7 @@ func (w *walletService) UpdateCoinTransactionStatus(id uint, txStatus entity.Tra
 
 func (w *walletService) ScanWithdrawalRequestByStatus(status entity.WithdrawalStatus) (result []*entity.WithdrawalRequest, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.ScanWithdrawalRequestByStatus(tx, status)
+		result, err = w.walletRepository.ScanWithdrawalRequestByStatus(tx, status)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -369,7 +374,7 @@ func (w *walletService) ScanWithdrawalRequestByStatus(status entity.WithdrawalSt
 
 func (w *walletService) ScanWithdrawalRequestByCond(coinID uint, status entity.WithdrawalStatus) (result []*entity.WithdrawalRequest, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.ScanWithdrawalRequestByCond(tx, coinID, status)
+		result, err = w.walletRepository.ScanWithdrawalRequestByCond(tx, coinID, status)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -379,7 +384,7 @@ func (w *walletService) ScanWithdrawalRequestByCond(coinID uint, status entity.W
 
 func (w *walletService) UpdateWithdrawalRequest(id uint, state entity.WithdrawalStatus) (result *entity.WithdrawalRequest, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.repo.UpdateWithdrawalRequest(tx, id, state)
+		result, err = w.walletRepository.UpdateWithdrawalRequest(tx, id, state)
 		return err
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return nil, err
@@ -388,7 +393,7 @@ func (w *walletService) UpdateWithdrawalRequest(id uint, state entity.Withdrawal
 }
 
 func newWalletService(repo Repository) *walletService {
-	return &walletService{repo: repo}
+	return &walletService{walletRepository: repo}
 }
 
 func (w *walletService) Ctx() context.Context {
@@ -400,9 +405,9 @@ func (w *walletService) CtxWithCancel(ctx context.Context) (context.Context, con
 }
 
 func (w *walletService) Tx(level sql.IsolationLevel) *gorm.DB {
-	return w.repo.Tx(level)
+	return w.walletRepository.Tx(level)
 }
 
 func (w *walletService) Conn() *gorm.DB {
-	return w.repo.Conn()
+	return w.walletRepository.Conn()
 }
