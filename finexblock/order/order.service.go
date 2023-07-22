@@ -36,7 +36,6 @@ func (o *orderService) MarketOrderMatchingInBatch(event []*grpc_order.MarketOrde
 		var _symbol *entity.OrderSymbol
 
 		var matchingHistories []*entity.OrderMatchingHistory
-		var _matchingHistory *entity.OrderMatchingHistory
 
 		for _, v := range event {
 			// Memoize user uuid
@@ -53,7 +52,8 @@ func (o *orderService) MarketOrderMatchingInBatch(event []*grpc_order.MarketOrde
 		}
 
 		// SELECT * FROM user WHERE uuid IN (...)
-		if err = tx.Table(_user.TableName()).Where("uuid IN ?", userUUIDs).Find(&users).Error; err != nil {
+		users, err = o.userRepository.FindManyUserByUUID(tx, userUUIDs)
+		if err != nil {
 			return fmt.Errorf("failed to get user : %v", err)
 		}
 
@@ -63,7 +63,8 @@ func (o *orderService) MarketOrderMatchingInBatch(event []*grpc_order.MarketOrde
 		}
 
 		// SELECT * FROM order_symbol WHERE name IN (...)
-		if err = tx.Table(_symbol.TableName()).Where("name IN ?", symbolNames).Find(&symbols).Error; err != nil {
+		symbols, err = o.orderRepository.FindManySymbolByName(tx, symbolNames)
+		if err != nil {
 			return fmt.Errorf("failed to get symbol : %v", err)
 		}
 
@@ -99,7 +100,7 @@ func (o *orderService) MarketOrderMatchingInBatch(event []*grpc_order.MarketOrde
 			})
 		}
 
-		return tx.Table(_matchingHistory.TableName()).CreateInBatches(matchingHistories, 100).Error
+		return o.orderRepository.BatchInsertOrderMatchingHistory(tx, matchingHistories)
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
 

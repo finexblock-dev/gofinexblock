@@ -1,4 +1,4 @@
-package safety
+package safemath
 
 import (
 	"github.com/shopspring/decimal"

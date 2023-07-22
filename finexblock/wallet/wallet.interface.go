@@ -15,6 +15,7 @@ type Repository interface {
 
 	FindCoinByID(tx *gorm.DB, id uint) (result *entity.Coin, err error)
 	FindCoinByName(tx *gorm.DB, name string) (result *entity.Coin, err error)
+	FindManyCoinByName(tx *gorm.DB, names []string) (result []*entity.Coin, err error)
 
 	FindBlockNumberByCoinID(tx *gorm.DB, coinID uint) (result *entity.BlockNumber, err error)
 	FindBlockNumberByID(tx *gorm.DB, id uint) (result *entity.BlockNumber, err error)
@@ -88,5 +89,5 @@ func NewRepository(db *gorm.DB) Repository {
 }
 
 func NewService(db *gorm.DB) Service {
-	return newWalletService(NewRepository(db))
+	return newWalletService(db)
 }

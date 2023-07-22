@@ -31,8 +31,6 @@ import (
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/orderbook"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/safety"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/secure"
-	_ "github.com/finexblock-dev/gofinexblock/finexblock/stream"
-	_ "github.com/finexblock-dev/gofinexblock/finexblock/structure"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/trade"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/types"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/user"
