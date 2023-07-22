@@ -392,10 +392,6 @@ func (w *walletService) UpdateWithdrawalRequest(id uint, state entity.Withdrawal
 	return result, err
 }
 
-func newWalletService(repo Repository) *walletService {
-	return &walletService{walletRepository: repo}
-}
-
 func (w *walletService) Ctx() context.Context {
 	return context.Background()
 }
@@ -410,4 +406,8 @@ func (w *walletService) Tx(level sql.IsolationLevel) *gorm.DB {
 
 func (w *walletService) Conn() *gorm.DB {
 	return w.walletRepository.Conn()
+}
+
+func newWalletService(db *gorm.DB) *walletService {
+	return &walletService{walletRepository: NewRepository(db), userRepository: user.NewRepository(db)}
 }

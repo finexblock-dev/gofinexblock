@@ -89,5 +89,5 @@ func NewRepository(db *gorm.DB) Repository {
 }
 
 func NewService(db *gorm.DB) Service {
-	return newWalletService(NewRepository(db))
+	return newWalletService(db)
 }
