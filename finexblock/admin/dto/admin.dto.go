@@ -24,7 +24,7 @@ type (
 	FindAdminByGradeInput struct {
 		Limit  int              `json:"limit,required" query:"limit,required" default:"20"`
 		Offset int              `json:"offset,required" query:"offset,required" default:"0"`
-		Grade  entity.GradeType `json:"grade,required" query:"grade,required"`
+		Grade  entity.GradeType `json:"grade,required" query:"grade,required" binding:"required,enum"`
 	}
 
 	FindAdminByGradeOutput struct {
@@ -91,8 +91,8 @@ type (
 
 type (
 	UpdateGradeInput struct {
-		AdminID uint             `json:"admin_id,required"`
-		Grade   entity.GradeType `json:"grade,required"`
+		AdminID uint             `json:"admin_id,required" query:"adminId,required" binding:"required"`
+		Grade   entity.GradeType `json:"grade,required" query:"grade,required" binding:"required,enum"`
 	}
 
 	UpdateGradeOutput struct {

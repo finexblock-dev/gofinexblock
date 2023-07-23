@@ -6,13 +6,13 @@ import (
 
 type (
 	SearchApiLogInput struct {
-		Limit     int    `json:"limit,required" query:"limit,required" default:"20"`
-		Offset    int    `json:"offset,required" query:"offset,required" default:"0"`
-		AdminID   uint   `json:"admin_id,required" query:"admin_id,required"`
-		StartTime string `json:"start_time,required" query:"start_time,required"`
-		EndTime   string `json:"end_time,required" query:"end_time,required"`
-		Method    string `json:"method,required" query:"method,required"`
-		Endpoint  string `json:"endpoint,required" query:"endpoint,required"`
+		Limit     int              `json:"limit,required" query:"limit,required" default:"20"`
+		Offset    int              `json:"offset,required" query:"offset,required" default:"0"`
+		AdminID   uint             `json:"admin_id,required" query:"admin_id,required"`
+		StartTime string           `json:"start_time,required" query:"start_time,required"`
+		EndTime   string           `json:"end_time,required" query:"end_time,required"`
+		Method    entity.ApiMethod `json:"method,required" query:"method,required" binding:"required,enum"`
+		Endpoint  string           `json:"endpoint,required" query:"endpoint,required"`
 	}
 
 	SearchApiLogOutput struct {
@@ -78,9 +78,9 @@ type (
 
 type (
 	FindApiLogByMethodCondInput struct {
-		Method string `json:"method,required" query:"method,required"`
-		Limit  int    `json:"limit,required" query:"limit,required" default:"20"`
-		Offset int    `json:"offset,required" query:"offset,required" default:"0"`
+		Method entity.ApiMethod `json:"method,required" query:"method,required"  binding:"required,enum"`
+		Limit  int              `json:"limit,required" query:"limit,required" default:"20"`
+		Offset int              `json:"offset,required" query:"offset,required" default:"0"`
 	}
 
 	FindApiLogByMethodCondOutput struct {
