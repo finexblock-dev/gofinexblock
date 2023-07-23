@@ -11,17 +11,16 @@ import (
 	"mime/multipart"
 )
 
-var table = &entity.Image{}
-
 type imageRepository struct {
 	db *gorm.DB
 }
 
 func (i *imageRepository) FindAllImages(tx *gorm.DB, limit, offset int) ([]*entity.Image, error) {
 	var result []*entity.Image
+	var _image *entity.Image
 	var err error
 
-	if err = tx.Table(table.TableName()).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err = tx.Table(_image.TableName()).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -32,6 +31,7 @@ func (i *imageRepository) UploadFiles(tx *gorm.DB, f *multipart.Form, bucket, ba
 	var client *s3.S3
 	var uploadResult map[string]string
 	var files []*multipart.FileHeader
+	var _image *entity.Image
 	var sess *session.Session
 
 	sess, err = secure.GetSessionFromEnv()
@@ -55,7 +55,7 @@ func (i *imageRepository) UploadFiles(tx *gorm.DB, f *multipart.Form, bucket, ba
 		result = append(result, img)
 	}
 
-	if err = tx.Table(table.TableName()).CreateInBatches(&result, 100).Error; err != nil {
+	if err = tx.Table(_image.TableName()).CreateInBatches(&result, 100).Error; err != nil {
 		return nil, err
 	}
 

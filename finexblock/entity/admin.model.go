@@ -44,7 +44,7 @@ type Admin struct {
 type PartialAdmin struct {
 	ID           uint      `json:"id"`
 	Email        string    `json:"email"`
-	Grade        string    `json:"grade"`
+	Grade        GradeType `json:"grade"`
 	IsBlocked    bool      `json:"is_blocked"`
 	InitialLogin bool      `json:"initial_login"`
 	CreatedAt    time.Time `json:"created_at"`
