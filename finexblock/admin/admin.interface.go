@@ -1,7 +1,7 @@
 package admin
 
 import (
-	"github.com/finexblock-dev/gofinexblock/finexblock/admin/dto"
+	"github.com/finexblock-dev/gofinexblock/finexblock/admin/structs"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"gorm.io/gorm"
@@ -29,16 +29,18 @@ type Repository interface {
 	FindApiLogByTimeCond(tx *gorm.DB, start, end time.Time, limit, offset int) ([]*entity.AdminApiLog, error)
 	FindApiLogByMethodCond(tx *gorm.DB, method entity.ApiMethod, limit, offset int) ([]*entity.AdminApiLog, error)
 	FindApiLogByEndpoint(tx *gorm.DB, endpoint string, limit, offset int) ([]*entity.AdminApiLog, error)
-	SearchApiLog(tx *gorm.DB, query *dto.SearchApiLogInput) ([]*entity.AdminApiLog, error)
-
-	SearchDeleteLog(tx *gorm.DB, input *dto.SearchDeleteLogInput) ([]*entity.AdminDeleteLog, error)
+	// FIXME: do not pass the whole structs
+	SearchApiLog(tx *gorm.DB, query *structs.SearchApiLogInput) ([]*entity.AdminApiLog, error)
+	// FIXME: do not pass the whole structs
+	SearchDeleteLog(tx *gorm.DB, input *structs.SearchDeleteLogInput) ([]*entity.AdminDeleteLog, error)
 	FindAllDeleteLog(tx *gorm.DB, limit, offset int) ([]*entity.AdminDeleteLog, error)
 	FindDeleteLogOfExecutor(tx *gorm.DB, executor uint, limit, offset int) ([]*entity.AdminDeleteLog, error)
 	FindDeleteLogOfTarget(tx *gorm.DB, target uint) (*entity.AdminDeleteLog, error)
 	InsertDeleteLog(tx *gorm.DB, executor, target uint) (*entity.AdminDeleteLog, error)
 
 	InsertGradeUpdateLog(tx *gorm.DB, executor, target uint, prev, curr string) (*entity.AdminGradeUpdateLog, error)
-	SearchGradeUpdateLog(tx *gorm.DB, input *dto.SearchGradeUpdateLogInput) ([]*entity.AdminGradeUpdateLog, error)
+	// FIXME: do not pass the whole structs
+	SearchGradeUpdateLog(tx *gorm.DB, input *structs.SearchGradeUpdateLogInput) ([]*entity.AdminGradeUpdateLog, error)
 	FindAllGradeUpdateLog(tx *gorm.DB, limit, offset int) ([]*entity.AdminGradeUpdateLog, error)
 	FindGradeUpdateLogOfExecutor(tx *gorm.DB, executor uint, limit, offset int) ([]*entity.AdminGradeUpdateLog, error)
 	FindGradeUpdateLogOfTarget(tx *gorm.DB, target uint, limit, offset int) ([]*entity.AdminGradeUpdateLog, error)
@@ -49,7 +51,8 @@ type Repository interface {
 	FindLoginHistoryByAdminID(tx *gorm.DB, adminID uint, limit, offset int) ([]*entity.AdminLoginHistory, error)
 	InsertLoginHistory(tx *gorm.DB, adminID uint) (*entity.AdminLoginHistory, error)
 
-	SearchPasswordUpdateLog(tx *gorm.DB, input *dto.SearchPasswordUpdateLogInput) ([]*entity.AdminPasswordLog, error)
+	// FIXME: do not pass the whole structs
+	SearchPasswordUpdateLog(tx *gorm.DB, input *structs.SearchPasswordUpdateLogInput) ([]*entity.AdminPasswordLog, error)
 	FindAllPasswordUpdateLog(tx *gorm.DB, limit, offset int) ([]*entity.AdminPasswordLog, error)
 	FindPasswordUpdateLogOfExecutor(tx *gorm.DB, executor uint, limit, offset int) ([]*entity.AdminPasswordLog, error)
 	FindPasswordUpdateLogOfTarget(tx *gorm.DB, target uint, limit, offset int) ([]*entity.AdminPasswordLog, error)
@@ -64,8 +67,8 @@ type Service interface {
 	FindLoginFailedLogOfAdmin(adminID uint, limit, offset int) (result []*entity.AdminLoginFailedLog, err error)
 
 	FindLoginHistoryOfAdmin(adminID uint, limit, offset int) (result []*entity.AdminLoginHistory, err error)
-
-	SearchApiLog(query *dto.SearchApiLogInput) (result []*entity.AdminApiLog, err error)
+	// FIXME: do not pass the whole structs
+	SearchApiLog(query *structs.SearchApiLogInput) (result []*entity.AdminApiLog, err error)
 	FindAllApiLog(limit, offset int) (result []*entity.AdminApiLog, err error)
 	FindApiLogByAdmin(adminID uint, limit, offset int) (result []*entity.AdminApiLog, err error)
 	FindApiLogByTimeCond(start, end time.Time, limit, offset int) (result []*entity.AdminApiLog, err error)
@@ -73,16 +76,19 @@ type Service interface {
 	FindApiLogByEndpoint(endpoint string, limit, offset int) (result []*entity.AdminApiLog, err error)
 
 	FindAllGradeUpdateLog(limit, offset int) (result []*entity.AdminGradeUpdateLog, err error)
-	SearchGradeUpdateLog(query *dto.SearchGradeUpdateLogInput) (result []*entity.AdminGradeUpdateLog, err error)
+	// FIXME: do not pass the whole structs
+	SearchGradeUpdateLog(query *structs.SearchGradeUpdateLogInput) (result []*entity.AdminGradeUpdateLog, err error)
 	FindGradeUpdateLogOfExecutor(executor uint, limit, offset int) (result []*entity.AdminGradeUpdateLog, err error)
 	FindGradeUpdateLogOfTarget(target uint, limit, offset int) (result []*entity.AdminGradeUpdateLog, err error)
 
-	SearchPasswordUpdateLog(query *dto.SearchPasswordUpdateLogInput) (result []*entity.AdminPasswordLog, err error)
+	// FIXME: do not pass the whole structs
+	SearchPasswordUpdateLog(query *structs.SearchPasswordUpdateLogInput) (result []*entity.AdminPasswordLog, err error)
 	FindAllPasswordUpdateLog(limit, offset int) (result []*entity.AdminPasswordLog, err error)
 	FindPasswordUpdateLogOfExecutor(executor uint, limit, offset int) (result []*entity.AdminPasswordLog, err error)
 	FindPasswordUpdateLogOfTarget(target uint, limit, offset int) (result []*entity.AdminPasswordLog, err error)
 
-	SearchDeleteLog(query *dto.SearchDeleteLogInput) (result []*entity.AdminDeleteLog, err error)
+	// FIXME: do not pass the whole structs
+	SearchDeleteLog(query *structs.SearchDeleteLogInput) (result []*entity.AdminDeleteLog, err error)
 	FindAllDeleteLog(limit, offset int) (result []*entity.AdminDeleteLog, err error)
 	FindDeleteLogOfExecutor(executor uint, limit, offset int) (result []*entity.AdminDeleteLog, err error)
 	FindDeleteLogOfTarget(target uint, limit, offset int) (result *entity.AdminDeleteLog, err error)

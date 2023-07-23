@@ -2,7 +2,7 @@ package admin
 
 import (
 	"database/sql"
-	"github.com/finexblock-dev/gofinexblock/finexblock/admin/dto"
+	"github.com/finexblock-dev/gofinexblock/finexblock/admin/structs"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"gorm.io/gorm"
 	"time"
@@ -94,7 +94,7 @@ func (a *adminRepository) FindApiLogByEndpoint(tx *gorm.DB, endpoint string, lim
 	return apiLogs, nil
 }
 
-func (a *adminRepository) SearchApiLog(tx *gorm.DB, input *dto.SearchApiLogInput) ([]*entity.AdminApiLog, error) {
+func (a *adminRepository) SearchApiLog(tx *gorm.DB, input *structs.SearchApiLogInput) ([]*entity.AdminApiLog, error) {
 	var _apiLog *entity.AdminApiLog
 	var result []*entity.AdminApiLog
 
@@ -129,7 +129,7 @@ func (a *adminRepository) SearchApiLog(tx *gorm.DB, input *dto.SearchApiLogInput
 	return result, nil
 }
 
-func (a *adminRepository) SearchDeleteLog(tx *gorm.DB, input *dto.SearchDeleteLogInput) ([]*entity.AdminDeleteLog, error) {
+func (a *adminRepository) SearchDeleteLog(tx *gorm.DB, input *structs.SearchDeleteLogInput) ([]*entity.AdminDeleteLog, error) {
 	var _deleteLog *entity.AdminDeleteLog
 	var result []*entity.AdminDeleteLog
 
@@ -203,7 +203,7 @@ func (a *adminRepository) InsertDeleteLog(tx *gorm.DB, executor, target uint) (*
 	return _deleteLog, nil
 }
 
-func (a *adminRepository) SearchGradeUpdateLog(tx *gorm.DB, input *dto.SearchGradeUpdateLogInput) ([]*entity.AdminGradeUpdateLog, error) {
+func (a *adminRepository) SearchGradeUpdateLog(tx *gorm.DB, input *structs.SearchGradeUpdateLogInput) ([]*entity.AdminGradeUpdateLog, error) {
 	var _gradeUpdateLog *entity.AdminGradeUpdateLog
 	var result []*entity.AdminGradeUpdateLog
 	var err error
@@ -327,7 +327,7 @@ func (a *adminRepository) InsertLoginHistory(tx *gorm.DB, adminID uint) (*entity
 	return _loginHistory, nil
 }
 
-func (a *adminRepository) SearchPasswordUpdateLog(tx *gorm.DB, input *dto.SearchPasswordUpdateLogInput) ([]*entity.AdminPasswordLog, error) {
+func (a *adminRepository) SearchPasswordUpdateLog(tx *gorm.DB, input *structs.SearchPasswordUpdateLogInput) ([]*entity.AdminPasswordLog, error) {
 	var _passwordLog *entity.AdminPasswordLog
 	var result []*entity.AdminPasswordLog
 

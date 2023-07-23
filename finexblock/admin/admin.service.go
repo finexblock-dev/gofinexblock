@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"github.com/finexblock-dev/gofinexblock/finexblock/admin/dto"
+	"github.com/finexblock-dev/gofinexblock/finexblock/admin/structs"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/utils"
 	"gorm.io/gorm"
@@ -37,7 +37,7 @@ func (a *adminService) FindLoginHistoryOfAdmin(adminID uint, limit, offset int) 
 	return result, err
 }
 
-func (a *adminService) SearchApiLog(query *dto.SearchApiLogInput) (result []*entity.AdminApiLog, err error) {
+func (a *adminService) SearchApiLog(query *structs.SearchApiLogInput) (result []*entity.AdminApiLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.SearchApiLog(tx, query)
 		return err
@@ -114,7 +114,7 @@ func (a *adminService) FindAllGradeUpdateLog(limit, offset int) (result []*entit
 	return result, err
 }
 
-func (a *adminService) SearchGradeUpdateLog(query *dto.SearchGradeUpdateLogInput) (result []*entity.AdminGradeUpdateLog, err error) {
+func (a *adminService) SearchGradeUpdateLog(query *structs.SearchGradeUpdateLogInput) (result []*entity.AdminGradeUpdateLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.SearchGradeUpdateLog(tx, query)
 		return err
@@ -147,7 +147,7 @@ func (a *adminService) FindGradeUpdateLogOfTarget(target uint, limit, offset int
 	return result, err
 }
 
-func (a *adminService) SearchPasswordUpdateLog(query *dto.SearchPasswordUpdateLogInput) (result []*entity.AdminPasswordLog, err error) {
+func (a *adminService) SearchPasswordUpdateLog(query *structs.SearchPasswordUpdateLogInput) (result []*entity.AdminPasswordLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.SearchPasswordUpdateLog(tx, query)
 		return err
@@ -191,7 +191,7 @@ func (a *adminService) FindPasswordUpdateLogOfTarget(target uint, limit, offset 
 	return result, err
 }
 
-func (a *adminService) SearchDeleteLog(query *dto.SearchDeleteLogInput) (result []*entity.AdminDeleteLog, err error) {
+func (a *adminService) SearchDeleteLog(query *structs.SearchDeleteLogInput) (result []*entity.AdminDeleteLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.SearchDeleteLog(tx, query)
 		return err

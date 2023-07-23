@@ -30,7 +30,7 @@ var DefaultRootDerivationPath = accounts.DefaultRootDerivationPath
 // at m/44'/60'/0'/1, etc
 var DefaultBaseDerivationPath = accounts.DefaultBaseDerivationPath
 
-// Wallet is the underlying wallet struct.
+// Wallet is the underlying wallet structs.
 type Wallet struct {
 	mnemonic    string
 	masterKey   *hdkeychain.ExtendedKey

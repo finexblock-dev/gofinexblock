@@ -6,12 +6,12 @@ type FinexblockServerIP struct {
 	IP       string `gorm:"column:ip;type:longtext;not null;comment:'IP 주소'"`
 }
 
-// TableName sets the insert table name for this struct type
+// TableName sets the insert table name for this structs type
 func (f *FinexblockServerIP) TableName() string {
 	return "finexblock_server_ip"
 }
 
-// Alias sets the alias name for this struct type
+// Alias sets the alias name for this structs type
 func (f *FinexblockServerIP) Alias() string {
 	return "finexblock_server_ip fsi"
 }
