@@ -15,6 +15,16 @@ type adminService struct {
 	repo Repository
 }
 
+func (a *adminService) FindAdminByID(adminID uint) (result *entity.Admin, err error) {
+	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.FindAdminByID(tx, adminID)
+		return err
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted, ReadOnly: true}); err != nil {
+		return nil, err
+	}
+	return result, err
+}
+
 func (a *adminService) FindLoginFailedLogOfAdmin(adminID uint, limit, offset int) (result []*entity.AdminLoginFailedLog, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindLoginFailedLogByAdminID(tx, adminID, limit, offset)

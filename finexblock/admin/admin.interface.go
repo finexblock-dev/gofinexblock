@@ -58,6 +58,7 @@ type Repository interface {
 
 type Service interface {
 	types.Service
+	FindAdminByID(adminID uint) (result *entity.Admin, err error)
 	FindAllAdmin(limit, offset int) (result []*entity.Admin, err error)
 	FindAdminByGrade(grade entity.GradeType, limit, offset int) (result []*entity.Admin, err error)
 
