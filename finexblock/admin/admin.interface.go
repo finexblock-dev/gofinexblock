@@ -29,9 +29,8 @@ type Repository interface {
 	FindApiLogByTimeCond(tx *gorm.DB, start, end time.Time, limit, offset int) ([]*entity.AdminApiLog, error)
 	FindApiLogByMethodCond(tx *gorm.DB, method entity.ApiMethod, limit, offset int) ([]*entity.AdminApiLog, error)
 	FindApiLogByEndpoint(tx *gorm.DB, endpoint string, limit, offset int) ([]*entity.AdminApiLog, error)
-	// FIXME: do not pass the whole structs
 	SearchApiLog(tx *gorm.DB, query *structs.SearchApiLogInput) ([]*entity.AdminApiLog, error)
-	// FIXME: do not pass the whole structs
+
 	SearchDeleteLog(tx *gorm.DB, input *structs.SearchDeleteLogInput) ([]*entity.AdminDeleteLog, error)
 	FindAllDeleteLog(tx *gorm.DB, limit, offset int) ([]*entity.AdminDeleteLog, error)
 	FindDeleteLogOfExecutor(tx *gorm.DB, executor uint, limit, offset int) ([]*entity.AdminDeleteLog, error)
@@ -39,7 +38,6 @@ type Repository interface {
 	InsertDeleteLog(tx *gorm.DB, executor, target uint) (*entity.AdminDeleteLog, error)
 
 	InsertGradeUpdateLog(tx *gorm.DB, executor, target uint, prev, curr string) (*entity.AdminGradeUpdateLog, error)
-	// FIXME: do not pass the whole structs
 	SearchGradeUpdateLog(tx *gorm.DB, input *structs.SearchGradeUpdateLogInput) ([]*entity.AdminGradeUpdateLog, error)
 	FindAllGradeUpdateLog(tx *gorm.DB, limit, offset int) ([]*entity.AdminGradeUpdateLog, error)
 	FindGradeUpdateLogOfExecutor(tx *gorm.DB, executor uint, limit, offset int) ([]*entity.AdminGradeUpdateLog, error)
@@ -51,7 +49,6 @@ type Repository interface {
 	FindLoginHistoryByAdminID(tx *gorm.DB, adminID uint, limit, offset int) ([]*entity.AdminLoginHistory, error)
 	InsertLoginHistory(tx *gorm.DB, adminID uint) (*entity.AdminLoginHistory, error)
 
-	// FIXME: do not pass the whole structs
 	SearchPasswordUpdateLog(tx *gorm.DB, input *structs.SearchPasswordUpdateLogInput) ([]*entity.AdminPasswordLog, error)
 	FindAllPasswordUpdateLog(tx *gorm.DB, limit, offset int) ([]*entity.AdminPasswordLog, error)
 	FindPasswordUpdateLogOfExecutor(tx *gorm.DB, executor uint, limit, offset int) ([]*entity.AdminPasswordLog, error)
@@ -68,7 +65,6 @@ type Service interface {
 	FindLoginFailedLogOfAdmin(adminID uint, limit, offset int) (result []*entity.AdminLoginFailedLog, err error)
 
 	FindLoginHistoryOfAdmin(adminID uint, limit, offset int) (result []*entity.AdminLoginHistory, err error)
-	// FIXME: do not pass the whole structs
 	SearchApiLog(query *structs.SearchApiLogInput) (result []*entity.AdminApiLog, err error)
 	FindAllApiLog(limit, offset int) (result []*entity.AdminApiLog, err error)
 	FindApiLogByAdmin(adminID uint, limit, offset int) (result []*entity.AdminApiLog, err error)
@@ -77,22 +73,28 @@ type Service interface {
 	FindApiLogByEndpoint(endpoint string, limit, offset int) (result []*entity.AdminApiLog, err error)
 
 	FindAllGradeUpdateLog(limit, offset int) (result []*entity.AdminGradeUpdateLog, err error)
-	// FIXME: do not pass the whole structs
 	SearchGradeUpdateLog(query *structs.SearchGradeUpdateLogInput) (result []*entity.AdminGradeUpdateLog, err error)
 	FindGradeUpdateLogOfExecutor(executor uint, limit, offset int) (result []*entity.AdminGradeUpdateLog, err error)
 	FindGradeUpdateLogOfTarget(target uint, limit, offset int) (result []*entity.AdminGradeUpdateLog, err error)
 
-	// FIXME: do not pass the whole structs
 	SearchPasswordUpdateLog(query *structs.SearchPasswordUpdateLogInput) (result []*entity.AdminPasswordLog, err error)
 	FindAllPasswordUpdateLog(limit, offset int) (result []*entity.AdminPasswordLog, err error)
 	FindPasswordUpdateLogOfExecutor(executor uint, limit, offset int) (result []*entity.AdminPasswordLog, err error)
 	FindPasswordUpdateLogOfTarget(target uint, limit, offset int) (result []*entity.AdminPasswordLog, err error)
 
-	// FIXME: do not pass the whole structs
 	SearchDeleteLog(query *structs.SearchDeleteLogInput) (result []*entity.AdminDeleteLog, err error)
 	FindAllDeleteLog(limit, offset int) (result []*entity.AdminDeleteLog, err error)
 	FindDeleteLogOfExecutor(executor uint, limit, offset int) (result []*entity.AdminDeleteLog, err error)
 	FindDeleteLogOfTarget(target uint, limit, offset int) (result *entity.AdminDeleteLog, err error)
+
+	// TODO: implement this
+	InsertDeleteLog()
+	InsertApiLog()
+	InsertLoginHistory()
+	InsertGradeUpdateLog()
+	InsertAccessToken()
+	InsertLoginFailedLog()
+	ToggleBlockAdmin()
 
 	DeleteAdmin(adminID uint) (err error)
 	BlockAdmin(adminID uint) (err error)
