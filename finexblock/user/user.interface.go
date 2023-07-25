@@ -13,8 +13,7 @@ type Repository interface {
 	FindUserByUUID(tx *gorm.DB, uuid string) (result *entity.User, err error)
 	FindManyUserByUUID(tx *gorm.DB, uuids []string) (result []*entity.User, err error)
 	FindUserByID(tx *gorm.DB, id uint) (result *entity.User, err error)
-	FindUserMetadata(tx *gorm.DB, id uint) (result *entity.UserMetadata, err error)
-	SearchUser(tx *gorm.DB, input *structs.SearchUserInput) (result []*entity.UserMetadata, err error)
+	SearchUser(tx *gorm.DB, input *structs.SearchUserInput) (result []*entity.User, err error)
 
 	BlockUser(tx *gorm.DB, id uint) (err error)
 	UnBlockUser(tx *gorm.DB, id uint) (err error)
@@ -44,8 +43,8 @@ type Service interface {
 	CreateMemo(id uint, desc string) (err error)
 }
 
-func NewRepository(db *gorm.DB, cluster *redis.ClusterClient) Repository {
-	return newUserRepository(db, cluster)
+func NewRepository(db *gorm.DB) Repository {
+	return newUserRepository(db)
 }
 
 func NewService(db *gorm.DB, cluster *redis.ClusterClient) Service {

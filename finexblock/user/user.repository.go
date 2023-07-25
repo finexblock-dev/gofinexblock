@@ -2,19 +2,13 @@ package user
 
 import (
 	"database/sql"
-	"errors"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
-	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
-	"github.com/finexblock-dev/gofinexblock/finexblock/trade"
 	"github.com/finexblock-dev/gofinexblock/finexblock/user/structs"
-	"github.com/redis/go-redis/v9"
-	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
 type userRepository struct {
-	db      *gorm.DB
-	manager trade.Manager
+	db *gorm.DB
 }
 
 func (u *userRepository) FindUserDormantByUserID(tx *gorm.DB, userID uint) (result *entity.UserDormant, err error) {
@@ -56,89 +50,9 @@ func (u *userRepository) FindUserProfileByUserID(tx *gorm.DB, userID uint) (resu
 	return result, nil
 }
 
-func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *entity.UserMetadata, err error) {
-	var _user = new(entity.User)
-	var _profile = new(entity.UserProfile)
-	var metaverseSSO = new(entity.UserSingleSignOnInfo)
-	var appleSSO = new(entity.UserSingleSignOnInfo)
-	var googleSSO = new(entity.UserSingleSignOnInfo)
-	var dormant = new(entity.UserDormant)
-	var memo = new(entity.UserMemo)
-
-	var btcTotal = decimal.Zero
-
-	_user, err = u.FindUserByID(tx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	_profile, err = u.FindUserProfileByUserID(tx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	metaverseSSO, err = u.FindUserSingleSignOnInfoByCond(tx, id, entity.Metaverse)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, err
-	}
-
-	appleSSO, err = u.FindUserSingleSignOnInfoByCond(tx, id, entity.Apple)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, err
-	}
-
-	googleSSO, err = u.FindUserSingleSignOnInfoByCond(tx, id, entity.Google)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, err
-	}
-
-	_, err = u.FindUserEmailSignUpByUserID(tx, id)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, err
-	}
-
-	memo, err = u.FindUserMemoByUserID(tx, id)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, err
-	}
-
-	dormant, err = u.FindUserDormantByUserID(tx, id)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, err
-	}
-
-	// Calculate the BTC balance
-	btcTotal, err = u.manager.GetBalance(_user.UUID, grpc_order.Currency_BTC.String())
-	if err != nil && !errors.Is(err, redis.Nil) {
-		return nil, err
-	}
-
-	info := &entity.UserMetadata{
-		ID:                _user.ID,
-		UUID:              _user.UUID,
-		UserType:          _user.UserType,
-		Nickname:          _profile.Nickname,
-		Fullname:          _profile.Fullname,
-		PhoneNumber:       _profile.PhoneNumber,
-		BTC:               btcTotal,
-		IsBlock:           _user.IsBlock,
-		IsDormant:         dormant.ID != 0,
-		IsMetaverseUser:   metaverseSSO.SSOType == entity.Metaverse,
-		IsAppleUser:       appleSSO.SSOType == entity.Apple,
-		IsGoogleUser:      googleSSO.SSOType == entity.Google,
-		IsEmailSignUpUser: metaverseSSO.SSOType != entity.Metaverse && appleSSO.SSOType != entity.Apple && googleSSO.SSOType != entity.Google,
-		CreatedAt:         _user.CreatedAt,
-		UpdatedAt:         _user.UpdatedAt,
-		UserMemo:          memo,
-	}
-
-	return info, nil
-}
-
-func (u *userRepository) SearchUser(tx *gorm.DB, input *structs.SearchUserInput) (result []*entity.UserMetadata, err error) {
+func (u *userRepository) SearchUser(tx *gorm.DB, input *structs.SearchUserInput) (result []*entity.User, err error) {
 	var users []*entity.User
 	var _user = new(entity.User)
-	var metadata = new(entity.UserMetadata)
 
 	query := tx.Table(_user.TableName())
 
@@ -214,15 +128,7 @@ func (u *userRepository) SearchUser(tx *gorm.DB, input *structs.SearchUserInput)
 		return nil, err
 	}
 
-	for _, v := range users {
-		metadata, err = u.FindUserMetadata(tx, v.ID)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, metadata)
-	}
-
-	return result, nil
+	return users, nil
 }
 
 func (u *userRepository) CreateMemo(tx *gorm.DB, id uint, desc string) (err error) {
@@ -299,6 +205,6 @@ func (u *userRepository) Conn() *gorm.DB {
 	return u.db
 }
 
-func newUserRepository(db *gorm.DB, cluster *redis.ClusterClient) *userRepository {
-	return &userRepository{db: db, manager: trade.New(cluster)}
+func newUserRepository(db *gorm.DB) *userRepository {
+	return &userRepository{db: db}
 }
