@@ -38,7 +38,7 @@ func (a *announcementService) FindAllAnnouncement(limit, offset int) (result []*
 	return result, nil
 }
 
-func (a *announcementService) SearchAnnouncement(input structs.SearchAnnouncementInput) (result []*entity.Announcement, err error) {
+func (a *announcementService) SearchAnnouncement(input *structs.SearchAnnouncementInput) (result []*entity.Announcement, err error) {
 	err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.SearchAnnouncement(tx, input)
 		return err
