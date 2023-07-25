@@ -312,7 +312,7 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 		}
 
 		// update all orders
-		if err = o.orderRepository.BatchUpdateOrderBookStatus(tx, orderUUIDs, types.PartialFilled); err != nil {
+		if err = o.orderRepository.BatchUpdateOrderBookStatus(tx, orderUUIDs, types.Fulfilled); err != nil {
 			return err
 		}
 
