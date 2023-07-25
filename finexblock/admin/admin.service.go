@@ -15,6 +15,101 @@ type adminService struct {
 	repo Repository
 }
 
+func (a *adminService) FindAdminByEmail(email string) (result *entity.Admin, err error) {
+	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.FindAdminByEmail(tx, email)
+		return err
+	}, &sql.TxOptions{ReadOnly: true}); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (a *adminService) InsertDeleteLog(executor, target uint) (result *entity.AdminDeleteLog, err error) {
+	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.InsertDeleteLog(tx, executor, target)
+		return err
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *adminService) InsertApiLog(adminID uint, method entity.ApiMethod, ip, endpoint string) (result *entity.AdminApiLog, err error) {
+	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.InsertApiLog(tx, &entity.AdminApiLog{
+			AdminID:  adminID,
+			IP:       ip,
+			Endpoint: endpoint,
+			Method:   method,
+		})
+		return err
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *adminService) InsertLoginHistory(adminID uint) (result *entity.AdminLoginHistory, err error) {
+	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.InsertLoginHistory(tx, adminID)
+		return err
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *adminService) InsertGradeUpdateLog(executor, target uint, prev, curr entity.GradeType) (result *entity.AdminGradeUpdateLog, err error) {
+	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.InsertGradeUpdateLog(tx, executor, target, prev, curr)
+		return err
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *adminService) InsertAccessToken(adminID uint, expiredAt time.Time) (result *entity.AdminAccessToken, err error) {
+	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.InsertAccessToken(tx, adminID, expiredAt)
+		return err
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *adminService) InsertLoginFailedLog(adminID uint) (result *entity.AdminLoginFailedLog, err error) {
+	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = a.repo.InsertLoginFailedLog(tx, adminID)
+		return err
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *adminService) UnblockAdmin(adminID uint) (err error) {
+	return a.Conn().Transaction(func(tx *gorm.DB) error {
+		var _admin = new(entity.Admin)
+
+		_admin, err = a.repo.FindAdminByID(tx, adminID)
+		if err != nil {
+			return err
+		}
+
+		_admin.IsBlocked = false
+		return a.repo.UpdateAdminByID(tx, _admin.ID, _admin)
+	})
+}
+
 func (a *adminService) FindAdminByID(adminID uint) (result *entity.Admin, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindAdminByID(tx, adminID)
@@ -264,7 +359,9 @@ func (a *adminService) BlockAdmin(adminID uint) (err error) {
 			return errors.New("super admin can't be blocked")
 		}
 
-		return a.repo.UpdateAdminByID(tx, adminID, &entity.Admin{IsBlocked: true})
+		_admin.IsBlocked = true
+
+		return a.repo.UpdateAdminByID(tx, adminID, _admin)
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
 

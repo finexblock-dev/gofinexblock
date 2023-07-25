@@ -241,7 +241,7 @@ func (a *adminRepository) SearchGradeUpdateLog(tx *gorm.DB, input *structs.Searc
 	return result, nil
 }
 
-func (a *adminRepository) InsertGradeUpdateLog(tx *gorm.DB, executor, target uint, prev, curr string) (*entity.AdminGradeUpdateLog, error) {
+func (a *adminRepository) InsertGradeUpdateLog(tx *gorm.DB, executor, target uint, prev, curr entity.GradeType) (*entity.AdminGradeUpdateLog, error) {
 	var _gradeUpdateLog = &entity.AdminGradeUpdateLog{
 		ExecutorID: executor,
 		TargetID:   target,
