@@ -472,6 +472,7 @@ func (a *adminRepository) InsertAdmin(tx *gorm.DB, email, password string) (*ent
 	input = &entity.Admin{
 		Email:    email,
 		Password: password,
+		Grade:    entity.SUPPORT,
 	}
 
 	if err = tx.Table(input.TableName()).Create(input).Error; err != nil {

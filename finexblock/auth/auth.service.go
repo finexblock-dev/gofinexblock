@@ -25,7 +25,7 @@ func (a *authService) AdminLogin(email, password string) (result string, err err
 	var _token string
 	if err = a.adminRepository.Conn().Transaction(func(tx *gorm.DB) error {
 
-		_admin, err = a.adminRepository.FindAdminByEmail(a.Conn(), email)
+		_admin, err = a.adminRepository.FindAdminByEmail(tx, email)
 		if err != nil {
 			return err
 		}
