@@ -31,20 +31,20 @@ type User struct {
 type UserMetadata struct {
 	ID                uint            `json:"id" query:"id"`
 	UUID              string          `json:"uuid" query:"uuid"`
-	UserType          string          `json:"userType" query:"user_type"`
+	UserType          string          `json:"userType" query:"userType"`
 	Nickname          string          `json:"nickname" query:"nickname"`
 	Fullname          string          `json:"fullname" query:"fullname"`
-	PhoneNumber       string          `json:"phoneNumber" query:"phone_number"`
+	PhoneNumber       string          `json:"phoneNumber" query:"phoneNumber"`
 	BTC               decimal.Decimal `json:"btc" query:"btc"`
-	IsBlock           bool            `json:"isBlock" query:"is_block"`
-	IsDormant         bool            `json:"isDormant" query:"is_dormant"`
-	IsMetaverseUser   bool            `json:"isMetaverseUser" query:"is_metaverse_user"`
-	IsGoogleUser      bool            `json:"isGoogleUser" query:"is_google_user"`
-	IsAppleUser       bool            `json:"isAppleUser" query:"is_apple_user"`
-	IsEmailSignUpUser bool            `json:"isEmailSignUpUser" query:"is_email_sign_up_user"`
-	CreatedAt         time.Time       `json:"createdAt" query:"created_at"`
-	UpdatedAt         time.Time       `json:"updatedAt" query:"updated_at"`
-	UserMemo          *UserMemo       `json:"userMemo" query:"user_memo"`
+	IsBlock           bool            `json:"isBlock" query:"isBlock"`
+	IsDormant         bool            `json:"isDormant" query:"isDormant"`
+	IsMetaverseUser   bool            `json:"isMetaverseUser" query:"isMetaverseUser"`
+	IsGoogleUser      bool            `json:"isGoogleUser" query:"isGoogleUser"`
+	IsAppleUser       bool            `json:"isAppleUser" query:"isAppleUser"`
+	IsEmailSignUpUser bool            `json:"isEmailSignUpUser" query:"isEmailSignUpUser"`
+	CreatedAt         time.Time       `json:"createdAt" query:"createdAt"`
+	UpdatedAt         time.Time       `json:"updatedAt" query:"updatedAt"`
+	UserMemo          *UserMemo       `json:"userMemo" query:"userMemo"`
 }
 
 func (u *User) TableName() string {
