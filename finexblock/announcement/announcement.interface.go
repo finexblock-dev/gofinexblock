@@ -1,7 +1,7 @@
 package announcement
 
 import (
-	"github.com/finexblock-dev/gofinexblock/finexblock/announcement/dto"
+	"github.com/finexblock-dev/gofinexblock/finexblock/announcement/structs"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"gorm.io/gorm"
@@ -11,7 +11,7 @@ type Repository interface {
 	types.Repository
 	FindAnnouncementByID(tx *gorm.DB, id uint) (result *entity.Announcement, err error)
 	FindAllAnnouncement(tx *gorm.DB, limit, offset int) (result []*entity.Announcement, err error)
-	SearchAnnouncement(tx *gorm.DB, input dto.SearchAnnouncementInput) (result []*entity.Announcement, err error)
+	SearchAnnouncement(tx *gorm.DB, input structs.SearchAnnouncementInput) (result []*entity.Announcement, err error)
 	InsertAnnouncement(tx *gorm.DB, _announcement *entity.Announcement) (result *entity.Announcement, err error)
 	UpdateAnnouncement(tx *gorm.DB, id uint, _announcement *entity.Announcement) (result *entity.Announcement, err error)
 	DeleteAnnouncement(tx *gorm.DB, id uint) (err error)
@@ -26,7 +26,7 @@ type Service interface {
 	types.Service
 	FindAnnouncementByID(id uint) (result *entity.Announcement, err error)
 	FindAllAnnouncement(limit, offset int) (result []*entity.Announcement, err error)
-	SearchAnnouncement(input dto.SearchAnnouncementInput) (result []*entity.Announcement, err error)
+	SearchAnnouncement(input structs.SearchAnnouncementInput) (result []*entity.Announcement, err error)
 	InsertAnnouncement(_announcement *entity.Announcement) (result *entity.Announcement, err error)
 	UpdateAnnouncement(id uint, _announcement *entity.Announcement) (result *entity.Announcement, err error)
 	DeleteAnnouncement(id uint) (err error)
