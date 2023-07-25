@@ -116,7 +116,7 @@ func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *entity.
 
 	btcTotal = decimal.Zero
 	DivInto := decimal.NewFromFloat(math.Pow10(8))
-	if len(btc) != 0 {
+	if btc != nil && len(btc) != 0 {
 		for _, v := range btc {
 			btcTotal.Add(v.Div(DivInto))
 		}

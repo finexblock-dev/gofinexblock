@@ -10,10 +10,11 @@ import (
 
 type userService struct {
 	repo Repository
+	//tradeService trade.Manager
 }
 
-func newUserService(repo Repository) *userService {
-	return &userService{repo: repo}
+func newUserService(db *gorm.DB) *userService {
+	return &userService{repo: NewRepository(db)}
 }
 
 func (u *userService) Ctx() context.Context {
