@@ -5,16 +5,16 @@ import (
 	"database/sql"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/user/structs"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
 type userService struct {
 	repo Repository
-	//tradeService trade.Manager
 }
 
-func newUserService(db *gorm.DB) *userService {
-	return &userService{repo: NewRepository(db)}
+func newUserService(db *gorm.DB, cluster *redis.ClusterClient) *userService {
+	return &userService{repo: NewRepository(db, cluster)}
 }
 
 func (u *userService) Ctx() context.Context {

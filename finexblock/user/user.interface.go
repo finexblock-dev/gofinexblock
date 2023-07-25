@@ -4,6 +4,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/finexblock-dev/gofinexblock/finexblock/user/structs"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -43,10 +44,10 @@ type Service interface {
 	CreateMemo(id uint, desc string) (err error)
 }
 
-func NewRepository(db *gorm.DB) Repository {
-	return newUserRepository(db)
+func NewRepository(db *gorm.DB, cluster *redis.ClusterClient) Repository {
+	return newUserRepository(db, cluster)
 }
 
-func NewService(db *gorm.DB) Service {
-	return newUserService(db)
+func NewService(db *gorm.DB, cluster *redis.ClusterClient) Service {
+	return newUserService(db, cluster)
 }

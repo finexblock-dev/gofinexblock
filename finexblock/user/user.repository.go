@@ -4,14 +4,17 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
+	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
+	"github.com/finexblock-dev/gofinexblock/finexblock/trade"
 	"github.com/finexblock-dev/gofinexblock/finexblock/user/structs"
+	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
-	"math"
 )
 
 type userRepository struct {
-	db *gorm.DB
+	db      *gorm.DB
+	manager trade.Manager
 }
 
 func (u *userRepository) FindUserDormantByUserID(tx *gorm.DB, userID uint) (result *entity.UserDormant, err error) {
@@ -54,16 +57,15 @@ func (u *userRepository) FindUserProfileByUserID(tx *gorm.DB, userID uint) (resu
 }
 
 func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *entity.UserMetadata, err error) {
-	var _user *entity.User
-	var _profile *entity.UserProfile
-	var metaverseSSO *entity.UserSingleSignOnInfo
-	var appleSSO *entity.UserSingleSignOnInfo
-	var googleSSO *entity.UserSingleSignOnInfo
-	var dormant *entity.UserDormant
-	var memo *entity.UserMemo
+	var _user = new(entity.User)
+	var _profile = new(entity.UserProfile)
+	var metaverseSSO = new(entity.UserSingleSignOnInfo)
+	var appleSSO = new(entity.UserSingleSignOnInfo)
+	var googleSSO = new(entity.UserSingleSignOnInfo)
+	var dormant = new(entity.UserDormant)
+	var memo = new(entity.UserMemo)
 
-	var btc []decimal.Decimal
-	var btcTotal decimal.Decimal
+	var btcTotal = decimal.Zero
 
 	_user, err = u.FindUserByID(tx, id)
 	if err != nil {
@@ -106,23 +108,10 @@ func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *entity.
 	}
 
 	// Calculate the BTC balance
-	if err := tx.Table("coin_transfer").
-		Select("amount as btc").
-		Joins("JOIN wallet ON coin_transfer.wallet_id = wallet.id").
-		Where("wallet.user_id = ? AND wallet.coin_id = 1", id).
-		Find(&btc).Error; !errors.Is(err, gorm.ErrRecordNotFound) && err != nil {
+	btcTotal, err = u.manager.GetBalance(_user.UUID, grpc_order.Currency_BTC.String())
+	if err != nil && !errors.Is(err, redis.Nil) {
 		return nil, err
 	}
-
-	btcTotal = decimal.Zero
-	DivInto := decimal.NewFromFloat(math.Pow10(8))
-	if btc != nil && len(btc) != 0 {
-		for _, v := range btc {
-			btcTotal.Add(v.Div(DivInto))
-		}
-	}
-
-	//btc = btc.Div(decimal.NewFromFloat(math.Pow10(8)))
 
 	info := &entity.UserMetadata{
 		ID:                _user.ID,
@@ -147,9 +136,9 @@ func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *entity.
 }
 
 func (u *userRepository) SearchUser(tx *gorm.DB, input *structs.SearchUserInput) (result []*entity.UserMetadata, err error) {
-	var _user *entity.User
 	var users []*entity.User
-	var metadata *entity.UserMetadata
+	var _user = new(entity.User)
+	var metadata = new(entity.UserMetadata)
 
 	query := tx.Table(_user.TableName())
 
@@ -239,7 +228,7 @@ func (u *userRepository) SearchUser(tx *gorm.DB, input *structs.SearchUserInput)
 func (u *userRepository) CreateMemo(tx *gorm.DB, id uint, desc string) (err error) {
 	var _memo = &entity.UserMemo{UserID: id, Description: desc}
 
-	if err = tx.Table(_memo.TableName()).Create(_memo).Error; err != nil {
+	if err = tx.Table(_memo.TableName()).Create(&_memo).Error; err != nil {
 		return err
 	}
 
@@ -247,7 +236,7 @@ func (u *userRepository) CreateMemo(tx *gorm.DB, id uint, desc string) (err erro
 }
 
 func (u *userRepository) FindUserByUUID(tx *gorm.DB, uuid string) (*entity.User, error) {
-	var _user *entity.User
+	var _user = new(entity.User)
 	var err error
 
 	if err = tx.Table(_user.TableName()).Where("uuid = ?", uuid).First(&_user).Error; err != nil {
@@ -259,7 +248,7 @@ func (u *userRepository) FindUserByUUID(tx *gorm.DB, uuid string) (*entity.User,
 
 func (u *userRepository) FindManyUserByUUID(tx *gorm.DB, uuids []string) ([]*entity.User, error) {
 	var users []*entity.User
-	var table *entity.User
+	var table = new(entity.User)
 	var err error
 
 	if err = tx.Table(table.TableName()).Where("uuid IN (?)", uuids).Find(&users).Error; err != nil {
@@ -270,7 +259,7 @@ func (u *userRepository) FindManyUserByUUID(tx *gorm.DB, uuids []string) ([]*ent
 }
 
 func (u *userRepository) FindUserByID(tx *gorm.DB, id uint) (*entity.User, error) {
-	var _user *entity.User
+	var _user = new(entity.User)
 	var err error
 
 	if err = tx.Table(_user.TableName()).Where("id = ?", id).First(&_user).Error; err != nil {
@@ -281,7 +270,7 @@ func (u *userRepository) FindUserByID(tx *gorm.DB, id uint) (*entity.User, error
 }
 
 func (u *userRepository) BlockUser(tx *gorm.DB, id uint) error {
-	var table *entity.User
+	var table = new(entity.User)
 	var err error
 
 	if err = tx.Table(table.TableName()).Where("id = ?", id).Update("is_block", true).Error; err != nil {
@@ -292,7 +281,7 @@ func (u *userRepository) BlockUser(tx *gorm.DB, id uint) error {
 }
 
 func (u *userRepository) UnBlockUser(tx *gorm.DB, id uint) error {
-	var table *entity.User
+	var table = new(entity.User)
 	var err error
 
 	if err = tx.Table(table.TableName()).Where("id = ?", id).Update("is_block", false).Error; err != nil {
@@ -310,6 +299,6 @@ func (u *userRepository) Conn() *gorm.DB {
 	return u.db
 }
 
-func newUserRepository(db *gorm.DB) *userRepository {
-	return &userRepository{db: db}
+func newUserRepository(db *gorm.DB, cluster *redis.ClusterClient) *userRepository {
+	return &userRepository{db: db, manager: trade.New(cluster)}
 }
