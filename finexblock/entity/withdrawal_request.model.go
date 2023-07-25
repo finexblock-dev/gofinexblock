@@ -18,15 +18,15 @@ const (
 )
 
 type WithdrawalRequest struct {
-	ID             uint             `gorm:"primaryKey;autoIncrement;not null;comment:'기본키'"`
-	CoinTransferID uint             `gorm:"comment:'선차감 id'"`
-	ToAddress      string           `gorm:"comment:'출금 주소';not null;type:longtext"`
-	Amount         decimal.Decimal  `gorm:"type:decimal(30,4);not null;comment:'출금량';"`
-	Fee            decimal.Decimal  `gorm:"type:decimal(30,4);not null;comment:'수수료';"`
-	Status         WithdrawalStatus `gorm:"not null;type:enum('SUBMITTED', 'APPROVED', 'CANCELED', 'REJECTED', 'PENDING', 'COMPLETED', 'FAILED');comment:'상태'"`
-	CreatedAt      time.Time        `gorm:"not null;comment:'생성일자';default:CURRENT_TIMESTAMP;type:timestamp"`
-	UpdatedAt      time.Time        `gorm:"not null;comment:'수정일자';default:CURRENT_TIMESTAMP;type:timestamp"`
-	CoinTransfer   *CoinTransfer    `gorm:"foreignKey:CoinTransferID;references:ID"`
+	ID             uint             `gorm:"primaryKey;autoIncrement;not null;comment:'기본키'" json:"id"`
+	CoinTransferID uint             `gorm:"comment:'선차감 id'" json:"coinTransferId"`
+	ToAddress      string           `gorm:"comment:'출금 주소';not null;type:longtext" json:"toAddress"`
+	Amount         decimal.Decimal  `gorm:"type:decimal(30,4);not null;comment:'출금량';" json:"amount"`
+	Fee            decimal.Decimal  `gorm:"type:decimal(30,4);not null;comment:'수수료';" json:"fee"`
+	Status         WithdrawalStatus `gorm:"not null;type:enum('SUBMITTED', 'APPROVED', 'CANCELED', 'REJECTED', 'PENDING', 'COMPLETED', 'FAILED');comment:'상태'" json:"status"`
+	CreatedAt      time.Time        `gorm:"not null;comment:'생성일자';default:CURRENT_TIMESTAMP;type:timestamp" json:"createdAt"`
+	UpdatedAt      time.Time        `gorm:"not null;comment:'수정일자';default:CURRENT_TIMESTAMP;type:timestamp" json:"updatedAt"`
+	CoinTransfer   *CoinTransfer    `gorm:"foreignKey:CoinTransferID;references:ID" json:"coinTransfer"`
 }
 
 func (w *WithdrawalRequest) Alias() string {

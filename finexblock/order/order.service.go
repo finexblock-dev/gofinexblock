@@ -361,7 +361,7 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 		}
 
 		return o.orderRepository.BatchInsertOrderMatchingHistory(tx, orderMatchingHistories)
-	}, &sql.TxOptions{Isolation: sql.LevelRepeatableRead}); err != nil {
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return event, err
 	}
 
@@ -486,7 +486,7 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 		}
 
 		return o.orderRepository.BatchInsertOrderMatchingHistory(tx, orderMatchingHistories)
-	}, &sql.TxOptions{Isolation: sql.LevelRepeatableRead}); err != nil {
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return event, err
 	}
 
@@ -731,7 +731,7 @@ func (o *orderService) LimitOrderCancellationInBatch(event []*grpc_order.OrderCa
 
 		return o.orderRepository.BatchUpdateOrderBookStatus(tx, orderUUIDs, types.Cancelled)
 
-	}, &sql.TxOptions{Isolation: sql.LevelRepeatableRead}); err != nil {
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return event, err
 	}
 

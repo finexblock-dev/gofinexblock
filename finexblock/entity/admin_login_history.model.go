@@ -6,8 +6,8 @@ import (
 
 type AdminLoginHistory struct {
 	ID       uint      `gorm:"primaryKey;autoIncrement:true;comment:'기본키'" json:"id"`
-	AdminID  uint      `json:"admin_id,omitempty" gorm:"comment:'운영진 id'"`
-	LoggedAt time.Time `json:"logged_at" gorm:"comment:'로그인 일자';not null;type:timestamp;default:CURRENT_TIMESTAMP;type:timestamp"`
+	AdminID  uint      `json:"adminId,omitempty" gorm:"comment:'운영진 id'"`
+	LoggedAt time.Time `json:"loggedAt" gorm:"comment:'로그인 일자';not null;type:timestamp;default:CURRENT_TIMESTAMP;type:timestamp"`
 }
 
 func (l *AdminLoginHistory) Alias() string {
