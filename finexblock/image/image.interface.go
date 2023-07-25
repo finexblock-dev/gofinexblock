@@ -16,7 +16,7 @@ type Repository interface {
 type Service interface {
 	types.Service
 	UploadFile(f *multipart.Form) ([]*entity.Image, error)
-	FindAllImages(tx *gorm.DB, limit, offset int) ([]*entity.Image, error)
+	FindAllImages(limit, offset int) ([]*entity.Image, error)
 }
 
 func NewRepository(db *gorm.DB) Repository {

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
-	"github.com/finexblock-dev/gofinexblock/finexblock/user/dto"
+	"github.com/finexblock-dev/gofinexblock/finexblock/user/structs"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 	"math"
@@ -146,7 +146,7 @@ func (u *userRepository) FindUserMetadata(tx *gorm.DB, id uint) (result *entity.
 	return info, nil
 }
 
-func (u *userRepository) SearchUser(tx *gorm.DB, input *dto.SearchUserInput) (result []*entity.UserMetadata, err error) {
+func (u *userRepository) SearchUser(tx *gorm.DB, input *structs.SearchUserInput) (result []*entity.UserMetadata, err error) {
 	var _user *entity.User
 	var users []*entity.User
 	var metadata *entity.UserMetadata

@@ -3,7 +3,7 @@ package user
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
-	"github.com/finexblock-dev/gofinexblock/finexblock/user/dto"
+	"github.com/finexblock-dev/gofinexblock/finexblock/user/structs"
 	"gorm.io/gorm"
 )
 
@@ -13,7 +13,7 @@ type Repository interface {
 	FindManyUserByUUID(tx *gorm.DB, uuids []string) (result []*entity.User, err error)
 	FindUserByID(tx *gorm.DB, id uint) (result *entity.User, err error)
 	FindUserMetadata(tx *gorm.DB, id uint) (result *entity.UserMetadata, err error)
-	SearchUser(tx *gorm.DB, input *dto.SearchUserInput) (result []*entity.UserMetadata, err error)
+	SearchUser(tx *gorm.DB, input *structs.SearchUserInput) (result []*entity.UserMetadata, err error)
 
 	BlockUser(tx *gorm.DB, id uint) (err error)
 	UnBlockUser(tx *gorm.DB, id uint) (err error)
@@ -35,7 +35,7 @@ type Service interface {
 	FindUserByUUIDs(uuids []string) (result []*entity.User, err error)
 	FindUserByID(id uint) (result *entity.User, err error)
 	FindUserMetadata(id uint) (result *entity.UserMetadata, err error)
-	SearchUser(input *dto.SearchUserInput) (result []*entity.UserMetadata, err error)
+	SearchUser(input *structs.SearchUserInput) (result []*entity.UserMetadata, err error)
 
 	BlockUser(id uint) (err error)
 	UnBlockUser(id uint) (err error)

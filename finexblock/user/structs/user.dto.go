@@ -1,4 +1,4 @@
-package dto
+package structs
 
 import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
