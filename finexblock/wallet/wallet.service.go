@@ -7,14 +7,83 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/cache"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
+	"github.com/finexblock-dev/gofinexblock/finexblock/trade"
 	"github.com/finexblock-dev/gofinexblock/finexblock/user"
+	"github.com/finexblock-dev/gofinexblock/finexblock/wallet/structs"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
 type walletService struct {
+	manager          trade.Manager
 	walletRepository Repository
 	userRepository   user.Repository
+}
+
+func (w *walletService) FindAllUserAssets(id uint) (result []*structs.Asset, err error) {
+	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
+		var wallets []*entity.Wallet
+		var coins []*entity.Coin
+		var _user *entity.User
+		var coinIDs []uint
+		var balance decimal.Decimal
+
+		_user, err = w.userRepository.FindUserByID(tx, id)
+		if err != nil {
+			return err
+		}
+
+		wallets, err = w.walletRepository.ScanWalletByUserID(tx, id)
+		if err != nil {
+			return err
+		}
+
+		for _, w := range wallets {
+			coinIDs = append(coinIDs, w.CoinID)
+		}
+
+		coins, err = w.walletRepository.FindManyCoinByID(tx, coinIDs)
+		if err != nil {
+			return err
+		}
+
+		for _, c := range coins {
+			balance, err = w.manager.GetBalance(_user.UUID, c.Name)
+			if err != nil {
+				return err
+			}
+
+			result = append(result, &structs.Asset{
+				CoinID:  c.ID,
+				Balance: balance,
+			})
+		}
+
+		return err
+	}, &sql.TxOptions{ReadOnly: true}); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (w *walletService) FindManyCoinByID(ids []uint) (result []*entity.Coin, err error) {
+	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = w.walletRepository.FindManyCoinByID(tx, ids)
+		return err
+	}, &sql.TxOptions{ReadOnly: true}); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (w *walletService) FindManyCoinByName(names []string) (result []*entity.Coin, err error) {
+	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = w.walletRepository.FindManyCoinByName(tx, names)
+		return err
+	}, &sql.TxOptions{ReadOnly: true}); err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func (w *walletService) BalanceUpdateInBatch(event []*grpc_order.BalanceUpdate) (err error) {

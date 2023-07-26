@@ -12,6 +12,16 @@ type walletRepository struct {
 	db *gorm.DB
 }
 
+func (w *walletRepository) FindManyCoinByID(tx *gorm.DB, ids []uint) (result []*entity.Coin, err error) {
+	var _coin *entity.Coin
+
+	if err = tx.Table(_coin.TableName()).Where("id IN ?", ids).Find(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (w *walletRepository) FindManyCoinByName(tx *gorm.DB, names []string) (result []*entity.Coin, err error) {
 	var coin *entity.Coin
 

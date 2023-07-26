@@ -4,6 +4,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
+	"github.com/finexblock-dev/gofinexblock/finexblock/wallet/structs"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
@@ -15,6 +16,7 @@ type Repository interface {
 
 	FindCoinByID(tx *gorm.DB, id uint) (result *entity.Coin, err error)
 	FindCoinByName(tx *gorm.DB, name string) (result *entity.Coin, err error)
+	FindManyCoinByID(tx *gorm.DB, ids []uint) (result []*entity.Coin, err error)
 	FindManyCoinByName(tx *gorm.DB, names []string) (result []*entity.Coin, err error)
 
 	FindBlockNumberByCoinID(tx *gorm.DB, coinID uint) (result *entity.BlockNumber, err error)
@@ -23,6 +25,7 @@ type Repository interface {
 	FindWalletByID(tx *gorm.DB, id uint) (result *entity.Wallet, err error)
 	FindWalletByAddress(tx *gorm.DB, addr string) (result *entity.Wallet, err error)
 	FindAllWallet(tx *gorm.DB, coinID uint) (result []*entity.Wallet, err error)
+
 	ScanWalletByCoinID(tx *gorm.DB, coinID uint) (result []*entity.Wallet, err error)
 	ScanWalletByUserID(tx *gorm.DB, userID uint) (result []*entity.Wallet, err error)
 	GetContractAddressByCoinID(tx *gorm.DB, coinID uint) (result *entity.SmartContract, err error)
@@ -47,11 +50,15 @@ type Repository interface {
 
 type Service interface {
 	types.Service
+	FindAllUserAssets(id uint) (result []*structs.Asset, err error)
+
 	FindBlockchainByName(name string) (result *entity.Blockchain, err error)
 	FindBlockchainByID(id uint) (result *entity.Blockchain, err error)
 
 	FindCoinByID(id uint) (result *entity.Coin, err error)
 	FindCoinByName(name string) (result *entity.Coin, err error)
+	FindManyCoinByID(ids []uint) (result []*entity.Coin, err error)
+	FindManyCoinByName(names []string) (result []*entity.Coin, err error)
 
 	FindBlockNumberByCoinID(coinID uint) (result *entity.BlockNumber, err error)
 	FindBlockNumberByID(id uint) (result *entity.BlockNumber, err error)
