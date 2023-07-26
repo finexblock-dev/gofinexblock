@@ -12,6 +12,29 @@ type walletRepository struct {
 	db *gorm.DB
 }
 
+func (w *walletRepository) ScanWithdrawalRequestByUser(tx *gorm.DB, userID uint, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
+	var _withdrawalRequest *entity.WithdrawalRequest
+	var query *gorm.DB
+
+	query = tx.Table(_withdrawalRequest.Alias()).
+		Joins("JOIN coin_transfer ct ON ct.id = wr.coin_transfer_id").
+		Joins("JOIN wallet w ON w.id = ct.wallet_id AND w.user_id = ?", userID)
+
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+
+	if offset > 0 {
+		query = query.Offset(offset)
+	}
+
+	if err = query.Find(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (w *walletRepository) ScanCoinTransferByUserID(tx *gorm.DB, userID uint, limit, offset int) (result []*entity.CoinTransfer, err error) {
 	var _coinTransfer *entity.CoinTransfer
 	var query *gorm.DB
