@@ -10,6 +10,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/trade"
 	"github.com/finexblock-dev/gofinexblock/finexblock/user"
 	"github.com/finexblock-dev/gofinexblock/finexblock/wallet/structs"
+	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
@@ -477,6 +478,6 @@ func (w *walletService) Conn() *gorm.DB {
 	return w.walletRepository.Conn()
 }
 
-func newWalletService(db *gorm.DB) *walletService {
-	return &walletService{walletRepository: NewRepository(db), userRepository: user.NewRepository(db)}
+func newWalletService(db *gorm.DB, cluster *redis.ClusterClient) *walletService {
+	return &walletService{walletRepository: NewRepository(db), userRepository: user.NewRepository(db), manager: trade.New(cluster)}
 }

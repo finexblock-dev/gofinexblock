@@ -5,6 +5,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
 	"github.com/finexblock-dev/gofinexblock/finexblock/types"
 	"github.com/finexblock-dev/gofinexblock/finexblock/wallet/structs"
+	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
@@ -95,6 +96,6 @@ func NewRepository(db *gorm.DB) Repository {
 	return newWalletRepository(db)
 }
 
-func NewService(db *gorm.DB) Service {
-	return newWalletService(db)
+func NewService(db *gorm.DB, cluster *redis.ClusterClient) Service {
+	return newWalletService(db, cluster)
 }
