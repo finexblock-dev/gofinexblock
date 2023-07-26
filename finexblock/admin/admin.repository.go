@@ -12,6 +12,16 @@ type adminRepository struct {
 	db *gorm.DB
 }
 
+func (a *adminRepository) FindManyAdminByID(tx *gorm.DB, ids []uint) (result []*entity.Admin, err error) {
+	var _admin *entity.Admin
+
+	if err = tx.Table(_admin.TableName()).Where("id IN ?", ids).Find(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (a *adminRepository) InsertAccessToken(tx *gorm.DB, adminID uint, expiredAt time.Time) (result *entity.AdminAccessToken, err error) {
 	result = &entity.AdminAccessToken{
 		AdminID:   adminID,

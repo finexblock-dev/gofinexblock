@@ -15,6 +15,28 @@ type adminService struct {
 	repo Repository
 }
 
+func (a *adminService) FindOnlineAdmin(limit, offset int) (result []*entity.Admin, err error) {
+	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
+		var tokens []*entity.AdminAccessToken
+		var ids []uint
+
+		tokens, err = a.repo.FindAccessToken(tx, limit, offset)
+		if err != nil {
+			return err
+		}
+
+		for _, token := range tokens {
+			ids = append(ids, token.AdminID)
+		}
+
+		result, err = a.repo.FindManyAdminByID(tx, ids)
+		return err
+	}); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (a *adminService) FindAdminByEmail(email string) (result *entity.Admin, err error) {
 	if err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.FindAdminByEmail(tx, email)
@@ -367,7 +389,8 @@ func (a *adminService) BlockAdmin(adminID uint) (err error) {
 
 func (a *adminService) UpdatePassword(adminID uint, prevPassword, currentPassword string) (err error) {
 	return a.Conn().Transaction(func(tx *gorm.DB) error {
-		var _adminCredentials *entity.Admin
+		var _admin = new(entity.Admin)
+		var _adminCredentials = new(entity.Admin)
 
 		if utils.PasswordRegex(currentPassword) {
 			return errors.New("regex error: password is not valid")
@@ -382,7 +405,15 @@ func (a *adminService) UpdatePassword(adminID uint, prevPassword, currentPasswor
 			return errors.New("invalid credentials: password is not valid")
 		}
 
-		return a.repo.UpdateAdminByID(tx, adminID, &entity.Admin{Password: currentPassword})
+		_admin, err = a.repo.FindAdminByID(tx, adminID)
+		if err != nil {
+			return err
+		}
+
+		_admin.Password = currentPassword
+		_admin.InitialLogin = true
+
+		return a.repo.UpdateAdminByID(tx, adminID, _admin)
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
 

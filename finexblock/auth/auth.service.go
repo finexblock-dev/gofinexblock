@@ -43,6 +43,11 @@ func (a *authService) AdminLogin(email, password string) (result string, err err
 			return errors.New("invalid credentials")
 		}
 
+		_admin.InitialLogin = false
+		if err = a.adminRepository.UpdateAdminByID(tx, _admin.ID, _admin); err != nil {
+			return err
+		}
+
 		_token, err = a.AdminToken(_admin)
 		if err != nil {
 			return err

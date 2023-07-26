@@ -10,12 +10,13 @@ import (
 
 type Repository interface {
 	types.Repository
-	FindAdminByID(tx *gorm.DB, id uint) (*entity.Admin, error)
-	FindAdminByEmail(tx *gorm.DB, email string) (*entity.Admin, error)
-	FindAdminCredentialsByID(tx *gorm.DB, id uint) (*entity.Admin, error)
-	FindAdminByGrade(tx *gorm.DB, grade entity.GradeType, limit, offset int) ([]*entity.Admin, error)
-	FindAllAdmin(tx *gorm.DB, limit, offset int) ([]*entity.Admin, error)
-	InsertAdmin(tx *gorm.DB, email, password string) (*entity.Admin, error)
+	FindAdminByID(tx *gorm.DB, id uint) (result *entity.Admin, err error)
+	FindManyAdminByID(tx *gorm.DB, ids []uint) (result []*entity.Admin, err error)
+	FindAdminByEmail(tx *gorm.DB, email string) (result *entity.Admin, err error)
+	FindAdminCredentialsByID(tx *gorm.DB, id uint) (result *entity.Admin, err error)
+	FindAdminByGrade(tx *gorm.DB, grade entity.GradeType, limit, offset int) (result []*entity.Admin, err error)
+	FindAllAdmin(tx *gorm.DB, limit, offset int) (result []*entity.Admin, err error)
+	InsertAdmin(tx *gorm.DB, email, password string) (result *entity.Admin, err error)
 	UpdateAdminByID(tx *gorm.DB, id uint, admin *entity.Admin) error
 	DeleteAdminByID(tx *gorm.DB, id uint) error
 
@@ -58,6 +59,8 @@ type Repository interface {
 
 type Service interface {
 	types.Service
+	FindOnlineAdmin(limit, offset int) (result []*entity.Admin, err error)
+
 	FindAdminByID(adminID uint) (result *entity.Admin, err error)
 	FindAllAdmin(limit, offset int) (result []*entity.Admin, err error)
 	FindAdminByGrade(grade entity.GradeType, limit, offset int) (result []*entity.Admin, err error)
