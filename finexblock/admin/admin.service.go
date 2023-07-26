@@ -121,13 +121,20 @@ func (a *adminService) InsertLoginFailedLog(adminID uint) (result *entity.AdminL
 func (a *adminService) UnblockAdmin(adminID uint) (err error) {
 	return a.Conn().Transaction(func(tx *gorm.DB) error {
 		var _admin = new(entity.Admin)
+		var _adminCredentials = new(entity.Admin)
 
 		_admin, err = a.repo.FindAdminByID(tx, adminID)
 		if err != nil {
 			return err
 		}
 
+		_adminCredentials, err = a.repo.FindAdminCredentialsByID(tx, adminID)
+		if err != nil {
+			return err
+		}
+
 		_admin.IsBlocked = false
+		_admin.Password = _adminCredentials.Password
 		return a.repo.UpdateAdminByID(tx, _admin.ID, _admin)
 	})
 }
@@ -370,7 +377,8 @@ func (a *adminService) DeleteAdmin(adminID uint) (err error) {
 
 func (a *adminService) BlockAdmin(adminID uint) (err error) {
 	return a.Conn().Transaction(func(tx *gorm.DB) error {
-		var _admin *entity.Admin
+		var _admin = new(entity.Admin)
+		var _adminCredentials = new(entity.Admin)
 
 		_admin, err = a.repo.FindAdminByID(tx, adminID)
 		if err != nil {
@@ -381,7 +389,13 @@ func (a *adminService) BlockAdmin(adminID uint) (err error) {
 			return errors.New("super admin can't be blocked")
 		}
 
+		_adminCredentials, err = a.repo.FindAdminCredentialsByID(tx, adminID)
+		if err != nil {
+			return err
+		}
+
 		_admin.IsBlocked = true
+		_admin.Password = _adminCredentials.Password
 
 		return a.repo.UpdateAdminByID(tx, adminID, _admin)
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
@@ -419,8 +433,20 @@ func (a *adminService) UpdatePassword(adminID uint, prevPassword, currentPasswor
 
 func (a *adminService) UpdateEmail(adminID uint, newEmail string) (err error) {
 	return a.Conn().Transaction(func(tx *gorm.DB) error {
-		var _admin = &entity.Admin{Email: newEmail}
+		var _admin = new(entity.Admin)
+		var _adminCredentials = new(entity.Admin)
 
+		_admin, err = a.repo.FindAdminByID(tx, adminID)
+		if err != nil {
+			return err
+		}
+
+		_adminCredentials, err = a.repo.FindAdminCredentialsByID(tx, adminID)
+		if err != nil {
+			return err
+		}
+
+		_admin.Password = _adminCredentials.Password
 		return a.repo.UpdateAdminByID(tx, adminID, _admin)
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
@@ -428,13 +454,20 @@ func (a *adminService) UpdateEmail(adminID uint, newEmail string) (err error) {
 func (a *adminService) UpdateGrade(adminID uint, grade entity.GradeType) (err error) {
 	return a.Conn().Transaction(func(tx *gorm.DB) error {
 		var _admin = new(entity.Admin)
+		var _adminCredentials = new(entity.Admin)
 
 		_admin, err = a.repo.FindAdminByID(tx, adminID)
 		if err != nil {
 			return err
 		}
 
+		_adminCredentials, err = a.repo.FindAdminCredentialsByID(tx, adminID)
+		if err != nil {
+			return err
+		}
+
 		_admin.Grade = grade
+		_admin.Password = _adminCredentials.Password
 
 		return a.repo.UpdateAdminByID(tx, adminID, _admin)
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
