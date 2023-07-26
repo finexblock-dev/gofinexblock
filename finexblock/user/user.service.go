@@ -79,20 +79,37 @@ func (u *userService) FindUserMetadata(id uint) (result *entity.UserMetadata, er
 		var dormant = new(entity.UserDormant)
 		var memo = new(entity.UserMemo)
 		var btcTotal = decimal.Zero
+		result = new(entity.UserMetadata)
 
 		_user, err = u.repo.FindUserByID(tx, id)
 		if err != nil {
 			return err
 		}
 
+		result.ID = _user.ID
+		result.UUID = _user.UUID
+		result.UserType = _user.UserType
+		result.CreatedAt = _user.CreatedAt
+		result.UpdatedAt = _user.UpdatedAt
+
 		_profile, err = u.repo.FindUserProfileByUserID(tx, id)
 		if err != nil {
 			return err
 		}
 
+		result.Nickname = _profile.Nickname
+		result.Fullname = _profile.Fullname
+		result.PhoneNumber = _profile.PhoneNumber
+
 		metaverseSSO, err = u.repo.FindUserSingleSignOnInfoByCond(tx, id, entity.Metaverse)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			return err
+		}
+
+		if metaverseSSO != nil {
+			result.IsMetaverseUser = metaverseSSO != nil && metaverseSSO.SSOType == entity.Metaverse
+		} else {
+			result.IsMetaverseUser = false
 		}
 
 		appleSSO, err = u.repo.FindUserSingleSignOnInfoByCond(tx, id, entity.Apple)
@@ -100,14 +117,21 @@ func (u *userService) FindUserMetadata(id uint) (result *entity.UserMetadata, er
 			return err
 		}
 
+		if appleSSO != nil {
+			result.IsAppleUser = appleSSO != nil && appleSSO.SSOType == entity.Apple
+		} else {
+			result.IsAppleUser = false
+		}
+
 		googleSSO, err = u.repo.FindUserSingleSignOnInfoByCond(tx, id, entity.Google)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			return err
 		}
 
-		_, err = u.repo.FindUserEmailSignUpByUserID(tx, id)
-		if err != nil && err != gorm.ErrRecordNotFound {
-			return err
+		if googleSSO != nil {
+			result.IsGoogleUser = googleSSO != nil && googleSSO.SSOType == entity.Google
+		} else {
+			result.IsGoogleUser = false
 		}
 
 		memo, err = u.repo.FindUserMemoByUserID(tx, id)
@@ -115,9 +139,21 @@ func (u *userService) FindUserMetadata(id uint) (result *entity.UserMetadata, er
 			return err
 		}
 
+		if memo != nil {
+			result.UserMemo = memo
+		} else {
+			result.UserMemo = nil
+		}
+
 		dormant, err = u.repo.FindUserDormantByUserID(tx, id)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			return err
+		}
+
+		if dormant != nil {
+			result.IsDormant = true
+		} else {
+			result.IsDormant = false
 		}
 
 		// Calculate the BTC balance
@@ -126,24 +162,7 @@ func (u *userService) FindUserMetadata(id uint) (result *entity.UserMetadata, er
 			return err
 		}
 
-		result = &entity.UserMetadata{
-			ID:                _user.ID,
-			UUID:              _user.UUID,
-			UserType:          _user.UserType,
-			Nickname:          _profile.Nickname,
-			Fullname:          _profile.Fullname,
-			PhoneNumber:       _profile.PhoneNumber,
-			BTC:               btcTotal,
-			IsBlock:           _user.IsBlock,
-			IsDormant:         dormant.ID != 0,
-			IsMetaverseUser:   metaverseSSO.SSOType == entity.Metaverse,
-			IsAppleUser:       appleSSO.SSOType == entity.Apple,
-			IsGoogleUser:      googleSSO.SSOType == entity.Google,
-			IsEmailSignUpUser: metaverseSSO.SSOType != entity.Metaverse && appleSSO.SSOType != entity.Apple && googleSSO.SSOType != entity.Google,
-			CreatedAt:         _user.CreatedAt,
-			UpdatedAt:         _user.UpdatedAt,
-			UserMemo:          memo,
-		}
+		result.BTC = btcTotal
 
 		return nil
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
