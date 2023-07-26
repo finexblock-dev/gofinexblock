@@ -396,7 +396,14 @@ func (a *adminService) UpdateEmail(adminID uint, newEmail string) (err error) {
 
 func (a *adminService) UpdateGrade(adminID uint, grade entity.GradeType) (err error) {
 	return a.Conn().Transaction(func(tx *gorm.DB) error {
-		var _admin = &entity.Admin{Grade: grade}
+		var _admin = new(entity.Admin)
+
+		_admin, err = a.repo.FindAdminByID(tx, adminID)
+		if err != nil {
+			return err
+		}
+
+		_admin.Grade = grade
 
 		return a.repo.UpdateAdminByID(tx, adminID, _admin)
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
