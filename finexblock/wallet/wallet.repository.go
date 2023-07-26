@@ -12,6 +12,25 @@ type walletRepository struct {
 	db *gorm.DB
 }
 
+func (w *walletRepository) ScanWithdrawalRequestByStatusWithLimitOffset(tx *gorm.DB, status entity.WithdrawalStatus, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
+	var table *entity.WithdrawalRequest
+	var query = tx.Table(table.TableName()).Where("status = ?", status)
+
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+
+	if offset > 0 {
+		query = query.Offset(offset)
+	}
+
+	if err = query.Find(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (w *walletRepository) ScanWithdrawalRequestByUser(tx *gorm.DB, userID uint, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
 	var _withdrawalRequest *entity.WithdrawalRequest
 	var query *gorm.DB
