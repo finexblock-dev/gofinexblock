@@ -58,10 +58,10 @@ func (a *authService) AdminLogin(email, password string) (result string, err err
 
 func (a *authService) AdminToken(_admin *entity.Admin) (string, error) {
 	claims := jwt.MapClaims{
-		"admin_id": _admin.ID,
-		"grade":    _admin.Grade,
-		"email":    _admin.Email,
-		"exp":      time.Now().Add(time.Hour * 8).Unix(),
+		"adminId": _admin.ID,
+		"grade":   _admin.Grade,
+		"email":   _admin.Email,
+		"exp":     time.Now().Add(time.Hour * 8).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
