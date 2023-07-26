@@ -21,6 +21,17 @@ type walletService struct {
 	userRepository   user.Repository
 }
 
+func (w *walletService) ScanCoinTransferByUser(userID uint, limit, offset int) (result []*entity.CoinTransfer, err error) {
+	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = w.walletRepository.ScanCoinTransferByUserID(tx, userID, limit, offset)
+		return err
+	}, &sql.TxOptions{ReadOnly: true}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (w *walletService) FindAllUserAssets(id uint) (result []*structs.Asset, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		var wallets []*entity.Wallet
