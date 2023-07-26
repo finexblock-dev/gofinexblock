@@ -8,6 +8,18 @@ import (
 
 type Priority string
 
+func (p Priority) String() string {
+	return string(p)
+}
+
+func (p Priority) Validate() error {
+	switch p {
+	case HIGH, MEDIUM, LOW:
+		return nil
+	}
+	return errors.New("invalid priority")
+}
+
 type Metadata map[string]interface{}
 
 const (

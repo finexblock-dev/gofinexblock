@@ -1,11 +1,24 @@
 package entity
 
 import (
+	"errors"
 	"github.com/shopspring/decimal"
 	"time"
 )
 
 type WithdrawalStatus string
+
+func (w WithdrawalStatus) String() string {
+	return string(w)
+}
+
+func (w WithdrawalStatus) Validate() error {
+	switch w {
+	case SUBMITTED, APPROVED, CANCELED, REJECTED, PENDING, COMPLETED, FAILED:
+		return nil
+	}
+	return errors.New("invalid withdrawal status")
+}
 
 const (
 	SUBMITTED WithdrawalStatus = "SUBMITTED"

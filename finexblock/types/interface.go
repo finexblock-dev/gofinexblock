@@ -3,10 +3,16 @@ package types
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 	"time"
 )
+
+type StringEnum interface {
+	fmt.Stringer
+	Validate() error
+}
 
 type Model interface {
 	TableName() string

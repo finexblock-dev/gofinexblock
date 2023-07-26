@@ -1,8 +1,23 @@
 package entity
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 type SSOType string
+
+func (S SSOType) String() string {
+	return string(S)
+}
+
+func (S SSOType) Validate() error {
+	switch S {
+	case Metaverse, Apple, Google:
+		return nil
+	}
+	return errors.New("invalid sso type")
+}
 
 const (
 	Metaverse SSOType = "METAVERSE"

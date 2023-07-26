@@ -1,10 +1,23 @@
 package entity
 
 import (
+	"errors"
 	"time"
 )
 
 type ApiMethod string
+
+func (a ApiMethod) String() string {
+	return string(a)
+}
+
+func (a ApiMethod) Validate() error {
+	switch a {
+	case GetMethod, PostMethod, PutMethod, PatchMethod, DeleteMethod:
+		return nil
+	}
+	return errors.New("invalid api method")
+}
 
 const (
 	GetMethod    ApiMethod = "GET"

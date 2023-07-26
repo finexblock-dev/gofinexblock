@@ -1,8 +1,23 @@
 package entity
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 type TransactionStatus string
+
+func (t TransactionStatus) String() string {
+	return string(t)
+}
+
+func (t TransactionStatus) Validate() error {
+	switch t {
+	case INIT, DONE, REVERT:
+		return nil
+	}
+	return errors.New("invalid transaction status")
+}
 
 const (
 	INIT   TransactionStatus = "INIT"

@@ -1,12 +1,25 @@
 package entity
 
 import (
+	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"time"
 )
 
 type GradeType string
+
+func (g GradeType) String() string {
+	return string(g)
+}
+
+func (g GradeType) Validate() error {
+	switch g {
+	case MAINTAINER, SUPERUSER, SUPPORT:
+		return nil
+	}
+	return errors.New("invalid grade type")
+}
 
 const (
 	MAINTAINER GradeType = "MAINTAINER"

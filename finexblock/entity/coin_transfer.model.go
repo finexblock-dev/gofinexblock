@@ -1,11 +1,24 @@
 package entity
 
 import (
+	"errors"
 	"github.com/shopspring/decimal"
 	"time"
 )
 
 type TransferType string
+
+func (t TransferType) String() string {
+	return string(t)
+}
+
+func (t TransferType) Validate() error {
+	switch t {
+	case Deposit, Withdrawal, Trade:
+		return nil
+	}
+	return errors.New("invalid transfer type")
+}
 
 const (
 	Deposit    TransferType = "DEPOSIT"
