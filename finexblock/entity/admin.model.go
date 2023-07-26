@@ -22,9 +22,9 @@ func (g GradeType) Validate() error {
 }
 
 const (
-	MAINTAINER GradeType = "MAINTAINER"
-	SUPERUSER  GradeType = "SUPERUSER"
-	SUPPORT    GradeType = "SUPPORT"
+	MAINTAINER GradeType = "M"
+	SUPERUSER  GradeType = "U"
+	SUPPORT    GradeType = "S"
 )
 
 type Admin struct {
