@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/alexedwards/argon2id"
 	_ "github.com/alexedwards/argon2id"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"time"
 )
@@ -76,11 +75,13 @@ func (a *Admin) TableName() string {
 }
 
 func (a *Admin) BeforeCreate(tx *gorm.DB) (err error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(a.Password), bcrypt.MinCost)
+	var hashedPassword string
+
+	hashedPassword, err = argon2id.CreateHash(a.Password, argon2id.DefaultParams)
 	if err != nil {
 		return err
 	}
-	a.Password = string(hashedPassword)
+	a.Password = hashedPassword
 	return nil
 }
 
