@@ -11,7 +11,7 @@ type User struct {
 
 	IsEmailUser bool      `gorm:"not null;default:false;comment:'자체 회원가입 여부'" json:"isEmailUser"`
 	UserType    string    `gorm:"not null;default:'NORMAL';comment:'유저 타입'" json:"userType"`
-	IsBlock     bool      `gorm:"not null;default:false;comment:'블락 여부'" json:"isBlock"`
+	IsBlock     bool      `gorm:"not null;default:0;type:tinyint(1);comment:'블락 여부'" json:"isBlock"`
 	CreatedAt   time.Time `gorm:"comment:'생성일자';not null;type:timestamp;default:CURRENT_TIMESTAMP;type:timestamp" json:"createdAt"`
 	UpdatedAt   time.Time `gorm:"comment:'수정일자';not null;type:timestamp;default:CURRENT_TIMESTAMP;type:timestamp" json:"updatedAt"`
 	DeletedAt   time.Time `gorm:"comment:'삭제일자';index" json:"deletedAt"`

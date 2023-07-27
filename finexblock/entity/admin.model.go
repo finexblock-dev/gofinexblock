@@ -33,12 +33,12 @@ type Admin struct {
 	Email        string    `json:"email" gorm:"not null;unique;comment:'이메일'"`
 	Password     string    `gorm:"comment:'패스워드';not null;type:longtext;" json:"password"`
 	Grade        GradeType `json:"grade" gorm:"not null;type:enum('S','M','U');default:'S';comment:'등급';"`
-	IsBlocked    bool      `json:"isBlocked" gorm:"comment:'잠김 여부';not null;default:false"`
+	IsBlocked    bool      `json:"isBlocked" gorm:"comment:'잠김 여부';not null;default:0;type:tinyint(1);"`
 	InitialLogin bool      `json:"initialLogin" gorm:"default:1;type:tinyint(1);comment:'최초 로그인 여부';not null;"`
-	PwdUpdatedAt time.Time `json:"pwdUpdatedAt,omitempty" gorm:"comment:'패스워드 수정일자';type:timestamp;"`
+	PwdUpdatedAt time.Time `json:"pwdUpdatedAt,omitempty" gorm:"comment:'패스워드 수정일자';type:timestamp;default:null;"`
 	CreatedAt    time.Time `json:"createdAt" gorm:"comment:'생성일자';not null;type:timestamp;default:CURRENT_TIMESTAMP;"`
 	UpdatedAt    time.Time `json:"updatedAt" gorm:"comment:'수정일자';not null;type:timestamp;default:CURRENT_TIMESTAMP;"`
-	DeletedAt    time.Time `json:"deletedAt,omitempty" gorm:"comment:'삭제일자';index"`
+	DeletedAt    time.Time `json:"deletedAt,omitempty" gorm:"comment:'삭제일자';index;default:null;type:timestamp;"`
 
 	ExecuteDeleteLog []AdminDeleteLog `json:"executeDeleteLog" gorm:"foreignKey:ExecutorID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
 	TargetDeleteLog  []AdminDeleteLog `gorm:"foreignKey:TargetID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"targetDeleteLog"`

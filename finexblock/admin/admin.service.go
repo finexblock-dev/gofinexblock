@@ -120,22 +120,7 @@ func (a *adminService) InsertLoginFailedLog(adminID uint) (result *entity.AdminL
 
 func (a *adminService) UnblockAdmin(adminID uint) (err error) {
 	return a.Conn().Transaction(func(tx *gorm.DB) error {
-		var _admin = new(entity.Admin)
-		var _adminCredentials = new(entity.Admin)
-
-		_admin, err = a.repo.FindAdminByID(tx, adminID)
-		if err != nil {
-			return err
-		}
-
-		_adminCredentials, err = a.repo.FindAdminCredentialsByID(tx, adminID)
-		if err != nil {
-			return err
-		}
-
-		_admin.IsBlocked = false
-		_admin.Password = _adminCredentials.Password
-		return a.repo.UpdateAdminByID(tx, _admin.ID, _admin)
+		return a.repo.UnblockAdminByID(tx, adminID)
 	})
 }
 
@@ -377,27 +362,7 @@ func (a *adminService) DeleteAdmin(adminID uint) (err error) {
 
 func (a *adminService) BlockAdmin(adminID uint) (err error) {
 	return a.Conn().Transaction(func(tx *gorm.DB) error {
-		var _admin = new(entity.Admin)
-		var _adminCredentials = new(entity.Admin)
-
-		_admin, err = a.repo.FindAdminByID(tx, adminID)
-		if err != nil {
-			return err
-		}
-
-		if _admin.Grade == entity.SUPERUSER {
-			return errors.New("super admin can't be blocked")
-		}
-
-		_adminCredentials, err = a.repo.FindAdminCredentialsByID(tx, adminID)
-		if err != nil {
-			return err
-		}
-
-		_admin.IsBlocked = true
-		_admin.Password = _adminCredentials.Password
-
-		return a.repo.UpdateAdminByID(tx, adminID, _admin)
+		return a.repo.BlockAdminByID(tx, adminID)
 	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 }
 

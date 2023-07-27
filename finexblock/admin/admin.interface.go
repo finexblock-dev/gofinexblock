@@ -20,6 +20,9 @@ type Repository interface {
 	UpdateAdminByID(tx *gorm.DB, id uint, admin *entity.Admin) error
 	DeleteAdminByID(tx *gorm.DB, id uint) error
 
+	BlockAdminByID(tx *gorm.DB, id uint) error
+	UnblockAdminByID(tx *gorm.DB, id uint) error
+
 	FindAccessToken(tx *gorm.DB, limit, offset int) ([]*entity.AdminAccessToken, error)
 	InsertAccessToken(tx *gorm.DB, adminID uint, expiredAt time.Time) (*entity.AdminAccessToken, error)
 	DeleteAccessToken(tx *gorm.DB, id uint) error

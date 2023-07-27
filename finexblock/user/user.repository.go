@@ -179,7 +179,7 @@ func (u *userRepository) BlockUser(tx *gorm.DB, id uint) error {
 	var table = new(entity.User)
 	var err error
 
-	if err = tx.Table(table.TableName()).Where("id = ?", id).Update("is_block", true).Error; err != nil {
+	if err = tx.Table(table.TableName()).Where("id = ?", id).Update("is_block", 1).Error; err != nil {
 		return err
 	}
 
@@ -190,7 +190,7 @@ func (u *userRepository) UnBlockUser(tx *gorm.DB, id uint) error {
 	var table = new(entity.User)
 	var err error
 
-	if err = tx.Table(table.TableName()).Where("id = ?", id).Update("is_block", false).Error; err != nil {
+	if err = tx.Table(table.TableName()).Where("id = ?", id).Update("is_block", 0).Error; err != nil {
 		return err
 	}
 

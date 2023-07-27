@@ -12,6 +12,26 @@ type adminRepository struct {
 	db *gorm.DB
 }
 
+func (a *adminRepository) BlockAdminByID(tx *gorm.DB, id uint) (err error) {
+	var _admin = new(entity.Admin)
+
+	if err = tx.Table(_admin.TableName()).Where("id = ?", id).UpdateColumn("is_blocked", 1).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *adminRepository) UnblockAdminByID(tx *gorm.DB, id uint) (err error) {
+	var _admin = new(entity.Admin)
+
+	if err = tx.Table(_admin.TableName()).Where("id = ?", id).UpdateColumn("is_blocked", 0).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (a *adminRepository) FindManyAdminByID(tx *gorm.DB, ids []uint) (result []*entity.Admin, err error) {
 	var _admin *entity.Admin
 
@@ -477,7 +497,7 @@ func (a *adminRepository) FindAllAdmin(tx *gorm.DB, limit, offset int) ([]*entit
 
 func (a *adminRepository) InsertAdmin(tx *gorm.DB, email, password string) (*entity.Admin, error) {
 	var err error
-	var input = new(entity.Admin)
+	var input *entity.Admin
 
 	input = &entity.Admin{
 		Email:    email,
