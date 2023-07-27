@@ -71,6 +71,7 @@ func (u *userService) FindUserMetadata(id uint) (result *entity.UserMetadata, er
 		result.UserType = _user.UserType
 		result.CreatedAt = _user.CreatedAt
 		result.UpdatedAt = _user.UpdatedAt
+		result.IsBlock = _user.IsBlock
 
 		_profile, err = u.repo.FindUserProfileByUserID(tx, id)
 		if err != nil {
