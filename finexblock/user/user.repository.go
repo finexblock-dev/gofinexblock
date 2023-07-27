@@ -19,7 +19,7 @@ func (u *userRepository) FindUserDormantByUserID(tx *gorm.DB, userID uint) (resu
 }
 
 func (u *userRepository) FindUserMemoByUserID(tx *gorm.DB, userID uint) (result *entity.UserMemo, err error) {
-	if err = tx.Table(result.TableName()).Where("user_id = ?", userID).First(&result).Error; err != nil {
+	if err = tx.Table(result.TableName()).Where("user_id = ?", userID).Order("id DESC").First(&result).Error; err != nil {
 		return nil, err
 	}
 
