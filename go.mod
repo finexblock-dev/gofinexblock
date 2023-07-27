@@ -11,12 +11,10 @@ require (
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/golang-jwt/jwt/v4 v4.3.0
-	github.com/google/uuid v1.3.0
 	github.com/redis/go-redis/v9 v9.0.5
 	github.com/shopspring/decimal v1.3.1
 	github.com/tyler-smith/go-bip39 v1.1.0
 	golang.org/x/crypto v0.10.0
-	golang.org/x/exp v0.0.0-20230206171751-46f607a40771
 	golang.org/x/sync v0.1.0
 	google.golang.org/grpc v1.56.1
 	google.golang.org/protobuf v1.30.0
@@ -40,6 +38,7 @@ require (
 	github.com/go-ole/go-ole v1.2.1 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/holiman/uint256 v1.2.2-0.20230321075855-87b91420868c // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
