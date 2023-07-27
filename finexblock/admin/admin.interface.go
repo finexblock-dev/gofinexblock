@@ -17,14 +17,15 @@ type Repository interface {
 	FindAdminByGrade(tx *gorm.DB, grade entity.GradeType, limit, offset int) (result []*entity.Admin, err error)
 	FindAllAdmin(tx *gorm.DB, limit, offset int) (result []*entity.Admin, err error)
 	InsertAdmin(tx *gorm.DB, email, password string) (result *entity.Admin, err error)
-	UpdateAdminByID(tx *gorm.DB, id uint, admin *entity.Admin) error
-	DeleteAdminByID(tx *gorm.DB, id uint) error
+	UpdateAdminByID(tx *gorm.DB, id uint, admin *entity.Admin) (err error)
+	DeleteAdminByID(tx *gorm.DB, id uint) (err error)
 
-	BlockAdminByID(tx *gorm.DB, id uint) error
-	UnblockAdminByID(tx *gorm.DB, id uint) error
+	BlockAdminByID(tx *gorm.DB, id uint) (err error)
+	UnblockAdminByID(tx *gorm.DB, id uint) (err error)
+	UpdateInitialLogin(tx *gorm.DB, id uint, initialLogin int) (err error)
 
-	FindAccessToken(tx *gorm.DB, limit, offset int) ([]*entity.AdminAccessToken, error)
-	InsertAccessToken(tx *gorm.DB, adminID uint, expiredAt time.Time) (*entity.AdminAccessToken, error)
+	FindAccessToken(tx *gorm.DB, limit, offset int) (result []*entity.AdminAccessToken, err error)
+	InsertAccessToken(tx *gorm.DB, adminID uint, expiredAt time.Time) (result *entity.AdminAccessToken, err error)
 	DeleteAccessToken(tx *gorm.DB, id uint) error
 
 	InsertApiLog(tx *gorm.DB, log *entity.AdminApiLog) (*entity.AdminApiLog, error)

@@ -12,6 +12,12 @@ type adminRepository struct {
 	db *gorm.DB
 }
 
+func (a *adminRepository) UpdateInitialLogin(tx *gorm.DB, id uint, initialLogin int) (err error) {
+	var _admin = new(entity.Admin)
+
+	return tx.Table(_admin.TableName()).Where("id = ?", id).UpdateColumn("initial_login", initialLogin).Error
+}
+
 func (a *adminRepository) BlockAdminByID(tx *gorm.DB, id uint) (err error) {
 	var _admin = new(entity.Admin)
 

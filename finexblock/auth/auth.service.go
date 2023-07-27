@@ -46,9 +46,7 @@ func (a *authService) AdminLogin(email, password string) (result string, err err
 		}
 
 		if _admin.InitialLogin {
-			_admin.InitialLogin = false
-			_admin.Password = password
-			if err = a.adminRepository.UpdateAdminByID(tx, _admin.ID, _admin); err != nil {
+			if err = a.adminRepository.UpdateInitialLogin(tx, _admin.ID, 0); err != nil {
 				return err
 			}
 		}
