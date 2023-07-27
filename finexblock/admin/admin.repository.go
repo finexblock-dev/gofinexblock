@@ -477,7 +477,7 @@ func (a *adminRepository) FindAllAdmin(tx *gorm.DB, limit, offset int) ([]*entit
 
 func (a *adminRepository) InsertAdmin(tx *gorm.DB, email, password string) (*entity.Admin, error) {
 	var err error
-	var input *entity.Admin
+	var input = new(entity.Admin)
 
 	input = &entity.Admin{
 		Email:    email,

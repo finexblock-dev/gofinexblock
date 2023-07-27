@@ -3,6 +3,7 @@ module github.com/finexblock-dev/gofinexblock
 go 1.20
 
 require (
+	github.com/alexedwards/argon2id v0.0.0-20230305115115-4b3c3280a736
 	github.com/aws/aws-sdk-go v1.44.295
 	github.com/btcsuite/btcd v0.23.4
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2
@@ -14,7 +15,7 @@ require (
 	github.com/redis/go-redis/v9 v9.0.5
 	github.com/shopspring/decimal v1.3.1
 	github.com/tyler-smith/go-bip39 v1.1.0
-	golang.org/x/crypto v0.10.0
+	golang.org/x/crypto v0.11.0
 	golang.org/x/sync v0.1.0
 	google.golang.org/grpc v1.56.1
 	google.golang.org/protobuf v1.30.0
@@ -51,8 +52,8 @@ require (
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.2.2 // indirect
 	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/sys v0.9.0 // indirect
-	golang.org/x/text v0.10.0 // indirect
+	golang.org/x/sys v0.10.0 // indirect
+	golang.org/x/text v0.11.0 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 )
