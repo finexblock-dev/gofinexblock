@@ -406,7 +406,7 @@ func (a *adminService) UpdatePassword(adminID uint, prevPassword, currentPasswor
 		var _admin = new(entity.Admin)
 		var _adminCredentials = new(entity.Admin)
 
-		if utils.PasswordRegex(currentPassword) {
+		if !utils.PasswordRegex(currentPassword) {
 			return errors.New("regex error: password is not valid")
 		}
 
@@ -425,6 +425,7 @@ func (a *adminService) UpdatePassword(adminID uint, prevPassword, currentPasswor
 		}
 
 		_admin.Password = currentPassword
+		_admin.PwdUpdatedAt = time.Now()
 		_admin.InitialLogin = true
 
 		return a.repo.UpdateAdminByID(tx, adminID, _admin)
