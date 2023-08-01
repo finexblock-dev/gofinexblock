@@ -42,6 +42,7 @@ func (e *engine) Consume() {
 					}
 
 					log.Println(stream, "ACK:", e.tradeManager.AckStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, message.ID))
+					log.Println("IN BALANCE UPDATE CONSUMER", "\n", "GROUP:", trade.BalanceUpdateGroup, "\n", "CONSUMER:", consumer, "\n", "MESSAGE ID:", message.ID, "\n", "MESSAGE VALUES:", message.Values, "\n", "STREAM:", trade.BalanceUpdateStream)
 				}(xStream.Stream, message)
 			}
 		}

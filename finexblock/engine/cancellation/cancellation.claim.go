@@ -48,6 +48,7 @@ func (e *engine) Claim() {
 				}
 
 				log.Println(trade.OrderCancellationStream, "ACK:", e.tradeManager.AckStream(trade.OrderCancellationStream, trade.OrderCancellationGroup, message.ID))
+				log.Println("IN CANCELLATION CLAIMER", "\n", "GROUP:", trade.OrderCancellationGroup, "\n", "CLAIMER:", claimer, "\n", "MESSAGE ID:", message.ID, "\n", "MESSAGE VALUES:", message.Values, "\n", "STREAM:", trade.OrderCancellationStream)
 			}(xMessage)
 		}
 	}

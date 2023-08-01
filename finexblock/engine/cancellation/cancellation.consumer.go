@@ -41,6 +41,7 @@ func (e *engine) Consume() {
 					}
 
 					log.Println(xStream.Stream, "ACK:", e.tradeManager.AckStream(trade.OrderCancellationStream, trade.OrderCancellationGroup, message.ID))
+					log.Println("IN ORDER CANCELLATION CONSUMER", "\n", "GROUP:", trade.OrderCancellationGroup, "\n", "CONSUMER:", consumer, "\n", "MESSAGE ID:", message.ID, "\n", "MESSAGE VALUES:", message.Values, "\n", "STREAM:", trade.OrderCancellationStream)
 				}(message)
 			}
 		}

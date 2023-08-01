@@ -51,7 +51,7 @@ func (e *engine) Consume() {
 							return
 						}
 
-						log.Println(stream.Stream, "ACK:", e.tradeManager.AckStream(types.Stream(stream.Stream), group, message.ID))
+						log.Println(stream.Stream, "ACK:", e.tradeManager.AckStream(types.Stream(stream.Stream), group, message.ID), "\n", "IN EVENT CONSUMER", "\n", "GROUP:", group, "\n", "CONSUMER:", consumer, "\n", "MESSAGE ID:", message.ID, "\n", "MESSAGE VALUES:", message.Values, "\n", "STREAM:", stream.Stream)
 					}(message)
 				}
 			}

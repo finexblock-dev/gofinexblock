@@ -49,7 +49,7 @@ func (e *engine) Claim() {
 					return
 				}
 
-				log.Println(trade.MatchStream, "ACK:", e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID))
+				log.Println(trade.MatchStream, "ACK:", e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID), "\n", "IN MATCH CLAIMER", "\n", "GROUP:", trade.MatchGroup, "\n", "CLAIMER:", claimer, "\n", "MESSAGE ID:", message.ID, "\n", "MESSAGE VALUES:", message.Values, "\n", "STREAM:", trade.MatchStream)
 			}(xMessage)
 		}
 	}

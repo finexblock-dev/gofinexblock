@@ -42,7 +42,7 @@ func (e *engine) Consume() {
 						return
 					}
 
-					log.Println(xStream.Stream, "ACK:", e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID))
+					log.Println(xStream.Stream, "ACK:", e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID), "\n", "IN MATCH CONSUMER", "\n", "GROUP:", trade.MatchGroup, "\n", "CONSUMER:", consumer, "\n", "MESSAGE ID:", message.ID, "\n", "MESSAGE VALUES:", message.Values, "\n", "STREAM:", trade.MatchStream)
 				}(message)
 			}
 		}

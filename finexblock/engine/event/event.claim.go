@@ -51,7 +51,7 @@ func (e *engine) Claim() {
 						return
 					}
 
-					log.Println(stream.String(), "ACK:", e.tradeManager.AckStream(stream, group, message.ID))
+					log.Println(stream.String(), "ACK:", e.tradeManager.AckStream(stream, group, message.ID), "\n", "IN EVENT CLAIMER", "\n", "GROUP:", group, "\n", "CLAIMER:", claimer, "\n", "MESSAGE ID:", message.ID, "\n", "MESSAGE VALUES:", message.Values, "\n", "STREAM:", stream)
 				}(xMessage)
 			}
 		}

@@ -50,6 +50,7 @@ func (e *engine) Claim() {
 
 				// FIXME: error handling
 				log.Println(trade.BalanceUpdateStream, "ACK:", e.tradeManager.AckStream(trade.BalanceUpdateStream, trade.BalanceUpdateGroup, message.ID))
+				log.Println("IN BALANCE UPDATE CLAIMER", "\n", "GROUP:", trade.BalanceUpdateGroup, "\n", "CLAIMER:", claimer, "\n", "MESSAGE ID:", message.ID, "\n", "MESSAGE VALUES:", message.Values, "\n", "STREAM:", trade.BalanceUpdateStream)
 			}(xMessage)
 		}
 	}
