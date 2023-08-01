@@ -16,10 +16,10 @@ func (e *engine) Claim() {
 	var xPending *redis.XPending
 	var err error
 
-	var claimer = e.Claimer(trade.OrderMatchingClaimer)
+	var claimer = e.Claimer(trade.MatchClaimer)
 	for {
 
-		xPending, err = e.ReadPendingStream(trade.OrderMatchingStream, trade.OrderMatchingGroup)
+		xPending, err = e.ReadPendingStream(trade.MatchStream, trade.MatchGroup)
 		if err != nil {
 			continue
 		}
@@ -28,7 +28,7 @@ func (e *engine) Claim() {
 			continue
 		}
 
-		xMessages, err = e.ClaimStream(trade.OrderMatchingStream, trade.OrderMatchingGroup, claimer, time.Minute, []string{xPending.Lower})
+		xMessages, err = e.ClaimStream(trade.MatchStream, trade.MatchGroup, claimer, time.Minute, []string{xPending.Lower})
 		if err != nil {
 			continue
 		}
@@ -49,7 +49,7 @@ func (e *engine) Claim() {
 					return
 				}
 
-				log.Println(trade.OrderMatchingStream, "ACK:", e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID))
+				log.Println(trade.MatchStream, "ACK:", e.tradeManager.AckStream(trade.MatchStream, trade.MatchGroup, message.ID))
 			}(xMessage)
 		}
 	}
