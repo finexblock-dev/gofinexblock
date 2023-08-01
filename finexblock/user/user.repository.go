@@ -157,7 +157,7 @@ func (u *userRepository) FindManyUserByUUID(tx *gorm.DB, uuids []string) ([]*ent
 	var table = new(entity.User)
 	var err error
 
-	if err = tx.Table(table.TableName()).Where("uuid IN (?)", uuids).Find(&users).Error; err != nil {
+	if err = tx.Table(table.TableName()).Where("uuid IN ?", uuids).Find(&users).Error; err != nil {
 		return nil, err
 	}
 

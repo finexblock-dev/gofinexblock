@@ -202,11 +202,7 @@ func (o *orderService) OrderMatchingEventInBatch(event []*grpc_order.OrderMatchi
 		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
 
 		for _, v := range event {
-			if _, err = symbolCache.Get(v.Symbol.String()); err == cache.ErrKeyNotFound {
-				symbolNames = append(symbolNames, v.Symbol.String())
-				// absolute ignore error
-				//_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
-			}
+			symbolNames = append(symbolNames, v.Symbol.String())
 		}
 
 		// find all symbols
@@ -269,20 +265,9 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 
 		// Cache all data for select and batch insert
 		for _, v := range event {
-			if _, err = userCache.Get(v.UserUUID); err == cache.ErrKeyNotFound {
-				userUUIDs = append(userUUIDs, v.UserUUID)
-				//_ = userCache.Set(v.UserUUID, &entity.User{UUID: v.UserUUID})
-			}
-
-			if _, err = symbolCache.Get(v.Symbol.String()); err == cache.ErrKeyNotFound {
-				symbolNames = append(symbolNames, v.Symbol.String())
-				//_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
-			}
-
-			if _, err = orderCache.Get(v.OrderUUID); err == cache.ErrKeyNotFound {
-				orderUUIDs = append(orderUUIDs, v.OrderUUID)
-				//_ = orderCache.Set(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
-			}
+			userUUIDs = append(userUUIDs, v.UserUUID)
+			symbolNames = append(symbolNames, v.Symbol.String())
+			orderUUIDs = append(orderUUIDs, v.OrderUUID)
 		}
 
 		// find all users
@@ -393,20 +378,9 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 
 		// Cache all data for select and batch insert
 		for _, v := range event {
-			if _, err = userCache.Get(v.UserUUID); err == cache.ErrKeyNotFound {
-				userUUIDs = append(userUUIDs, v.UserUUID)
-				//_ = userCache.Set(v.UserUUID, &entity.User{UUID: v.UserUUID})
-			}
-
-			if _, err = symbolCache.Get(v.Symbol.String()); err == cache.ErrKeyNotFound {
-				symbolNames = append(symbolNames, v.Symbol.String())
-				//_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
-			}
-
-			if _, err = orderCache.Get(v.OrderUUID); err == cache.ErrKeyNotFound {
-				orderUUIDs = append(orderUUIDs, v.OrderUUID)
-				//_ = orderCache.Set(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
-			}
+			userUUIDs = append(userUUIDs, v.UserUUID)
+			symbolNames = append(symbolNames, v.Symbol.String())
+			orderUUIDs = append(orderUUIDs, v.OrderUUID)
 		}
 
 		// find all users
@@ -434,12 +408,6 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 		if err != nil {
 			return err
 		}
-
-		// update all orders
-		// checkpoint: do not update order status
-		//if err = o.orderRepository.BatchUpdateOrderBookStatus(tx, orderUUIDs, types.Fulfilled); err != nil {
-		//	return err
-		//}
 
 		for _, _order = range orders {
 			_ = orderCache.Set(_order.OrderUUID, _order)
@@ -509,15 +477,8 @@ func (o *orderService) LimitOrderInitializeInBatch(event []*grpc_order.OrderInit
 		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
 
 		for _, v := range event {
-			if _, err = userCache.Get(v.UserUUID); err == cache.ErrKeyNotFound {
-				userUUIDs = append(userUUIDs, v.UserUUID)
-				//_ = userCache.Set(v.UserUUID, &entity.User{UUID: v.UserUUID})
-			}
-
-			if _, err = symbolCache.Get(v.Symbol.String()); err == cache.ErrKeyNotFound {
-				symbolNames = append(symbolNames, v.Symbol.String())
-				//_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
-			}
+			userUUIDs = append(userUUIDs, v.UserUUID)
+			symbolNames = append(symbolNames, v.Symbol.String())
 		}
 
 		// find all users
@@ -556,7 +517,7 @@ func (o *orderService) LimitOrderInitializeInBatch(event []*grpc_order.OrderInit
 				OrderSymbolID: _symbol.ID,
 				UnitPrice:     decimal.NewFromFloat(v.UnitPrice),
 				Quantity:      decimal.NewFromFloat(v.Quantity),
-				OrderType:     types.OrderType(v.OrderType),
+				OrderType:     types.OrderType(v.OrderType.String()),
 				Status:        types.Placed,
 			})
 		}
@@ -611,7 +572,7 @@ func (o *orderService) ChartDraw(event []*grpc_order.OrderMatching) (err error) 
 				data.HighPrice = unitPrice
 			}
 
-			if data, _ = poleDataCache.Get(name); data.LowPrice.GreaterThan(unitPrice) {
+			if data.LowPrice.GreaterThan(unitPrice) {
 				data.LowPrice = unitPrice
 			}
 
@@ -670,7 +631,6 @@ func (o *orderService) ChartDraw(event []*grpc_order.OrderMatching) (err error) 
 			pole.Volume = data.Volume.Add(data.Volume)
 			pole.TradingValue = data.TradingValue.Add(data.TradingValue)
 			pole.ClosePrice = data.ClosePrice
-
 		}
 
 		updateQuery := "UPDATE " + pole.TableName() + " SET high_price = CASE id "

@@ -137,73 +137,81 @@ func (w *walletService) BalanceUpdateInBatch(event []*grpc_order.BalanceUpdate) 
 		var userUUIDs []string
 		var currencies []string
 
+		// 유저 캐시 용도 map
 		var userCache = cache.NewDefaultKeyValueStore[entity.User](len(event))
+		// 코인 캐시 용도 map
 		var coinCache = cache.NewDefaultKeyValueStore[entity.Coin](len(event))
+		// 지갑 캐시 용도 map
 		var walletCache = cache.NewDefaultKeyValueStore[entity.Wallet](len(event))
 
+		// 일단 이벤트 순회
 		for _, e := range event {
-			if _user, err = userCache.Get(e.GetUserUUID()); err != nil {
-				userUUIDs = append(userUUIDs, e.GetUserUUID())
-				_ = userCache.Set(e.GetUserUUID(), new(entity.User))
-			}
-
-			if _coin, err = coinCache.Get(e.GetCurrency().String()); err != nil {
-				currencies = append(currencies, e.GetCurrency().String())
-				_ = coinCache.Set(e.GetCurrency().String(), new(entity.Coin))
-			}
+			// user uuid 담기 => 유저 찾는 용도 (in query)
+			userUUIDs = append(userUUIDs, e.GetUserUUID())
+			// currency 담기 => 코인 찾는 용도 (in query)
+			currencies = append(currencies, e.GetCurrency().String())
 		}
 
+		// SELECT * FROM user u where u.uuid in (userUUIDs)
 		users, err = w.userRepository.FindManyUserByUUID(tx, userUUIDs)
 		if err != nil {
 			return fmt.Errorf("failed to find users: %w", err)
 		}
 
+		// 유저 캐싱
 		for _, u := range users {
 			_ = userCache.Set(u.UUID, u)
 		}
 
+		// SELECT * FROM coin c where c.name in (currencies)
 		coins, err = w.walletRepository.FindManyCoinByName(tx, currencies)
 		if err != nil {
 			return fmt.Errorf("failed to find coins: %w", err)
 
 		}
 
+		// 코인 캐싱
 		for _, c := range coins {
 			_ = coinCache.Set(c.Name, c)
 		}
 
+		// SELECT FROM wallet w
 		queryBuilder := tx.Table(_wallet.TableName())
 
+		// 다시 이벤트 순회
 		for i, v := range event {
+			// checkpoint: 캐시에서 가져오지 못했다면 무조건 continue
+			// 코인 캐시에서 코인 가져오기
 			_coin, err = coinCache.Get(v.GetCurrency().String())
 			if err != nil {
 				continue
 			}
 
+			// 유저 캐시에서 유저 가져오기
 			_user, err = userCache.Get(v.GetUserUUID())
 			if err != nil {
 				continue
 			}
 
-			_wallet, err = walletCache.Get(fmt.Sprintf("%d-%d", _user.ID, _coin.ID))
-			if err != nil {
-				if i == 0 {
-					queryBuilder = queryBuilder.Where("user_id = ? AND coin_id = ?", _user.ID, _coin.ID)
-				} else {
-					queryBuilder = queryBuilder.Or("user_id = ? AND coin_id = ?", _user.ID, _coin.ID)
-				}
-				_ = walletCache.Set(fmt.Sprintf("%d-%d", _user.ID, _coin.ID), new(entity.Wallet))
+			// 첫 번째인 경우 where 절에 AND로 붙이고, 그 외에는 OR로 붙이기
+			if i == 0 {
+				queryBuilder = queryBuilder.Where("user_id = ? AND coin_id = ?", _user.ID, _coin.ID)
+			} else {
+				queryBuilder = queryBuilder.Or("user_id = ? AND coin_id = ?", _user.ID, _coin.ID)
 			}
 		}
 
+		// 쿼리 실행
 		if err = queryBuilder.Find(&wallets).Error; err != nil {
 			return fmt.Errorf("failed to find wallets: %w", err)
 		}
 
+		// 지갑 캐싱
 		for _, w := range wallets {
 			_ = walletCache.Set(fmt.Sprintf("%d-%d", w.UserID, w.CoinID), w)
 		}
 
+		// 이벤트 다시 한 번 순회
 		for _, e := range event {
 			_coin, err = coinCache.Get(e.GetCurrency().String())
 			if err != nil {

@@ -54,7 +54,13 @@ func (e *engine) Do(event *grpc_order.OrderCancelled) (err error) {
 		return status.Error(codes.InvalidArgument, "invalid order type")
 	}
 
-	amount = decimal.NewFromFloat(quantity).Mul(decimal.NewFromFloat(unitPrice))
+	// BTC인 경우에는 수량 * 단가 = BTC
+	// 알트코인인 경우에는 decimal이 달라서 수량 * 알트코인 decimal 곱해서 환불해야함
+	if event.OrderType == grpc_order.OrderType_BID {
+		amount = decimal.NewFromFloat(quantity).Mul(decimal.NewFromFloat(unitPrice))
+	} else {
+		amount = decimal.NewFromFloat(quantity).Mul(utils.CoinDecimal(currency))
+	}
 
 	balanceUpdate = utils.NewBalanceUpdate(userUUID, amount, currency, grpc_order.Reason_REFUND)
 
