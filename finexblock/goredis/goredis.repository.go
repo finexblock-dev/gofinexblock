@@ -11,6 +11,10 @@ type repository struct {
 	cluster *redis.ClusterClient
 }
 
+func (r *repository) XRange(ctx context.Context, stream, start, end string) ([]redis.XMessage, error) {
+	return r.cluster.XRange(ctx, stream, start, end).Result()
+}
+
 func (r *repository) XAddPipeline(tx redis.Pipeliner, ctx context.Context, args *redis.XAddArgs) error {
 	return tx.XAdd(ctx, args).Err()
 }

@@ -10,6 +10,7 @@ type Repository interface {
 	XClaim(ctx context.Context, args *redis.XClaimArgs) ([]redis.XMessage, error)
 	XInfoStream(ctx context.Context, stream string) (*redis.XInfoStream, error)
 	XPending(ctx context.Context, stream, group string) (*redis.XPending, error)
+	XRange(ctx context.Context, stream, start, end string) ([]redis.XMessage, error)
 	TxPipeline() redis.Pipeliner
 	XReadGroup(ctx context.Context, args *redis.XReadGroupArgs) ([]redis.XStream, error)
 	XDel(ctx context.Context, stream, group string, id string) error
@@ -28,6 +29,7 @@ type Repository interface {
 
 type Service interface {
 	XInfoStream(stream string) (*redis.XInfoStream, error)
+	XRange(stream, start, end string) ([]redis.XMessage, error)
 	XClaim(args *redis.XClaimArgs) ([]redis.XMessage, error)
 	XPending(stream, group string) (result *redis.XPending, err error)
 	XReadGroup(args *redis.XReadGroupArgs) (result []redis.XStream, err error)

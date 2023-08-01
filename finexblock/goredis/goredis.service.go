@@ -10,6 +10,10 @@ type service struct {
 	repository Repository
 }
 
+func (s *service) XRange(stream, start, end string) ([]redis.XMessage, error) {
+	return s.repository.XRange(context.Background(), stream, start, end)
+}
+
 func (s *service) TxPipeline() redis.Pipeliner {
 	return s.repository.TxPipeline()
 }
