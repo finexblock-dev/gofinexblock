@@ -36,7 +36,7 @@ func (e *engine) Claim() {
 			}
 
 			for _, xMessage := range xMessages {
-				go func(message redis.XMessage) {
+				go func(stream types.Stream, message redis.XMessage) {
 					var event proto.Message
 					var _err error
 
@@ -52,7 +52,7 @@ func (e *engine) Claim() {
 					}
 
 					log.Println(stream.String(), "ACK:", e.tradeManager.AckStream(stream, group, message.ID), "\n", "IN EVENT CLAIMER", "\n", "GROUP:", group, "\n", "CLAIMER:", claimer, "\n", "MESSAGE ID:", message.ID, "\n", "MESSAGE VALUES:", message.Values, "\n", "STREAM:", stream)
-				}(xMessage)
+				}(stream, xMessage)
 			}
 		}
 	}
