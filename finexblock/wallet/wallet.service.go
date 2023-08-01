@@ -231,7 +231,7 @@ func (w *walletService) BalanceUpdateInBatch(event []*grpc_order.BalanceUpdate) 
 			_transfer = &entity.CoinTransfer{
 				WalletID:     _wallet.ID,
 				Amount:       decimal.NewFromFloat(e.GetDiff()),
-				TransferType: entity.Trade,
+				TransferType: entity.TransferType(e.GetReason().String()),
 			}
 
 			coinTransfers = append(coinTransfers, _transfer)
