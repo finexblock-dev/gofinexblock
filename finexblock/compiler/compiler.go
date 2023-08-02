@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"crypto/tls"
 	"fmt"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/admin"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/announcement"
@@ -22,6 +24,7 @@ import (
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/gen/erc20"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/gen/ethereum"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/gen/grpc_order"
+	"github.com/finexblock-dev/gofinexblock/finexblock/gen/health"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/gen/polygon"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/goaws"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/goredis"
@@ -36,6 +39,9 @@ import (
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/user"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/utils"
 	_ "github.com/finexblock-dev/gofinexblock/finexblock/wallet"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"log"
 )
 
 func test(i int) (err error) {
@@ -48,5 +54,17 @@ func test(i int) (err error) {
 }
 
 func main() {
+	conn, _ := grpc.Dial("backoffice-api-dev.finexblock.com:50051", grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{
+		InsecureSkipVerify: false,
+	})))
 
+	client := health.NewHealthCheckClient(conn)
+
+	output, err := client.Check(context.Background(), &health.HealthCheckInput{Name: "test"})
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	log.Println(output)
 }
