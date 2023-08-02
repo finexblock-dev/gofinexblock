@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	HealthCheck_Check_FullMethodName = "/health.HealthCheck/Check"
+	HealthCheck_Check_FullMethodName  = "/health.HealthCheck/Check"
+	HealthCheck_WhoAmI_FullMethodName = "/health.HealthCheck/WhoAmI"
 )
 
 // HealthCheckClient is the client API for HealthCheck service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type HealthCheckClient interface {
 	Check(ctx context.Context, in *HealthCheckInput, opts ...grpc.CallOption) (*HealthCheckOutput, error)
+	WhoAmI(ctx context.Context, in *WhoAmIInput, opts ...grpc.CallOption) (*WhoAmIOutput, error)
 }
 
 type healthCheckClient struct {
@@ -46,11 +48,21 @@ func (c *healthCheckClient) Check(ctx context.Context, in *HealthCheckInput, opt
 	return out, nil
 }
 
+func (c *healthCheckClient) WhoAmI(ctx context.Context, in *WhoAmIInput, opts ...grpc.CallOption) (*WhoAmIOutput, error) {
+	out := new(WhoAmIOutput)
+	err := c.cc.Invoke(ctx, HealthCheck_WhoAmI_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // HealthCheckServer is the server API for HealthCheck service.
 // All implementations must embed UnimplementedHealthCheckServer
 // for forward compatibility
 type HealthCheckServer interface {
 	Check(context.Context, *HealthCheckInput) (*HealthCheckOutput, error)
+	WhoAmI(context.Context, *WhoAmIInput) (*WhoAmIOutput, error)
 	mustEmbedUnimplementedHealthCheckServer()
 }
 
@@ -60,6 +72,9 @@ type UnimplementedHealthCheckServer struct {
 
 func (UnimplementedHealthCheckServer) Check(context.Context, *HealthCheckInput) (*HealthCheckOutput, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
+}
+func (UnimplementedHealthCheckServer) WhoAmI(context.Context, *WhoAmIInput) (*WhoAmIOutput, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WhoAmI not implemented")
 }
 func (UnimplementedHealthCheckServer) mustEmbedUnimplementedHealthCheckServer() {}
 
@@ -92,6 +107,24 @@ func _HealthCheck_Check_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HealthCheck_WhoAmI_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WhoAmIInput)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HealthCheckServer).WhoAmI(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HealthCheck_WhoAmI_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HealthCheckServer).WhoAmI(ctx, req.(*WhoAmIInput))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // HealthCheck_ServiceDesc is the grpc.ServiceDesc for HealthCheck service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +135,10 @@ var HealthCheck_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Check",
 			Handler:    _HealthCheck_Check_Handler,
+		},
+		{
+			MethodName: "WhoAmI",
+			Handler:    _HealthCheck_WhoAmI_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
