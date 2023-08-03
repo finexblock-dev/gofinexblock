@@ -48,7 +48,7 @@ RESET  := $(shell tput -Txterm sgr0)
 all: help
 
 ## Build:
-build: ethereum-key polygon-key bitcoin-key ethereum-daemon polygon-daemon bitcoin-daemon ## event-subscriber matching-engine proxy ## Build all servers
+build: ethereum-key polygon-key bitcoin-key ethereum-daemon polygon-daemon bitcoin-daemon event-subscriber ## matching-engine proxy ## Build all servers
 
 ## Vet:
 vet: ## Run `go vet cmd/main.go`
