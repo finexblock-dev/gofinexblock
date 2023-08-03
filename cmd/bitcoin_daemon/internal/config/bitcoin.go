@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	"github.com/aws/aws-sdk-go/service/sts"
-	"github.com/finexblock-dev/gofinexblock/finexblock/secure"
+	"github.com/finexblock-dev/gofinexblock/pkg/secure"
 	"log"
 )
 

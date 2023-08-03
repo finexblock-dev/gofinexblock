@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/finexblock-dev/gofinexblock/finexblock/gen/ethereum"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/ethereum"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

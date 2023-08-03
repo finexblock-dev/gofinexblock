@@ -4,66 +4,66 @@ golang finexblock packages.
 
 ## Packages
 
-### [entity](finexblock/entity/entity.md)
+### [entity](pkg/entity/entity.md)
 
-### [admin](finexblock/admin/admin.md)
+### [admin](pkg/admin/admin.md)
 
-### [announcement](finexblock/announcement/announcement.md)
+### [announcement](pkg/announcement/announcement.md)
 
-### [auth](finexblock/auth/auth.md)
+### [auth](pkg/auth/auth.md)
 
-### [btcd](finexblock/btcd/btcd.md)
+### [btcd](pkg/btcd/btcd.md)
 
-### [cache](finexblock/cache/cache.md)
+### [cache](pkg/cache/cache.md)
 
-### [compiler](finexblock/compiler/compiler.md)
+### [compiler](pkg/compiler/compiler.md)
 
-### [constant](finexblock/constant/constant.md)
+### [constant](pkg/constant/constant.md)
 
-### [contracts](finexblock/contracts/contracts.md)
+### [contracts](pkg/contracts/contracts.md)
 
-### [daemon](finexblock/daemon/daemon.md)
+### [daemon](pkg/daemon/daemon.md)
 
-### [database](finexblock/database/database.md)
+### [database](pkg/database/database.md)
 
-### [engine](finexblock/engine/engine.md)
+### [engine](pkg/engine/engine.md)
 
-### [entity](finexblock/entity/entity.md)
+### [entity](pkg/entity/entity.md)
 
-### [ethereum](finexblock/ethereum/ethereum.md)
+### [ethereum](pkg/ethereum/ethereum.md)
 
-### [files](finexblock/files/files.md)
+### [files](pkg/files/files.md)
 
-### [gen](finexblock/gen/gen.md)
+### [gen](pkg/gen/gen.md)
 
-### [goaws](finexblock/goaws/goaws.md)
+### [goaws](pkg/goaws/goaws.md)
 
-### [goredis](finexblock/goredis/goredis.md)
+### [goredis](pkg/goredis/goredis.md)
 
-### [image](finexblock/image/image.md)
+### [image](pkg/image/image.md)
 
-### [instance](finexblock/instance/instance.md)
+### [instance](pkg/instance/instance.md)
 
-### [interceptor](finexblock/interceptor/interceptor.md)
+### [interceptor](pkg/interceptor/interceptor.md)
 
-### [order](finexblock/order/order.md)
+### [order](pkg/order/order.md)
 
-### [orderbook](finexblock/orderbook/orderbook.md)
+### [orderbook](pkg/orderbook/orderbook.md)
 
-### [proto](finexblock/proto/proto.md)
+### [proto](pkg/proto/proto.md)
 
-### [safety](finexblock/safety/safety.md)
+### [safety](pkg/safety/safety.md)
 
-### [secure](finexblock/secure/secure.md)
+### [secure](pkg/secure/secure.md)
 
-### [stream](finexblock/stream/stream.md)
+### [stream](pkg/stream/stream.md)
 
-### [trade](finexblock/trade/trade.md)
+### [trade](pkg/trade/trade.md)
 
-### [types](finexblock/types/types.md)
+### [types](pkg/types/types.md)
 
-### [user](finexblock/user/user.md)
+### [user](pkg/user/user.md)
 
-### [utils](finexblock/utils/utils.md)
+### [utils](pkg/utils/utils.md)
 
-### [wallet](finexblock/wallet/wallet.md)
+### [wallet](pkg/wallet/wallet.md)

@@ -2,9 +2,9 @@ package bitcoin
 
 import (
 	"context"
-	"github.com/finexblock-dev/gofinexblock/finexblock/daemon"
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
-	"github.com/finexblock-dev/gofinexblock/finexblock/gen/bitcoin"
+	"github.com/finexblock-dev/gofinexblock/pkg/daemon"
+	"github.com/finexblock-dev/gofinexblock/pkg/entity"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/bitcoin"
 	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
