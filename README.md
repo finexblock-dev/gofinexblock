@@ -1,69 +1,151 @@
 # gofinexblock
-golang finexblock packages.
 
+## Overview
+
+Go 기반 application을 위한 모놀리식 레포지토리입니다. 
+
+`cmd` 디렉토리에는 각각의 application들이 위치해있습니다. 
+
+> `cmd`/```${application_name}```/`internal` 에는 application 내부에서만 사용될 수 있는 패키지들이 위치해있습니다.
+
+`pkg` 디렉토리에는 공용으로 사용하는 패키지들이 위치해있습니다.
+
+## Build
+
+### Make
+
+모든 application은 `Makefile`을 통해서 컴파일됩니다. 
+
+아래는 명령어 예시입니다. 
+
+```shell
+## build all applications
+make build
+
+## build specific application
+make ${application}
+
+## show help
+make help
+```
+
+### Docker
+
+Dockerfile들은 전부 `build` 디렉토리에 위치합니다. 
+
+> 2023-08-03 현재 EC2에서 ECS로 이전작업 중입니다.  
+> Dockerfile로 빌드한 이미지를 ECR에 push 후 ECS에서 pull하여 사용해야 할 듯 합니다.  
+> 현재 EC2에서 사용하던 buildspec, appspec은 `scripts` 디렉토리에 위치하고 있습니다.   
+> ECS에서 사용할 buildspec 및 기타 파일들이 있다면 `deployments` 디렉토리에 작업 부탁드립니다.
+
+## Applications
+
+### Backoffice
+
+어드민 페이지 API 서버입니다. 
+
+### Bitcoin daemon
+
+비트코인 입출금 데몬 
+
+### Bitcoin key
+
+비트코인 signing 서버 
+
+### Ethereum daemon
+
+이더리움 입출금 데몬
+
+### Ethereum key
+
+이더리움 signing 서버
+
+### Polygon daemon
+
+폴리곤 입출금 데몬 
+
+### Polygon key
+
+폴리곤 signing 서버
+
+### Proxy
+
+Wallet proxy server, signing 서버로의 직접 호출을 막고, 모든 호출을 인터셉트하여 필요한 정보를 추가 혹은 로그를 기록한 뒤 전달합니다.
+
+### Event subscriber
+
+체결엔진으로부터 거래 이벤트를 hook으로 수신하고 데이터베이스에 반영합니다.
+
+### Matching engine
+
+trading server로 부터 지정가/시장가 주문 등록/취소 요청을 받고, 주문을 체결합니다.
+
+오더북을 관리하고, 오더북 조회 및 자체 스냅샷 기능을 제공합니다.
 
 ## Packages
 
-### [entity](finexblock/entity/entity.md)
+패키지가 추가되면 README.md에 해당 패키지에 대한 설명을 추가해주세요.
 
-### [admin](finexblock/admin/admin.md)
+### [entity](pkg/entity/entity.md)
 
-### [announcement](finexblock/announcement/announcement.md)
+### [admin](pkg/admin/admin.md)
 
-### [auth](finexblock/auth/auth.md)
+### [announcement](pkg/announcement/announcement.md)
 
-### [btcd](finexblock/btcd/btcd.md)
+### [auth](pkg/auth/auth.md)
 
-### [cache](finexblock/cache/cache.md)
+### [btcd](pkg/btcd/btcd.md)
 
-### [compiler](finexblock/compiler/compiler.md)
+### [cache](pkg/cache/cache.md)
 
-### [constant](finexblock/constant/constant.md)
+### [compiler](pkg/compiler/compiler.md)
 
-### [contracts](finexblock/contracts/contracts.md)
+### [constant](pkg/constant/constant.md)
 
-### [daemon](finexblock/daemon/daemon.md)
+### [contracts](pkg/contracts/contracts.md)
 
-### [database](finexblock/database/database.md)
+### [daemon](pkg/daemon/daemon.md)
 
-### [engine](finexblock/engine/engine.md)
+### [database](pkg/database/database.md)
 
-### [entity](finexblock/entity/entity.md)
+### [engine](pkg/engine/engine.md)
 
-### [ethereum](finexblock/ethereum/ethereum.md)
+### [entity](pkg/entity/entity.md)
 
-### [files](finexblock/files/files.md)
+### [ethereum](pkg/ethereum/ethereum.md)
 
-### [gen](finexblock/gen/gen.md)
+### [files](pkg/files/files.md)
 
-### [goaws](finexblock/goaws/goaws.md)
+### [gen](pkg/gen/gen.md)
 
-### [goredis](finexblock/goredis/goredis.md)
+### [goaws](pkg/goaws/goaws.md)
 
-### [image](finexblock/image/image.md)
+### [goredis](pkg/goredis/goredis.md)
 
-### [instance](finexblock/instance/instance.md)
+### [image](pkg/image/image.md)
 
-### [interceptor](finexblock/interceptor/interceptor.md)
+### [instance](pkg/instance/instance.md)
 
-### [order](finexblock/order/order.md)
+### [interceptor](pkg/interceptor/interceptor.md)
 
-### [orderbook](finexblock/orderbook/orderbook.md)
+### [order](pkg/order/order.md)
 
-### [proto](finexblock/proto/proto.md)
+### [orderbook](pkg/orderbook/orderbook.md)
 
-### [safety](finexblock/safety/safety.md)
+### [proto](pkg/proto/proto.md)
 
-### [secure](finexblock/secure/secure.md)
+### [safety](pkg/safety/safety.md)
 
-### [stream](finexblock/stream/stream.md)
+### [secure](pkg/secure/secure.md)
 
-### [trade](finexblock/trade/trade.md)
+### [stream](pkg/stream/stream.md)
 
-### [types](finexblock/types/types.md)
+### [trade](pkg/trade/trade.md)
 
-### [user](finexblock/user/user.md)
+### [types](pkg/types/types.md)
 
-### [utils](finexblock/utils/utils.md)
+### [user](pkg/user/user.md)
 
-### [wallet](finexblock/wallet/wallet.md)
+### [utils](pkg/utils/utils.md)
+
+### [wallet](pkg/wallet/wallet.md)

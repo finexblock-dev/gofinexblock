@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/finexblock-dev/gofinexblock/finexblock/gen/bitcoin"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/bitcoin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

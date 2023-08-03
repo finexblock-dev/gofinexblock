@@ -2,9 +2,9 @@ package polygon
 
 import (
 	"context"
-	"github.com/finexblock-dev/gofinexblock/finexblock/daemon"
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
-	"github.com/finexblock-dev/gofinexblock/finexblock/gen/polygon"
+	"github.com/finexblock-dev/gofinexblock/pkg/daemon"
+	"github.com/finexblock-dev/gofinexblock/pkg/entity"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/polygon"
 	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"

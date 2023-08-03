@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	"github.com/finexblock-dev/gofinexblock/finexblock/gen/ethereum"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/ethereum"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

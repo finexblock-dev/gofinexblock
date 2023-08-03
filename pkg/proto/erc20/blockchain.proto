@@ -1,0 +1,11 @@
+syntax = "proto3";
+package erc20;
+option go_package = "/erc20";
+
+import "pkg/proto/erc20/blockchain.message.proto";
+
+service Blockchain {
+  rpc GetCurrentBlockNumber(GetCurrentBlockNumberInput) returns (GetCurrentBlockNumberOutput);
+  rpc GetBlocks(GetBlocksInput) returns (GetBlocksOutput);
+  rpc GetReceipt(GetReceiptInput) returns (GetReceiptOutput);
+}

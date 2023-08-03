@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/finexblock-dev/gofinexblock/cmd/bitcoin_daemon/internal/bootstrap"
-	"github.com/finexblock-dev/gofinexblock/finexblock/safety"
+	"github.com/finexblock-dev/gofinexblock/pkg/safety"
 )
 
 func main() {

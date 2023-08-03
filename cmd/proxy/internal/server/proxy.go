@@ -2,9 +2,9 @@ package server
 
 import (
 	"fmt"
-	"github.com/finexblock-dev/gofinexblock/finexblock/gen/bitcoin"
-	"github.com/finexblock-dev/gofinexblock/finexblock/gen/ethereum"
-	"github.com/finexblock-dev/gofinexblock/finexblock/gen/polygon"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/bitcoin"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/ethereum"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/polygon"
 	"google.golang.org/grpc"
 	"log"
 	"net"

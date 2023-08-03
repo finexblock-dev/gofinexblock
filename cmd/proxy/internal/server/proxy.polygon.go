@@ -2,7 +2,7 @@ package server
 
 import (
 	context "context"
-	"github.com/finexblock-dev/gofinexblock/finexblock/gen/polygon"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/polygon"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
