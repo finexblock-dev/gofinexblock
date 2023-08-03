@@ -10,11 +10,13 @@ Go 기반 application을 위한 모놀리식 레포지토리입니다.
 
 `pkg` 디렉토리에는 공용으로 사용하는 패키지들이 위치해있습니다.
 
-
 ## Build
 
-
 ### Make
+
+모든 application은 `Makefile`을 통해서 컴파일됩니다. 
+
+아래는 명령어 예시입니다. 
 
 ```shell
 ## build all applications
@@ -29,10 +31,12 @@ make help
 
 ### Docker
 
-- CGO_ENABLED=0: cgo를 사용하지 않습니다. Scratch 이미지에는 C 바이너리조차 없기 때문에, 반드시 cgo를 비활성화 후 빌드해야합니다. 
-- `GOOS=linux`, `GOARCH=amd64` : OS와 아키텍쳐 설정입니다.
+Dockerfile들은 전부 `build` 디렉토리에 위치합니다. 
 
-
+> 2023-08-03 현재 EC2에서 ECS로 이전작업 중입니다.  
+> Dockerfile로 빌드한 이미지를 ECR에 push 후 ECS에서 pull하여 사용해야 할 듯 합니다.  
+> 현재 EC2에서 사용하던 buildspec, appspec은 `scripts` 디렉토리에 위치하고 있습니다.   
+> ECS에서 사용할 buildspec 및 기타 파일들이 있다면 `deployments` 디렉토리에 작업 부탁드립니다.
 
 ## Applications
 
