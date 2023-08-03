@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.3
-// source: proto/ethereum/hdwallet.proto
+// source: pkg/proto/ethereum/hdwallet.proto
 
 package ethereum
 
@@ -142,5 +142,5 @@ var HDWallet_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/ethereum/hdwallet.proto",
+	Metadata: "pkg/proto/ethereum/hdwallet.proto",
 }

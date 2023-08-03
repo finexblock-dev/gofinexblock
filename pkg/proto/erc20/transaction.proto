@@ -2,7 +2,7 @@ syntax = "proto3";
 package erc20;
 option go_package = "/erc20";
 
-import "proto/erc20/transaction.message.proto";
+import "pkg/proto/erc20/transaction.message.proto";
 
 service Transaction {
   rpc Transfer(TransferInput) returns (TransferOutput);

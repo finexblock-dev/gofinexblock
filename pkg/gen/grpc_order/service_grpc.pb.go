@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.3
-// source: proto/grpc_order/service.proto
+// source: pkg/proto/grpc_order/service.proto
 
 package grpc_order
 
@@ -105,7 +105,7 @@ var MarketOrder_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/grpc_order/service.proto",
+	Metadata: "pkg/proto/grpc_order/service.proto",
 }
 
 const (
@@ -195,7 +195,7 @@ var LimitOrder_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/grpc_order/service.proto",
+	Metadata: "pkg/proto/grpc_order/service.proto",
 }
 
 const (
@@ -285,7 +285,7 @@ var CancelOrder_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/grpc_order/service.proto",
+	Metadata: "pkg/proto/grpc_order/service.proto",
 }
 
 const (
@@ -745,7 +745,7 @@ var Event_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/grpc_order/service.proto",
+	Metadata: "pkg/proto/grpc_order/service.proto",
 }
 
 const (
@@ -835,7 +835,7 @@ var OrderBook_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/grpc_order/service.proto",
+	Metadata: "pkg/proto/grpc_order/service.proto",
 }
 
 const (
@@ -925,7 +925,7 @@ var PlacementProcess_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/grpc_order/service.proto",
+	Metadata: "pkg/proto/grpc_order/service.proto",
 }
 
 const (
@@ -1126,7 +1126,7 @@ var RefundProcess_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/grpc_order/service.proto",
+	Metadata: "pkg/proto/grpc_order/service.proto",
 }
 
 const (
@@ -1623,7 +1623,7 @@ var MatchProcess_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/grpc_order/service.proto",
+	Metadata: "pkg/proto/grpc_order/service.proto",
 }
 
 const (
@@ -1713,5 +1713,5 @@ var ErrorProcess_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/grpc_order/service.proto",
+	Metadata: "pkg/proto/grpc_order/service.proto",
 }

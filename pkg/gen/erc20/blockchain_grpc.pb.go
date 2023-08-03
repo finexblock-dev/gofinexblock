@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.3
-// source: proto/erc20/blockchain.proto
+// source: pkg/proto/erc20/blockchain.proto
 
 package erc20
 
@@ -179,5 +179,5 @@ var Blockchain_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/erc20/blockchain.proto",
+	Metadata: "pkg/proto/erc20/blockchain.proto",
 }

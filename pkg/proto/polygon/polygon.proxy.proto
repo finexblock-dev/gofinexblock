@@ -2,8 +2,8 @@ syntax = "proto3";
 package polygon;
 option go_package = "/polygon";
 
-import "proto/polygon/hdwallet.message.proto";
-import "proto/polygon/transaction.message.proto";
+import "pkg/proto/polygon/hdwallet.message.proto";
+import "pkg/proto/polygon/transaction.message.proto";
 
 service PolygonProxy {
   rpc CreateWallet(polygon.CreateWalletInput) returns (polygon.CreateWalletOutput);

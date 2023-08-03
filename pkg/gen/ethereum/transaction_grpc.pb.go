@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.3
-// source: proto/ethereum/transaction.proto
+// source: pkg/proto/ethereum/transaction.proto
 
 package ethereum
 
@@ -253,5 +253,5 @@ var Transaction_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/ethereum/transaction.proto",
+	Metadata: "pkg/proto/ethereum/transaction.proto",
 }

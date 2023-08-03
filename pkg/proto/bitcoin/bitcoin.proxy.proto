@@ -2,8 +2,8 @@ syntax = "proto3";
 package bitcoin;
 option go_package = "/bitcoin";
 
-import "proto/bitcoin/hdwallet.message.proto";
-import "proto/bitcoin/transaction.message.proto";
+import "pkg/proto/bitcoin/hdwallet.message.proto";
+import "pkg/proto/bitcoin/transaction.message.proto";
 
 service BitcoinProxy {
   rpc GetRawTransaction(GetRawTransactionInput) returns (GetRawTransactionOutput);

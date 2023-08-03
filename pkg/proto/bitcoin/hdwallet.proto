@@ -2,7 +2,7 @@ syntax = "proto3";
 package bitcoin;
 option go_package = "/bitcoin";
 
-import "proto/bitcoin/hdwallet.message.proto";
+import "pkg/proto/bitcoin/hdwallet.message.proto";
 
 service HDWallet {
   rpc GetNewAddress(GetNewAddressInput) returns (GetNewAddressOutput);

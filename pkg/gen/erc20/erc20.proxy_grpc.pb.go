@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.3
-// source: proto/erc20/erc20.proxy.proto
+// source: pkg/proto/erc20/erc20.proxy.proto
 
 package erc20
 
@@ -290,5 +290,5 @@ var Erc20Proxy_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/erc20/erc20.proxy.proto",
+	Metadata: "pkg/proto/erc20/erc20.proxy.proto",
 }

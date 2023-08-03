@@ -3,7 +3,7 @@ package ethereum;
 option go_package = "/ethereum";
 
 
-import "proto/ethereum/transaction.message.proto";
+import "pkg/proto/ethereum/transaction.message.proto";
 
 service Transaction {
   rpc GetReceipt(GetReceiptInput) returns (GetReceiptOutput);

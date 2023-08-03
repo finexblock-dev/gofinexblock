@@ -1,11 +1,25 @@
-.PHONY: build run-proxy run-ethereum run-polygon run-bitcoin bitcoin-key polygon-key ethereum-key proxy clean all vendor
+.PHONY: build run-proxy run-ethereum run-polygon run-bitcoin \
+bitcoin-key polygon-key ethereum-key proxy \
+backoffice run-backoffice \
+run-bitcoin run-ethereum run-polygon run-proxy \
+run-bitcoin-daemon run-ethereum-daemon run-polygon-daemon \
+run-event-subscriber run-matching-engine \
+proto abi bin erc20 \
+clean all vendor
 
-## Commands
 GOCMD = $$(which go)
 
-## Directories
 INIT = init
 CMD = cmd
+PKG = pkg
+GEN = gen
+CONTRACT = contracts
+PROTO = proto
+
+
+ABI = $(GEN)/abi
+BIN = $(GEN)/bin
+
 
 ETHEREUM_KEY = ethereum_key
 POLYGON_KEY = polygon_key
@@ -20,7 +34,6 @@ MATCHING_ENGINE = matching_engine
 EVENT_SUBSCRIBER = event_subscriber
 BACKOFFICE = backoffice
 
-## Outfiles
 ETHEREUM_KEY_OUTFILE = ethereum-key
 POLYGON_KEY_OUTFILE = polygon-key
 BITCOIN_KEY_OUTFILE = bitcoin-key
@@ -34,10 +47,8 @@ MATCHING_ENGINE_OUTFILE = matching-engine
 EVENT_SUBSCRIBER_OUTFILE = event-subscriber
 BACKOFFICE_OUTFILE = backoffice
 
-## main function
 ENTRY = main.go
 
-## Utils
 GREEN  := $(shell tput -Txterm setaf 2)
 YELLOW := $(shell tput -Txterm setaf 3)
 WHITE  := $(shell tput -Txterm setaf 7)
@@ -48,7 +59,7 @@ RESET  := $(shell tput -Txterm sgr0)
 all: help
 
 ## Build:
-build: ethereum-key polygon-key bitcoin-key ethereum-daemon polygon-daemon bitcoin-daemon event-subscriber ## matching-engine proxy ## Build all servers
+build: ethereum-key polygon-key bitcoin-key ethereum-daemon polygon-daemon bitcoin-daemon event-subscriber matching-engine proxy backoffice proto abi bin erc20 ## Build all servers
 
 ## Vet:
 vet: ## Run `go vet cmd/main.go`
@@ -57,6 +68,35 @@ vet: ## Run `go vet cmd/main.go`
 ## Vendor:
 vendor: ## Run `go mod vendor`
 	@go mod vendor
+
+## Proto:
+proto: ## Compile protobuf files
+	@echo "${YELLOW}Compiling protobuf...${YELLOW}"
+	@mkdir -p $(PKG)/$(GEN)
+	@protoc --go_out=$(PKG)/$(GEN) --go-grpc_out=$(PKG)/$(GEN) $(PKG)/$(PROTO)/**/*.proto
+	@echo "${CYAN}Compile done${RESET}"
+
+## Abi:
+abi: ## Generate abi files
+	@echo "${YELLOW}Generating ABIs...${YELLOW}"
+	@mkdir -p $(PKG)/$(ABI)
+	@solc --abi --overwrite -o $(PKG)/$(ABI) $(PKG)/$(CONTRACT)/*.sol
+	@echo "${CYAN}Generate done${CYAN}"
+
+## Bin:
+bin: ## Generate binary files
+	@echo "${YELLOW}Generating Binary files...${YELLOW}"
+	@mkdir -p $(PKG)/$(BIN)
+	@solc --bin --overwrite -o $(PKG)/$(BIN) $(PKG)/$(CONTRACT)/*.sol
+	@echo "${CYAN}Generate done${CYAN}"
+
+## ERC20:
+erc20: abi bin ## Compile solidity files and generate abi
+	@echo "${YELLOW}Compiling smart contract...${YELLOW}"
+	@mkdir -p $(PKG)/$(GEN)/$(CONTRACT)
+	@abigen --abi $(PKG)/$(ABI)/*.abi --bin $(PKG)/$(BIN)/*.bin --pkg=ERC20 --out=$(PKG)/$(GEN)/$(CONTRACT)/ERC20.go
+	@echo "${CYAN}Compile done${RESET}"
+
 
 ## Ethereum-Key
 ethereum-key: ## Build Ethereum Key Server
@@ -105,7 +145,7 @@ bitcoin-daemon: ## Build bitcoin daemon
 
 ## Ethereum daemon
 ethereum-daemon: ## Build ethereum daemon
-	@echo "${YELLOW}Building ethereum daemon server ...${YELLOW}"
+	@echo "${YELLOW}Building ethereum daemon ...${YELLOW}"
 	@GO111MODULE=on \
 	CGO_ENABLED=1 \
 	GOARCH=amd64 \
@@ -114,7 +154,7 @@ ethereum-daemon: ## Build ethereum daemon
 
 ## Polygon daemon
 polygon-daemon: ## Build polygon daemon
-	@echo "${YELLOW}Building polygon daemon server ...${YELLOW}"
+	@echo "${YELLOW}Building polygon daemon ...${YELLOW}"
 	@GO111MODULE=on \
 	CGO_ENABLED=1 \
 	GOARCH=amd64 \
@@ -140,8 +180,13 @@ matching-engine: ## Build matching engine
 	$(GOCMD) build -mod vendor -o $(INIT)/$(MATCHING_ENGINE_OUTFILE) $(CMD)/$(MATCHING_ENGINE)/$(ENTRY)
 	@echo "${CYAN}Build done${CYAN}"
 
+## Backoffice swagger
+backoffice-swagger: ## Generate backoffice swagger
+	@swag init -g $(CMD)/$(BACKOFFICE)/$(ENTRY) -q --output=./$(CMD)/$(BACKOFFICE)/docs --parseInternal --parseVendor --generatedTime --requiredByDefault
+	@#swag fmt .
+
 ## Backoffice
-backoffice: ## Build backoffice server
+backoffice: backoffice-swagger ## Build backoffice server
 	@echo "${YELLOW}Building backoffice server ...${YELLOW}"
 	@GO111MODULE=on \
 	CGO_ENABLED=1 \
@@ -164,6 +209,26 @@ run-ethereum: ethereum-key ## Run Ethereum Key Server
 ## Rum Polygon
 run-polygon: polygon-key ## Run Polygon Key Server
 	@$(INIT)/$(POLYGON_OUTFILE)
+
+## Run Bitcoin daemon
+run-bitcoin-daemon: bitcoin-daemon ## Run Bitcoin daemon
+	@$(INIT)/$(BITCOIN_DAEMON_OUTFILE)
+
+## Run Ethereum daemon
+run-ethereum-daemon: ethereum-daemon ## Run Ethereum daemon
+	@$(INIT)/$(ETHEREUM_DAEMON_OUTFILE)
+
+## Run Polygon daemon
+run-polygon-daemon: polygon-daemon ## Run Polygon daemon
+	@$(INIT)/$(POLYGON_DAEMON_OUTFILE)
+
+## Run Event subscriber
+run-event-subscriber: event-subscriber ## Run Event subscriber
+	@$(INIT)/$(EVENT_SUBSCRIBER_OUTFILE)
+
+## Run Matching engine
+run-matching-engine: matching-engine ## Run Matching engine
+	@$(INIT)/$(MATCHING_ENGINE_OUTFILE)
 
 ## Clean:
 clean: ## Clear all generated files

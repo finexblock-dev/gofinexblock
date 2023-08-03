@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.3
-// source: proto/polygon/polygon.proxy.proto
+// source: pkg/proto/polygon/polygon.proxy.proto
 
 package polygon
 
@@ -327,5 +327,5 @@ var PolygonProxy_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/polygon/polygon.proxy.proto",
+	Metadata: "pkg/proto/polygon/polygon.proxy.proto",
 }

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.3
-// source: proto/erc20/transaction.proto
+// source: pkg/proto/erc20/transaction.proto
 
 package erc20
 
@@ -105,5 +105,5 @@ var Transaction_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/erc20/transaction.proto",
+	Metadata: "pkg/proto/erc20/transaction.proto",
 }

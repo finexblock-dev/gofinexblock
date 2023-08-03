@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.28.1
 // 	protoc        v4.23.3
-// source: proto/health/health.proto
+// source: pkg/proto/health/health.proto
 
 package health
 
@@ -31,7 +31,7 @@ type HealthCheckInput struct {
 func (x *HealthCheckInput) Reset() {
 	*x = HealthCheckInput{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_health_health_proto_msgTypes[0]
+		mi := &file_pkg_proto_health_health_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -44,7 +44,7 @@ func (x *HealthCheckInput) String() string {
 func (*HealthCheckInput) ProtoMessage() {}
 
 func (x *HealthCheckInput) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_health_health_proto_msgTypes[0]
+	mi := &file_pkg_proto_health_health_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57,7 +57,7 @@ func (x *HealthCheckInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthCheckInput.ProtoReflect.Descriptor instead.
 func (*HealthCheckInput) Descriptor() ([]byte, []int) {
-	return file_proto_health_health_proto_rawDescGZIP(), []int{0}
+	return file_pkg_proto_health_health_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *HealthCheckInput) GetName() string {
@@ -78,7 +78,7 @@ type HealthCheckOutput struct {
 func (x *HealthCheckOutput) Reset() {
 	*x = HealthCheckOutput{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_health_health_proto_msgTypes[1]
+		mi := &file_pkg_proto_health_health_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -91,7 +91,7 @@ func (x *HealthCheckOutput) String() string {
 func (*HealthCheckOutput) ProtoMessage() {}
 
 func (x *HealthCheckOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_health_health_proto_msgTypes[1]
+	mi := &file_pkg_proto_health_health_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -104,7 +104,7 @@ func (x *HealthCheckOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthCheckOutput.ProtoReflect.Descriptor instead.
 func (*HealthCheckOutput) Descriptor() ([]byte, []int) {
-	return file_proto_health_health_proto_rawDescGZIP(), []int{1}
+	return file_pkg_proto_health_health_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *HealthCheckOutput) GetMessage() string {
@@ -125,7 +125,7 @@ type WhoAmIInput struct {
 func (x *WhoAmIInput) Reset() {
 	*x = WhoAmIInput{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_health_health_proto_msgTypes[2]
+		mi := &file_pkg_proto_health_health_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -138,7 +138,7 @@ func (x *WhoAmIInput) String() string {
 func (*WhoAmIInput) ProtoMessage() {}
 
 func (x *WhoAmIInput) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_health_health_proto_msgTypes[2]
+	mi := &file_pkg_proto_health_health_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -151,7 +151,7 @@ func (x *WhoAmIInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WhoAmIInput.ProtoReflect.Descriptor instead.
 func (*WhoAmIInput) Descriptor() ([]byte, []int) {
-	return file_proto_health_health_proto_rawDescGZIP(), []int{2}
+	return file_pkg_proto_health_health_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *WhoAmIInput) GetName() string {
@@ -172,7 +172,7 @@ type WhoAmIOutput struct {
 func (x *WhoAmIOutput) Reset() {
 	*x = WhoAmIOutput{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_health_health_proto_msgTypes[3]
+		mi := &file_pkg_proto_health_health_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -185,7 +185,7 @@ func (x *WhoAmIOutput) String() string {
 func (*WhoAmIOutput) ProtoMessage() {}
 
 func (x *WhoAmIOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_health_health_proto_msgTypes[3]
+	mi := &file_pkg_proto_health_health_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -198,7 +198,7 @@ func (x *WhoAmIOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WhoAmIOutput.ProtoReflect.Descriptor instead.
 func (*WhoAmIOutput) Descriptor() ([]byte, []int) {
-	return file_proto_health_health_proto_rawDescGZIP(), []int{3}
+	return file_pkg_proto_health_health_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *WhoAmIOutput) GetMessage() string {
@@ -208,53 +208,54 @@ func (x *WhoAmIOutput) GetMessage() string {
 	return ""
 }
 
-var File_proto_health_health_proto protoreflect.FileDescriptor
+var File_pkg_proto_health_health_proto protoreflect.FileDescriptor
 
-var file_proto_health_health_proto_rawDesc = []byte{
-	0x0a, 0x19, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x2f, 0x68,
-	0x65, 0x61, 0x6c, 0x74, 0x68, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x06, 0x68, 0x65, 0x61,
-	0x6c, 0x74, 0x68, 0x22, 0x26, 0x0a, 0x10, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x43, 0x68, 0x65,
-	0x63, 0x6b, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x2d, 0x0a, 0x11, 0x48,
-	0x65, 0x61, 0x6c, 0x74, 0x68, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74,
-	0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x21, 0x0a, 0x0b, 0x57, 0x68,
-	0x6f, 0x41, 0x6d, 0x49, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d,
-	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x28, 0x0a,
-	0x0c, 0x57, 0x68, 0x6f, 0x41, 0x6d, 0x49, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x12, 0x18, 0x0a,
-	0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x32, 0x80, 0x01, 0x0a, 0x0b, 0x48, 0x65, 0x61, 0x6c,
-	0x74, 0x68, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x12, 0x3c, 0x0a, 0x05, 0x43, 0x68, 0x65, 0x63, 0x6b,
-	0x12, 0x18, 0x2e, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x2e, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68,
-	0x43, 0x68, 0x65, 0x63, 0x6b, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x19, 0x2e, 0x68, 0x65, 0x61,
-	0x6c, 0x74, 0x68, 0x2e, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x4f,
-	0x75, 0x74, 0x70, 0x75, 0x74, 0x12, 0x33, 0x0a, 0x06, 0x57, 0x68, 0x6f, 0x41, 0x6d, 0x49, 0x12,
-	0x13, 0x2e, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x2e, 0x57, 0x68, 0x6f, 0x41, 0x6d, 0x49, 0x49,
-	0x6e, 0x70, 0x75, 0x74, 0x1a, 0x14, 0x2e, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x2e, 0x57, 0x68,
-	0x6f, 0x41, 0x6d, 0x49, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x42, 0x09, 0x5a, 0x07, 0x2f, 0x68,
-	0x65, 0x61, 0x6c, 0x74, 0x68, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+var file_pkg_proto_health_health_proto_rawDesc = []byte{
+	0x0a, 0x1d, 0x70, 0x6b, 0x67, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x68, 0x65, 0x61, 0x6c,
+	0x74, 0x68, 0x2f, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12,
+	0x06, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x22, 0x26, 0x0a, 0x10, 0x48, 0x65, 0x61, 0x6c, 0x74,
+	0x68, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e,
+	0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22,
+	0x2d, 0x0a, 0x11, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x4f, 0x75,
+	0x74, 0x70, 0x75, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x21,
+	0x0a, 0x0b, 0x57, 0x68, 0x6f, 0x41, 0x6d, 0x49, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x12, 0x0a,
+	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d,
+	0x65, 0x22, 0x28, 0x0a, 0x0c, 0x57, 0x68, 0x6f, 0x41, 0x6d, 0x49, 0x4f, 0x75, 0x74, 0x70, 0x75,
+	0x74, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x32, 0x80, 0x01, 0x0a, 0x0b,
+	0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x12, 0x3c, 0x0a, 0x05, 0x43,
+	0x68, 0x65, 0x63, 0x6b, 0x12, 0x18, 0x2e, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x2e, 0x48, 0x65,
+	0x61, 0x6c, 0x74, 0x68, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x19,
+	0x2e, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x2e, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x43, 0x68,
+	0x65, 0x63, 0x6b, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x12, 0x33, 0x0a, 0x06, 0x57, 0x68, 0x6f,
+	0x41, 0x6d, 0x49, 0x12, 0x13, 0x2e, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x2e, 0x57, 0x68, 0x6f,
+	0x41, 0x6d, 0x49, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x14, 0x2e, 0x68, 0x65, 0x61, 0x6c, 0x74,
+	0x68, 0x2e, 0x57, 0x68, 0x6f, 0x41, 0x6d, 0x49, 0x4f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x42, 0x09,
+	0x5a, 0x07, 0x2f, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
-	file_proto_health_health_proto_rawDescOnce sync.Once
-	file_proto_health_health_proto_rawDescData = file_proto_health_health_proto_rawDesc
+	file_pkg_proto_health_health_proto_rawDescOnce sync.Once
+	file_pkg_proto_health_health_proto_rawDescData = file_pkg_proto_health_health_proto_rawDesc
 )
 
-func file_proto_health_health_proto_rawDescGZIP() []byte {
-	file_proto_health_health_proto_rawDescOnce.Do(func() {
-		file_proto_health_health_proto_rawDescData = protoimpl.X.CompressGZIP(file_proto_health_health_proto_rawDescData)
+func file_pkg_proto_health_health_proto_rawDescGZIP() []byte {
+	file_pkg_proto_health_health_proto_rawDescOnce.Do(func() {
+		file_pkg_proto_health_health_proto_rawDescData = protoimpl.X.CompressGZIP(file_pkg_proto_health_health_proto_rawDescData)
 	})
-	return file_proto_health_health_proto_rawDescData
+	return file_pkg_proto_health_health_proto_rawDescData
 }
 
-var file_proto_health_health_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_proto_health_health_proto_goTypes = []interface{}{
+var file_pkg_proto_health_health_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_pkg_proto_health_health_proto_goTypes = []interface{}{
 	(*HealthCheckInput)(nil),  // 0: health.HealthCheckInput
 	(*HealthCheckOutput)(nil), // 1: health.HealthCheckOutput
 	(*WhoAmIInput)(nil),       // 2: health.WhoAmIInput
 	(*WhoAmIOutput)(nil),      // 3: health.WhoAmIOutput
 }
-var file_proto_health_health_proto_depIdxs = []int32{
+var file_pkg_proto_health_health_proto_depIdxs = []int32{
 	0, // 0: health.HealthCheck.Check:input_type -> health.HealthCheckInput
 	2, // 1: health.HealthCheck.WhoAmI:input_type -> health.WhoAmIInput
 	1, // 2: health.HealthCheck.Check:output_type -> health.HealthCheckOutput
@@ -266,13 +267,13 @@ var file_proto_health_health_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_proto_health_health_proto_init() }
-func file_proto_health_health_proto_init() {
-	if File_proto_health_health_proto != nil {
+func init() { file_pkg_proto_health_health_proto_init() }
+func file_pkg_proto_health_health_proto_init() {
+	if File_pkg_proto_health_health_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_proto_health_health_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_pkg_proto_health_health_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*HealthCheckInput); i {
 			case 0:
 				return &v.state
@@ -284,7 +285,7 @@ func file_proto_health_health_proto_init() {
 				return nil
 			}
 		}
-		file_proto_health_health_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+		file_pkg_proto_health_health_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*HealthCheckOutput); i {
 			case 0:
 				return &v.state
@@ -296,7 +297,7 @@ func file_proto_health_health_proto_init() {
 				return nil
 			}
 		}
-		file_proto_health_health_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+		file_pkg_proto_health_health_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*WhoAmIInput); i {
 			case 0:
 				return &v.state
@@ -308,7 +309,7 @@ func file_proto_health_health_proto_init() {
 				return nil
 			}
 		}
-		file_proto_health_health_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+		file_pkg_proto_health_health_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*WhoAmIOutput); i {
 			case 0:
 				return &v.state
@@ -325,18 +326,18 @@ func file_proto_health_health_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_proto_health_health_proto_rawDesc,
+			RawDescriptor: file_pkg_proto_health_health_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_health_health_proto_goTypes,
-		DependencyIndexes: file_proto_health_health_proto_depIdxs,
-		MessageInfos:      file_proto_health_health_proto_msgTypes,
+		GoTypes:           file_pkg_proto_health_health_proto_goTypes,
+		DependencyIndexes: file_pkg_proto_health_health_proto_depIdxs,
+		MessageInfos:      file_pkg_proto_health_health_proto_msgTypes,
 	}.Build()
-	File_proto_health_health_proto = out.File
-	file_proto_health_health_proto_rawDesc = nil
-	file_proto_health_health_proto_goTypes = nil
-	file_proto_health_health_proto_depIdxs = nil
+	File_pkg_proto_health_health_proto = out.File
+	file_pkg_proto_health_health_proto_rawDesc = nil
+	file_pkg_proto_health_health_proto_goTypes = nil
+	file_pkg_proto_health_health_proto_depIdxs = nil
 }

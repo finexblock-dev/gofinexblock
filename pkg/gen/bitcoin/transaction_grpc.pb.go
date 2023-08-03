@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.3
-// source: proto/bitcoin/transaction.proto
+// source: pkg/proto/bitcoin/transaction.proto
 
 package bitcoin
 
@@ -105,5 +105,5 @@ var Transaction_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/bitcoin/transaction.proto",
+	Metadata: "pkg/proto/bitcoin/transaction.proto",
 }

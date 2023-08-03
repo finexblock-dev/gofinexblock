@@ -3,7 +3,7 @@ package polygon;
 option go_package = "/polygon";
 
 
-import "proto/polygon/hdwallet.message.proto";
+import "pkg/proto/polygon/hdwallet.message.proto";
 
 service HDWallet {
   rpc CreateWallet(CreateWalletInput) returns (CreateWalletOutput);

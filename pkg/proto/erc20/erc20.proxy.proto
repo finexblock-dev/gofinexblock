@@ -2,9 +2,9 @@ syntax = "proto3";
 package erc20;
 option go_package = "/erc20";
 
-import "proto/erc20/hdwallet.message.proto";
-import "proto/erc20/blockchain.message.proto";
-import "proto/erc20/transaction.message.proto";
+import "pkg/proto/erc20/hdwallet.message.proto";
+import "pkg/proto/erc20/blockchain.message.proto";
+import "pkg/proto/erc20/transaction.message.proto";
 
 service Erc20Proxy {
   rpc GetCurrentBlockNumber(GetCurrentBlockNumberInput) returns (GetCurrentBlockNumberOutput);

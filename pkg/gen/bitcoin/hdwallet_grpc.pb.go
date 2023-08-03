@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.3
-// source: proto/bitcoin/hdwallet.proto
+// source: pkg/proto/bitcoin/hdwallet.proto
 
 package bitcoin
 
@@ -179,5 +179,5 @@ var HDWallet_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/bitcoin/hdwallet.proto",
+	Metadata: "pkg/proto/bitcoin/hdwallet.proto",
 }

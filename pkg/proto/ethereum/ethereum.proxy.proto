@@ -2,8 +2,8 @@ syntax = "proto3";
 package ethereum;
 option go_package = "/ethereum";
 
-import "proto/ethereum/hdwallet.message.proto";
-import "proto/ethereum/transaction.message.proto";
+import "pkg/proto/ethereum/hdwallet.message.proto";
+import "pkg/proto/ethereum/transaction.message.proto";
 
 service EthereumProxy {
   rpc CreateWallet(ethereum.CreateWalletInput) returns (ethereum.CreateWalletOutput);

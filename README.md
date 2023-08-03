@@ -1,8 +1,76 @@
 # gofinexblock
-golang finexblock packages.
 
+## Overview
+
+Go 기반 application을 위한 모놀리식 레포지토리입니다. 
+
+`cmd` 디렉토리에는 각각의 application들이 위치해있습니다. 
+
+> `cmd`/```${application_name}```/`internal` 에는 application 내부에서만 사용될 수 있는 패키지들이 위치해있습니다.
+
+`pkg` 디렉토리에는 공용으로 사용하는 패키지들이 위치해있습니다.
+
+
+## Build
+
+```shell
+## build all applications
+make build
+
+## build specific application
+make ${application}
+
+## show help
+make help
+```
+
+## Applications
+
+### Backoffice
+
+어드민 페이지 API 서버입니다. 
+
+### Bitcoin daemon
+
+비트코인 입출금 데몬 
+
+### Bitcoin key
+
+비트코인 signing 서버 
+
+### Ethereum daemon
+
+이더리움 입출금 데몬
+
+### Ethereum key
+
+이더리움 signing 서버
+
+### Polygon daemon
+
+폴리곤 입출금 데몬 
+
+### Polygon key
+
+폴리곤 signing 서버
+
+### Proxy
+
+Wallet proxy server, signing 서버로의 직접 호출을 막고, 모든 호출을 인터셉트하여 필요한 정보를 추가 혹은 로그를 기록한 뒤 전달합니다.
+
+### Event subscriber
+
+체결엔진으로부터 거래 이벤트를 hook으로 수신하고 데이터베이스에 반영합니다.
+
+### Matching engine
+
+trading server로 부터 지정가/시장가 주문 등록/취소 요청을 받고, 주문을 체결합니다.
+
+오더북을 관리하고, 오더북 조회 및 자체 스냅샷 기능을 제공합니다.
 
 ## Packages
+
+패키지가 추가되면 README.md에 해당 패키지에 대한 설명을 추가해주세요.
 
 ### [entity](pkg/entity/entity.md)
 

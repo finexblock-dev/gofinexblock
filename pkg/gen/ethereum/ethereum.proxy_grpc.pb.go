@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.3
-// source: proto/ethereum/ethereum.proxy.proto
+// source: pkg/proto/ethereum/ethereum.proxy.proto
 
 package ethereum
 
@@ -327,5 +327,5 @@ var EthereumProxy_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/ethereum/ethereum.proxy.proto",
+	Metadata: "pkg/proto/ethereum/ethereum.proxy.proto",
 }

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.3
-// source: proto/polygon/hdwallet.proto
+// source: pkg/proto/polygon/hdwallet.proto
 
 package polygon
 
@@ -142,5 +142,5 @@ var HDWallet_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/polygon/hdwallet.proto",
+	Metadata: "pkg/proto/polygon/hdwallet.proto",
 }

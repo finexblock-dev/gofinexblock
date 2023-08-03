@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.3
-// source: proto/bitcoin/bitcoin.proxy.proto
+// source: pkg/proto/bitcoin/bitcoin.proxy.proto
 
 package bitcoin
 
@@ -216,5 +216,5 @@ var BitcoinProxy_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/bitcoin/bitcoin.proxy.proto",
+	Metadata: "pkg/proto/bitcoin/bitcoin.proxy.proto",
 }
