@@ -34,17 +34,17 @@ MATCHING_ENGINE = matching_engine
 EVENT_SUBSCRIBER = event_subscriber
 BACKOFFICE = backoffice
 
-ETHEREUM_KEY_OUTFILE = ethereum-key
-POLYGON_KEY_OUTFILE = polygon-key
-BITCOIN_KEY_OUTFILE = bitcoin-key
+ETHEREUM_KEY_OUTFILE = ethereum_key
+POLYGON_KEY_OUTFILE = polygon_key
+BITCOIN_KEY_OUTFILE = bitcoin_key
 PROXY_OUTFILE = proxy
 
-ETHEREUM_DAEMON_OUTFILE = ethereum-daemon
-POLYGON_DAEMON_OUTFILE = polygon-daemon
-BITCOIN_DAEMON_OUTFILE = bitcoin-daemon
+ETHEREUM_DAEMON_OUTFILE = ethereum_daemon
+POLYGON_DAEMON_OUTFILE = polygon_daemon
+BITCOIN_DAEMON_OUTFILE = bitcoin_daemon
 
-MATCHING_ENGINE_OUTFILE = matching-engine
-EVENT_SUBSCRIBER_OUTFILE = event-subscriber
+MATCHING_ENGINE_OUTFILE = matching_engine
+EVENT_SUBSCRIBER_OUTFILE = event_subscriber
 BACKOFFICE_OUTFILE = backoffice
 
 ENTRY = main.go
@@ -104,7 +104,7 @@ ethereum-key: ## Build Ethereum Key Server
 	@GO111MODULE=on \
 	CGO_ENABLED=1 \
 	GOARCH=amd64 \
-	$(GOCMD) build -mod vendor -o $(INIT)/$(ETHEREUM_OUTFILE) $(CMD)/$(ETHEREUM_KEY)/$(ENTRY)
+	$(GOCMD) build -mod vendor -a -ldflags '-w -s' -o $(INIT)/$(ETHEREUM_KEY_OUTFILE) $(CMD)/$(ETHEREUM_KEY)/$(ENTRY)
 	@echo "${CYAN}Build done${CYAN}"
 
 ## Polygon-Key
@@ -113,7 +113,7 @@ polygon-key: ## Build Polygon Key Server
 	@GO111MODULE=on \
 	CGO_ENABLED=1 \
 	GOARCH=amd64 \
-	$(GOCMD) build -mod vendor -o $(INIT)/$(POLYGON_OUTFILE) $(CMD)/$(POLYGON_KEY)/$(ENTRY)
+	$(GOCMD) build -mod vendor -o $(INIT)/$(POLYGON_KEY_OUTFILE) $(CMD)/$(POLYGON_KEY)/$(ENTRY)
 	@echo "${CYAN}Build done${CYAN}"
 
 ## Bitcoin-Key
@@ -122,7 +122,7 @@ bitcoin-key:  ## Build Bitcoin Key Server
 	@GO111MODULE=on \
 	CGO_ENABLED=1 \
 	GOARCH=amd64 \
-	$(GOCMD) build -mod vendor -o $(INIT)/$(BITCOIN_OUTFILE) $(CMD)/$(BITCOIN_KEY)/$(ENTRY)
+	$(GOCMD) build -mod vendor -o $(INIT)/$(BITCOIN_KEY_OUTFILE) $(CMD)/$(BITCOIN_KEY)/$(ENTRY)
 	@echo "${CYAN}Build done${CYAN}"
 
 ## Proxy

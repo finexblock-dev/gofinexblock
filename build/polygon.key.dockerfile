@@ -9,27 +9,22 @@ RUN apk add gcc
 RUN apk --no-cache --update add build-base
 RUN apk update && apk add --no-cache bash cmake gcc git make
 
-
-
-
-FROM build as release
-
-WORKDIR /home
-
-COPY . /home/go/src/finexblock
-
-WORKDIR /home/go/src/finexblock
-
 RUN export GOROOT=/usr/local/go
 RUN export GOPATH=$HOME/go
-RUN export PATH=$PATH:$GOROOT/bin:/usr/local/bin:$GOPATH/bin
 RUN export PATH=$PATH:$(go env GOPATH)/bin
+
+WORKDIR /build
+COPY . /build
 
 RUN go mod download
 RUN go mod vendor
 
-RUN make polygon
+RUN make polygon-key
 
-ENTRYPOINT ["init/polygond"]
+FROM scratch as release
+
+COPY --from=build /build/init/polygon_key /polygon_key
+
+ENTRYPOINT ["polygon_key"]
 
 EXPOSE 50051

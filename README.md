@@ -13,6 +13,9 @@ Go 기반 application을 위한 모놀리식 레포지토리입니다.
 
 ## Build
 
+
+### Make
+
 ```shell
 ## build all applications
 make build
@@ -23,6 +26,13 @@ make ${application}
 ## show help
 make help
 ```
+
+### Docker
+
+- CGO_ENABLED=0: cgo를 사용하지 않습니다. Scratch 이미지에는 C 바이너리조차 없기 때문에, 반드시 cgo를 비활성화 후 빌드해야합니다. 
+- `GOOS=linux`, `GOARCH=amd64` : OS와 아키텍쳐 설정입니다.
+
+
 
 ## Applications
 

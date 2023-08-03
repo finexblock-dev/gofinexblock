@@ -16,15 +16,16 @@ RUN export PATH=$PATH:$(go env GOPATH)/bin
 WORKDIR /build
 COPY . /build
 
+RUN go install github.com/swaggo/swag/cmd/swag@latest
 RUN go mod download
 RUN go mod vendor
 
-RUN make bitcoin-key
+RUN make backoffice
 
 FROM scratch as release
 
-COPY --from=build /build/init/bitcoin_key /bitcoin_key
+COPY --from=build /build/init/backoffice /backoffice
 
-ENTRYPOINT ["bitcoin_key"]
+ENTRYPOINT ["backoffice"]
 
-EXPOSE 50051
+EXPOSE 80 443 50051

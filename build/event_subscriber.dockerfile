@@ -19,12 +19,12 @@ COPY . /build
 RUN go mod download
 RUN go mod vendor
 
-RUN make bitcoin-key
+RUN make event-subscriber
 
 FROM scratch as release
 
-COPY --from=build /build/init/bitcoin_key /bitcoin_key
+COPY --from=build /build/init/event_subscriber /event_subscriber
 
-ENTRYPOINT ["bitcoin_key"]
+ENTRYPOINT ["event_subscriber"]
 
 EXPOSE 50051
