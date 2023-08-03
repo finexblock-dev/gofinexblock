@@ -143,7 +143,7 @@ func bindERC20(address common.Address, caller bind.ContractCaller, transactor bi
 
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
-// returns, a slice of interfaces for anonymous returns and a struct for named
+// returns, a slice of interfaces for anonymous returns and a structs for named
 // returns.
 func (_ERC20 *ERC20Raw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _ERC20.Contract.ERC20Caller.contract.Call(opts, result, method, params...)
@@ -162,7 +162,7 @@ func (_ERC20 *ERC20Raw) Transact(opts *bind.TransactOpts, method string, params 
 
 // Call invokes the (constant) contract method with params as input values and
 // sets the output to result. The result type might be a single field for simple
-// returns, a slice of interfaces for anonymous returns and a struct for named
+// returns, a slice of interfaces for anonymous returns and a structs for named
 // returns.
 func (_ERC20 *ERC20CallerRaw) Call(opts *bind.CallOpts, result *[]interface{}, method string, params ...interface{}) error {
 	return _ERC20.Contract.contract.Call(opts, result, method, params...)

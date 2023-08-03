@@ -2,7 +2,7 @@ package admin
 
 import (
 	"database/sql"
-	"github.com/finexblock-dev/gofinexblock/finexblock/admin/dto"
+	"github.com/finexblock-dev/gofinexblock/finexblock/admin/structs"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"gorm.io/gorm"
 	"time"
@@ -10,6 +10,42 @@ import (
 
 type adminRepository struct {
 	db *gorm.DB
+}
+
+func (a *adminRepository) UpdateInitialLogin(tx *gorm.DB, id uint, initialLogin int) (err error) {
+	var _admin = new(entity.Admin)
+
+	return tx.Table(_admin.TableName()).Where("id = ?", id).UpdateColumn("initial_login", initialLogin).Error
+}
+
+func (a *adminRepository) BlockAdminByID(tx *gorm.DB, id uint) (err error) {
+	var _admin = new(entity.Admin)
+
+	if err = tx.Table(_admin.TableName()).Where("id = ?", id).UpdateColumn("is_blocked", 1).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *adminRepository) UnblockAdminByID(tx *gorm.DB, id uint) (err error) {
+	var _admin = new(entity.Admin)
+
+	if err = tx.Table(_admin.TableName()).Where("id = ?", id).UpdateColumn("is_blocked", 0).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *adminRepository) FindManyAdminByID(tx *gorm.DB, ids []uint) (result []*entity.Admin, err error) {
+	var _admin *entity.Admin
+
+	if err = tx.Table(_admin.TableName()).Where("id IN ?", ids).Find(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (a *adminRepository) InsertAccessToken(tx *gorm.DB, adminID uint, expiredAt time.Time) (result *entity.AdminAccessToken, err error) {
@@ -46,7 +82,7 @@ func (a *adminRepository) InsertApiLog(tx *gorm.DB, log *entity.AdminApiLog) (*e
 
 func (a *adminRepository) FindAllApiLog(tx *gorm.DB, limit, offset int) (result []*entity.AdminApiLog, err error) {
 	var _apiLog *entity.AdminApiLog
-	if err = tx.Table(_apiLog.TableName()).Offset(offset).Limit(limit).Find(&result).Error; err != nil {
+	if err = tx.Table(_apiLog.TableName()).Offset(offset).Limit(limit).Find(&result).Order("created_at DESC").Error; err != nil {
 		return nil, err
 	}
 
@@ -56,7 +92,7 @@ func (a *adminRepository) FindAllApiLog(tx *gorm.DB, limit, offset int) (result 
 func (a *adminRepository) FindApiLogByAdminID(tx *gorm.DB, adminID uint, limit, offset int) (result []*entity.AdminApiLog, err error) {
 	var _table *entity.AdminApiLog
 
-	if err = tx.Table(_table.TableName()).Where("admin_id = ?", adminID).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err = tx.Table(_table.TableName()).Where("admin_id = ?", adminID).Limit(limit).Offset(offset).Order("created_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -66,7 +102,7 @@ func (a *adminRepository) FindApiLogByAdminID(tx *gorm.DB, adminID uint, limit, 
 func (a *adminRepository) FindApiLogByTimeCond(tx *gorm.DB, start, end time.Time, limit, offset int) (result []*entity.AdminApiLog, err error) {
 	var _apiLog *entity.AdminApiLog
 
-	if err = tx.Table(_apiLog.TableName()).Where("created_at BETWEEN ? AND ?", start, end).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err = tx.Table(_apiLog.TableName()).Where("created_at BETWEEN ? AND ?", start, end).Limit(limit).Offset(offset).Order("created_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -77,7 +113,7 @@ func (a *adminRepository) FindApiLogByMethodCond(tx *gorm.DB, method entity.ApiM
 	var apiLogs []*entity.AdminApiLog
 	var _apiLog = &entity.AdminApiLog{Method: method}
 
-	if err := tx.Table(_apiLog.TableName()).Where(_apiLog).Limit(limit).Offset(offset).Find(&apiLogs).Error; err != nil {
+	if err := tx.Table(_apiLog.TableName()).Where(_apiLog).Limit(limit).Offset(offset).Order("created_at DESC").Find(&apiLogs).Error; err != nil {
 		return nil, err
 	}
 	return apiLogs, nil
@@ -87,14 +123,14 @@ func (a *adminRepository) FindApiLogByEndpoint(tx *gorm.DB, endpoint string, lim
 	var apiLogs []*entity.AdminApiLog
 	var _apiLog = &entity.AdminApiLog{Endpoint: endpoint}
 
-	if err := tx.Table(_apiLog.TableName()).Where(_apiLog).Limit(limit).Offset(offset).Find(&apiLogs).Error; err != nil {
+	if err := tx.Table(_apiLog.TableName()).Where(_apiLog).Limit(limit).Offset(offset).Order("created_at DESC").Find(&apiLogs).Error; err != nil {
 		return nil, err
 	}
 
 	return apiLogs, nil
 }
 
-func (a *adminRepository) SearchApiLog(tx *gorm.DB, input *dto.SearchApiLogInput) ([]*entity.AdminApiLog, error) {
+func (a *adminRepository) SearchApiLog(tx *gorm.DB, input *structs.SearchApiLogInput) ([]*entity.AdminApiLog, error) {
 	var _apiLog *entity.AdminApiLog
 	var result []*entity.AdminApiLog
 
@@ -122,14 +158,14 @@ func (a *adminRepository) SearchApiLog(tx *gorm.DB, input *dto.SearchApiLogInput
 		query.Offset(input.Offset)
 	}
 
-	if err := query.Find(&result).Error; err != nil {
+	if err := query.Order("created_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 
 	return result, nil
 }
 
-func (a *adminRepository) SearchDeleteLog(tx *gorm.DB, input *dto.SearchDeleteLogInput) ([]*entity.AdminDeleteLog, error) {
+func (a *adminRepository) SearchDeleteLog(tx *gorm.DB, input *structs.SearchDeleteLogInput) ([]*entity.AdminDeleteLog, error) {
 	var _deleteLog *entity.AdminDeleteLog
 	var result []*entity.AdminDeleteLog
 
@@ -154,7 +190,7 @@ func (a *adminRepository) SearchDeleteLog(tx *gorm.DB, input *dto.SearchDeleteLo
 		query.Offset(input.Offset)
 	}
 
-	if err := query.Find(&result).Error; err != nil {
+	if err := query.Order("created_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -165,7 +201,7 @@ func (a *adminRepository) FindAllDeleteLog(tx *gorm.DB, limit, offset int) ([]*e
 	var _deleteLog = &entity.AdminDeleteLog{}
 	var result []*entity.AdminDeleteLog
 
-	if err := tx.Table(_deleteLog.TableName()).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err := tx.Table(_deleteLog.TableName()).Limit(limit).Offset(offset).Order("created_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -176,7 +212,7 @@ func (a *adminRepository) FindDeleteLogOfExecutor(tx *gorm.DB, executor uint, li
 	var _deleteLog = &entity.AdminDeleteLog{ExecutorID: executor}
 	var result []*entity.AdminDeleteLog
 
-	if err := tx.Table(_deleteLog.TableName()).Where(_deleteLog).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err := tx.Table(_deleteLog.TableName()).Where(_deleteLog).Limit(limit).Offset(offset).Order("created_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -186,7 +222,7 @@ func (a *adminRepository) FindDeleteLogOfExecutor(tx *gorm.DB, executor uint, li
 func (a *adminRepository) FindDeleteLogOfTarget(tx *gorm.DB, target uint) (*entity.AdminDeleteLog, error) {
 	var _deleteLog = &entity.AdminDeleteLog{TargetID: target}
 
-	if err := tx.Table(_deleteLog.TableName()).Where(_deleteLog).First(&_deleteLog).Error; err != nil {
+	if err := tx.Table(_deleteLog.TableName()).Where(_deleteLog).Order("created_at DESC").First(&_deleteLog).Error; err != nil {
 		return nil, err
 	}
 
@@ -203,7 +239,7 @@ func (a *adminRepository) InsertDeleteLog(tx *gorm.DB, executor, target uint) (*
 	return _deleteLog, nil
 }
 
-func (a *adminRepository) SearchGradeUpdateLog(tx *gorm.DB, input *dto.SearchGradeUpdateLogInput) ([]*entity.AdminGradeUpdateLog, error) {
+func (a *adminRepository) SearchGradeUpdateLog(tx *gorm.DB, input *structs.SearchGradeUpdateLogInput) ([]*entity.AdminGradeUpdateLog, error) {
 	var _gradeUpdateLog *entity.AdminGradeUpdateLog
 	var result []*entity.AdminGradeUpdateLog
 	var err error
@@ -234,14 +270,14 @@ func (a *adminRepository) SearchGradeUpdateLog(tx *gorm.DB, input *dto.SearchGra
 		query.Offset(input.Offset)
 	}
 
-	if err = query.Find(&result).Error; err != nil {
+	if err = query.Order("created_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 
 	return result, nil
 }
 
-func (a *adminRepository) InsertGradeUpdateLog(tx *gorm.DB, executor, target uint, prev, curr string) (*entity.AdminGradeUpdateLog, error) {
+func (a *adminRepository) InsertGradeUpdateLog(tx *gorm.DB, executor, target uint, prev, curr entity.GradeType) (*entity.AdminGradeUpdateLog, error) {
 	var _gradeUpdateLog = &entity.AdminGradeUpdateLog{
 		ExecutorID: executor,
 		TargetID:   target,
@@ -260,7 +296,7 @@ func (a *adminRepository) FindAllGradeUpdateLog(tx *gorm.DB, limit, offset int) 
 	var _gradeUpdateLog *entity.AdminGradeUpdateLog
 	var result []*entity.AdminGradeUpdateLog
 
-	if err := tx.Table(_gradeUpdateLog.TableName()).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err := tx.Table(_gradeUpdateLog.TableName()).Limit(limit).Offset(offset).Order("created_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -269,7 +305,7 @@ func (a *adminRepository) FindAllGradeUpdateLog(tx *gorm.DB, limit, offset int) 
 func (a *adminRepository) FindGradeUpdateLogOfExecutor(tx *gorm.DB, executor uint, limit, offset int) ([]*entity.AdminGradeUpdateLog, error) {
 	var _gradeUpdateLog *entity.AdminGradeUpdateLog
 	var result []*entity.AdminGradeUpdateLog
-	if err := tx.Table(_gradeUpdateLog.TableName()).Where("executor_id = ?", executor).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err := tx.Table(_gradeUpdateLog.TableName()).Where("executor_id = ?", executor).Limit(limit).Offset(offset).Order("created_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -279,7 +315,7 @@ func (a *adminRepository) FindGradeUpdateLogOfTarget(tx *gorm.DB, target uint, l
 	var _gradeUpdateLog *entity.AdminGradeUpdateLog
 	var result []*entity.AdminGradeUpdateLog
 
-	if err := tx.Table(_gradeUpdateLog.TableName()).Where("target_id = ?", target).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err := tx.Table(_gradeUpdateLog.TableName()).Where("target_id = ?", target).Limit(limit).Offset(offset).Order("created_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -289,7 +325,7 @@ func (a *adminRepository) FindLoginFailedLogByAdminID(tx *gorm.DB, adminID uint,
 	var _loginFailedLog = &entity.AdminLoginFailedLog{AdminID: adminID}
 	var result []*entity.AdminLoginFailedLog
 
-	if err := tx.Table(_loginFailedLog.TableName()).Where(_loginFailedLog).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err := tx.Table(_loginFailedLog.TableName()).Where(_loginFailedLog).Limit(limit).Offset(offset).Order("failed_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -310,7 +346,7 @@ func (a *adminRepository) FindLoginHistoryByAdminID(tx *gorm.DB, adminID uint, l
 	var _loginHistory = &entity.AdminLoginHistory{AdminID: adminID}
 	var result []*entity.AdminLoginHistory
 
-	if err := tx.Table(_loginHistory.TableName()).Where(_loginHistory).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err := tx.Table(_loginHistory.TableName()).Where(_loginHistory).Limit(limit).Offset(offset).Order("logged_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -327,7 +363,7 @@ func (a *adminRepository) InsertLoginHistory(tx *gorm.DB, adminID uint) (*entity
 	return _loginHistory, nil
 }
 
-func (a *adminRepository) SearchPasswordUpdateLog(tx *gorm.DB, input *dto.SearchPasswordUpdateLogInput) ([]*entity.AdminPasswordLog, error) {
+func (a *adminRepository) SearchPasswordUpdateLog(tx *gorm.DB, input *structs.SearchPasswordUpdateLogInput) ([]*entity.AdminPasswordLog, error) {
 	var _passwordLog *entity.AdminPasswordLog
 	var result []*entity.AdminPasswordLog
 
@@ -352,7 +388,7 @@ func (a *adminRepository) SearchPasswordUpdateLog(tx *gorm.DB, input *dto.Search
 		query.Offset(input.Offset)
 	}
 
-	if err := query.Find(&result).Error; err != nil {
+	if err := query.Order("created_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -363,7 +399,7 @@ func (a *adminRepository) FindAllPasswordUpdateLog(tx *gorm.DB, limit, offset in
 	var _passwordLog = &entity.AdminPasswordLog{}
 	var result []*entity.AdminPasswordLog
 
-	if err := tx.Table(_passwordLog.TableName()).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err := tx.Table(_passwordLog.TableName()).Limit(limit).Offset(offset).Order("created_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -374,7 +410,7 @@ func (a *adminRepository) FindPasswordUpdateLogOfExecutor(tx *gorm.DB, executor 
 	var _passwordLog = &entity.AdminPasswordLog{ExecutorID: executor}
 	var result []*entity.AdminPasswordLog
 
-	if err := tx.Table(_passwordLog.TableName()).Where(_passwordLog).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err := tx.Table(_passwordLog.TableName()).Where(_passwordLog).Limit(limit).Offset(offset).Order("created_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -385,7 +421,7 @@ func (a *adminRepository) FindPasswordUpdateLogOfTarget(tx *gorm.DB, target uint
 	var _passwordLog = &entity.AdminPasswordLog{TargetID: target}
 	var result []*entity.AdminPasswordLog
 
-	if err := tx.Table(_passwordLog.TableName()).Where(_passwordLog).Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err := tx.Table(_passwordLog.TableName()).Where(_passwordLog).Limit(limit).Offset(offset).Order("created_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -434,7 +470,7 @@ func (a *adminRepository) FindAccessToken(tx *gorm.DB, limit, offset int) ([]*en
 	var _accessToken *entity.AdminAccessToken
 	var result []*entity.AdminAccessToken
 
-	if err := tx.Table(_accessToken.TableName()).Where("expired_at >= current_timestamp()").Limit(limit).Offset(offset).Find(&result).Error; err != nil {
+	if err := tx.Table(_accessToken.TableName()).Where("expired_at >= current_timestamp()").Limit(limit).Offset(offset).Order("expired_at DESC").Find(&result).Error; err != nil {
 		return nil, err
 	}
 

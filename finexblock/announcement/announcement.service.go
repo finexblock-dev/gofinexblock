@@ -3,7 +3,7 @@ package announcement
 import (
 	"context"
 	"database/sql"
-	"github.com/finexblock-dev/gofinexblock/finexblock/announcement/dto"
+	"github.com/finexblock-dev/gofinexblock/finexblock/announcement/structs"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"gorm.io/gorm"
 )
@@ -38,7 +38,7 @@ func (a *announcementService) FindAllAnnouncement(limit, offset int) (result []*
 	return result, nil
 }
 
-func (a *announcementService) SearchAnnouncement(input dto.SearchAnnouncementInput) (result []*entity.Announcement, err error) {
+func (a *announcementService) SearchAnnouncement(input *structs.SearchAnnouncementInput) (result []*entity.Announcement, err error) {
 	err = a.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = a.repo.SearchAnnouncement(tx, input)
 		return err

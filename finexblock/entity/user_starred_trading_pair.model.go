@@ -1,15 +1,15 @@
 package entity
 
-type UserStarredTraddingPair struct {
-	ID            uint `gorm:"primaryKey;autoIncrement:true;comment:'기본키'"`
-	UserID        uint `gorm:"comment:'유저 id'"`
-	OrderSymbolId uint `gorm:"comment: '거래쌍 id'"`
+type UserStarredTradingPair struct {
+	ID            uint `gorm:"primaryKey;autoIncrement:true;comment:'기본키'" json:"id"`
+	UserID        uint `gorm:"comment:'유저 id'" json:"userId"`
+	OrderSymbolId uint `gorm:"comment: '거래쌍 id'" json:"orderSymbolId"`
 }
 
-func (s *UserStarredTraddingPair) Alias() string {
+func (s *UserStarredTradingPair) Alias() string {
 	return "user_starred_trading_pair ustp"
 }
 
-func (s *UserStarredTraddingPair) TableName() string {
+func (s *UserStarredTradingPair) TableName() string {
 	return "user_starred_trading_pair"
 }

@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"github.com/alexedwards/argon2id"
 	"github.com/finexblock-dev/gofinexblock/finexblock/admin"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
 	"github.com/finexblock-dev/gofinexblock/finexblock/user"
-	"github.com/finexblock-dev/gofinexblock/finexblock/utils"
 	"github.com/golang-jwt/jwt/v4"
 	"gorm.io/gorm"
 	"os"
@@ -25,7 +25,7 @@ func (a *authService) AdminLogin(email, password string) (result string, err err
 	var _token string
 	if err = a.adminRepository.Conn().Transaction(func(tx *gorm.DB) error {
 
-		_admin, err = a.adminRepository.FindAdminByEmail(a.Conn(), email)
+		_admin, err = a.adminRepository.FindAdminByEmail(tx, email)
 		if err != nil {
 			return err
 		}
@@ -39,8 +39,16 @@ func (a *authService) AdminLogin(email, password string) (result string, err err
 			return err
 		}
 
-		if !utils.CompareHash(_credentials.Password, password) {
-			return errors.New("invalid credentials")
+		// Verify the password
+		_, err = argon2id.ComparePasswordAndHash(password, _credentials.Password)
+		if err != nil {
+			return err
+		}
+
+		if _admin.InitialLogin {
+			if err = a.adminRepository.UpdateInitialLogin(tx, _admin.ID, 0); err != nil {
+				return err
+			}
 		}
 
 		_token, err = a.AdminToken(_admin)
@@ -58,10 +66,10 @@ func (a *authService) AdminLogin(email, password string) (result string, err err
 
 func (a *authService) AdminToken(_admin *entity.Admin) (string, error) {
 	claims := jwt.MapClaims{
-		"admin_id": _admin.ID,
-		"grade":    _admin.Grade,
-		"email":    _admin.Email,
-		"exp":      time.Now().Add(time.Hour * 8).Unix(),
+		"adminId": _admin.ID,
+		"grade":   _admin.Grade,
+		"email":   _admin.Email,
+		"exp":     time.Now().Add(time.Hour * 8).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))

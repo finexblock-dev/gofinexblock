@@ -3,11 +3,10 @@ package entity
 import "time"
 
 type UserReferralCode struct {
-	ID           uint      `gorm:"primaryKey;autoIncrement:true;comment:'기본키'"`
-	ID2          uint      `gorm:"primaryKey;autoIncrement:true;comment:'기본키'"`
-	UserID       uint      `gorm:"comment:'유저 id'"`
-	ReferralCode uint      `gorm:"comment:'추천인 코드''"`
-	CreatedAt    time.Time `gorm:"comment:'생성일자';not null;type:timestamp;default:CURRENT_TIMESTAMP;type:timestamp"`
+	ID           uint      `gorm:"primaryKey;autoIncrement:true;comment:'기본키'" json:"id"`
+	UserID       uint      `gorm:"comment:'유저 id'" json:"userId"`
+	ReferralCode uint      `gorm:"comment:'추천인 코드''" json:"referralCode"`
+	CreatedAt    time.Time `gorm:"comment:'생성일자';not null;type:timestamp;default:CURRENT_TIMESTAMP;type:timestamp" json:"createdAt"`
 }
 
 func (r *UserReferralCode) Alias() string {

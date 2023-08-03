@@ -12,6 +12,89 @@ type walletRepository struct {
 	db *gorm.DB
 }
 
+func (w *walletRepository) ScanWithdrawalRequestByStatusWithLimitOffset(tx *gorm.DB, status entity.WithdrawalStatus, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
+	var table *entity.WithdrawalRequest
+	var query = tx.Table(table.TableName()).Where("status = ?", status)
+
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+
+	if offset > 0 {
+		query = query.Offset(offset)
+	}
+
+	if err = query.Find(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (w *walletRepository) ScanWithdrawalRequestByUser(tx *gorm.DB, userID uint, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
+	var _withdrawalRequest *entity.WithdrawalRequest
+	var query *gorm.DB
+
+	query = tx.Table(_withdrawalRequest.Alias()).
+		Joins("JOIN coin_transfer ct ON ct.id = wr.coin_transfer_id").
+		Joins("JOIN wallet w ON w.id = ct.wallet_id AND w.user_id = ?", userID)
+
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+
+	if offset > 0 {
+		query = query.Offset(offset)
+	}
+
+	if err = query.Find(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (w *walletRepository) ScanCoinTransferByUserID(tx *gorm.DB, userID uint, limit, offset int) (result []*entity.CoinTransfer, err error) {
+	var _coinTransfer *entity.CoinTransfer
+	var query *gorm.DB
+
+	query = tx.Table(_coinTransfer.Alias()).Joins("JOIN wallet w ON w.id = ct.id AND w.user_id = ?", userID)
+
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+
+	if offset > 0 {
+		query = query.Offset(offset)
+	}
+
+	if err = query.Find(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (w *walletRepository) FindManyCoinByID(tx *gorm.DB, ids []uint) (result []*entity.Coin, err error) {
+	var _coin *entity.Coin
+
+	if err = tx.Table(_coin.TableName()).Where("id IN ?", ids).Find(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (w *walletRepository) FindManyCoinByName(tx *gorm.DB, names []string) (result []*entity.Coin, err error) {
+	var coin *entity.Coin
+
+	if err = tx.Table(coin.TableName()).Where("name IN ?", names).Find(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (w *walletRepository) FindWithdrawalRequestByID(tx *gorm.DB, id uint) (*entity.WithdrawalRequest, error) {
 	var _withdrawalRequest *entity.WithdrawalRequest
 	var err error
@@ -109,6 +192,18 @@ func (w *walletRepository) ScanWalletByCoinID(tx *gorm.DB, coinID uint) ([]*enti
 	}
 
 	return _wallet, nil
+}
+
+func (w *walletRepository) GetContractAddressByCoinID(tx *gorm.DB, coinID uint) (*entity.SmartContract, error) {
+	var _smartContract *entity.SmartContract
+	var _table *entity.SmartContract
+	var err error
+
+	if err = tx.Table(_table.TableName()).Where("coin_id = ?", coinID).Find(&_smartContract).Error; err != nil {
+		return nil, err
+	}
+
+	return _smartContract, nil
 }
 
 func (w *walletRepository) ScanWalletByUserID(tx *gorm.DB, userID uint) ([]*entity.Wallet, error) {

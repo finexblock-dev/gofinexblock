@@ -12,7 +12,6 @@ import (
 	"github.com/finexblock-dev/gofinexblock/finexblock/user"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
-	"math"
 	"strconv"
 	"time"
 )
@@ -20,7 +19,100 @@ import (
 type orderService struct {
 	orderRepository Repository
 	userRepository  user.Repository
-	userCache       *cache.DefaultKeyValueStore[entity.User]
+}
+
+func (o *orderService) MarketOrderMatchingInBatch(event []*grpc_order.MarketOrderMatching) (err error) {
+	return o.Conn().Transaction(func(tx *gorm.DB) error {
+		var userCache = cache.NewDefaultKeyValueStore[entity.User](len(event))
+		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
+
+		var userUUIDs []string
+		var symbolNames []string
+
+		var users []*entity.User
+		var _user *entity.User
+
+		var symbols []*entity.OrderSymbol
+		var _symbol *entity.OrderSymbol
+
+		var matchingHistories []*entity.OrderMatchingHistory
+
+		for _, v := range event {
+			// Memoize user uuid
+			if _user, err = userCache.Get(v.UserUUID); err != nil {
+				userUUIDs = append(userUUIDs, v.UserUUID)
+				//_ = userCache.Set(v.UserUUID, new(entity.User))
+			}
+
+			// Memoize symbol name
+			if _symbol, err = symbolCache.Get(v.Symbol.String()); err != nil {
+				symbolNames = append(symbolNames, v.Symbol.String())
+				//_ = symbolCache.Set(v.Symbol.String(), new(entity.OrderSymbol))
+			}
+		}
+
+		// SELECT * FROM user WHERE uuid IN (...)
+		users, err = o.userRepository.FindManyUserByUUID(tx, userUUIDs)
+		if err != nil {
+			return fmt.Errorf("failed to get user : %v", err)
+		}
+
+		// Memoize user
+		for _, v := range users {
+			_ = userCache.Set(v.UUID, v)
+		}
+
+		// SELECT * FROM order_symbol WHERE name IN (...)
+		symbols, err = o.orderRepository.FindManySymbolByName(tx, symbolNames)
+		if err != nil {
+			return fmt.Errorf("failed to get symbol : %v", err)
+		}
+
+		// Memoize symbol
+		for _, v := range symbols {
+			_ = symbolCache.Set(v.Name, v)
+		}
+
+		for _, v := range event {
+			_symbol, err = symbolCache.Get(v.GetSymbol().String())
+			if err == cache.ErrKeyNotFound {
+				continue
+			}
+
+			_user, err = userCache.Get(v.GetUserUUID())
+			if err == cache.ErrKeyNotFound {
+				continue
+			}
+
+			if _symbol.ID == 0 || _user.ID == 0 {
+				continue
+			}
+
+			// order_matching_history (user_id, order_symbol_id, order_uuid, filled_quantity, unit_price, fee, order_type)
+			matchingHistories = append(matchingHistories, &entity.OrderMatchingHistory{
+				UserID:         _user.ID,
+				OrderSymbolID:  _symbol.ID,
+				OrderUUID:      v.OrderUUID,
+				FilledQuantity: decimal.NewFromFloat(v.Quantity),
+				UnitPrice:      decimal.NewFromFloat(v.UnitPrice),
+				Fee:            decimal.NewFromFloat(v.Fee.Amount),
+				OrderType:      types.OrderType(v.OrderType.String()),
+			})
+		}
+
+		return o.orderRepository.BatchInsertOrderMatchingHistory(tx, matchingHistories)
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
+}
+
+func (o *orderService) FindSnapshotByOrderSymbolID(symbolID uint) (result *entity.SnapshotOrderBook, err error) {
+	if err = o.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = o.orderRepository.FindSnapshotByOrderSymbolID(tx, symbolID)
+		return err
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (o *orderService) InsertSnapshot(symbolID uint, bid, ask []*grpc_order.Order) (result *entity.SnapshotOrderBook, err error) {
@@ -96,8 +188,6 @@ func (o *orderService) FindRecentIntervalByDuration(duration types.Duration) (re
 
 func (o *orderService) OrderMatchingEventInBatch(event []*grpc_order.OrderMatching) (err error) {
 	return o.Conn().Transaction(func(tx *gorm.DB) error {
-		// symbol cache for memoization
-		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
 		// symbols
 		var symbols []*entity.OrderSymbol
 		// symbol
@@ -109,11 +199,13 @@ func (o *orderService) OrderMatchingEventInBatch(event []*grpc_order.OrderMatchi
 		// order matching events for batch insert operation
 		var orderMatchingEvents []*entity.OrderMatchingEvent
 
+		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
+
 		for _, v := range event {
 			if _, err = symbolCache.Get(v.Symbol.String()); err == cache.ErrKeyNotFound {
 				symbolNames = append(symbolNames, v.Symbol.String())
 				// absolute ignore error
-				_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+				//_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
 			}
 		}
 
@@ -155,10 +247,6 @@ func (o *orderService) OrderMatchingEventInBatch(event []*grpc_order.OrderMatchi
 func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFulfillment) (remain []*grpc_order.OrderFulfillment, err error) {
 	// case of failed to handle order fulfillment event
 	if err = o.orderRepository.Conn().Transaction(func(tx *gorm.DB) error {
-		var userCache = cache.NewDefaultKeyValueStore[entity.User](len(event))
-		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
-		var orderCache = cache.NewDefaultKeyValueStore[entity.OrderBook](len(event))
-
 		var orderBookDifferences []*entity.OrderBookDifference
 
 		var orderMatchingHistories []*entity.OrderMatchingHistory
@@ -175,21 +263,25 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 		var _order *entity.OrderBook
 		var orderUUIDs []string
 
+		var userCache = cache.NewDefaultKeyValueStore[entity.User](len(event))
+		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
+		var orderCache = cache.NewDefaultKeyValueStore[entity.OrderBook](len(event))
+
 		// Cache all data for select and batch insert
 		for _, v := range event {
 			if _, err = userCache.Get(v.UserUUID); err == cache.ErrKeyNotFound {
 				userUUIDs = append(userUUIDs, v.UserUUID)
-				_ = userCache.Set(v.UserUUID, &entity.User{UUID: v.UserUUID})
+				//_ = userCache.Set(v.UserUUID, &entity.User{UUID: v.UserUUID})
 			}
 
 			if _, err = symbolCache.Get(v.Symbol.String()); err == cache.ErrKeyNotFound {
 				symbolNames = append(symbolNames, v.Symbol.String())
-				_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+				//_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
 			}
 
 			if _, err = orderCache.Get(v.OrderUUID); err == cache.ErrKeyNotFound {
 				orderUUIDs = append(orderUUIDs, v.OrderUUID)
-				_ = orderCache.Set(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
+				//_ = orderCache.Set(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
 			}
 		}
 
@@ -199,7 +291,7 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 			return err
 		}
 
-		for _, _user := range users {
+		for _, _user = range users {
 			_ = userCache.Set(_user.UUID, _user)
 		}
 
@@ -209,7 +301,7 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 			return err
 		}
 
-		for _, _symbol := range symbols {
+		for _, _symbol = range symbols {
 			_ = symbolCache.Set(_symbol.Name, _symbol)
 		}
 
@@ -220,11 +312,11 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 		}
 
 		// update all orders
-		if err = o.orderRepository.BatchUpdateOrderBookStatus(tx, orderUUIDs, types.PartialFilled); err != nil {
+		if err = o.orderRepository.BatchUpdateOrderBookStatus(tx, orderUUIDs, types.Fulfilled); err != nil {
 			return err
 		}
 
-		for _, _order := range orders {
+		for _, _order = range orders {
 			_ = orderCache.Set(_order.OrderUUID, _order)
 		}
 
@@ -269,7 +361,7 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 		}
 
 		return o.orderRepository.BatchInsertOrderMatchingHistory(tx, orderMatchingHistories)
-	}, &sql.TxOptions{Isolation: sql.LevelRepeatableRead}); err != nil {
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return event, err
 	}
 
@@ -279,10 +371,6 @@ func (o *orderService) LimitOrderFulfillmentInBatch(event []*grpc_order.OrderFul
 func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPartialFill) (remain []*grpc_order.OrderPartialFill, err error) {
 	// case of failed to handle order partial fill event
 	if err = o.orderRepository.Conn().Transaction(func(tx *gorm.DB) error {
-		var userCache = cache.NewDefaultKeyValueStore[entity.User](len(event))
-		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
-		var orderCache = cache.NewDefaultKeyValueStore[entity.OrderBook](len(event))
-
 		var orderBookDifferences []*entity.OrderBookDifference
 
 		var orderMatchingHistories []*entity.OrderMatchingHistory
@@ -299,21 +387,25 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 		var _order *entity.OrderBook
 		var orderUUIDs []string
 
+		var userCache = cache.NewDefaultKeyValueStore[entity.User](len(event))
+		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
+		var orderCache = cache.NewDefaultKeyValueStore[entity.OrderBook](len(event))
+
 		// Cache all data for select and batch insert
 		for _, v := range event {
 			if _, err = userCache.Get(v.UserUUID); err == cache.ErrKeyNotFound {
 				userUUIDs = append(userUUIDs, v.UserUUID)
-				_ = userCache.Set(v.UserUUID, &entity.User{UUID: v.UserUUID})
+				//_ = userCache.Set(v.UserUUID, &entity.User{UUID: v.UserUUID})
 			}
 
 			if _, err = symbolCache.Get(v.Symbol.String()); err == cache.ErrKeyNotFound {
 				symbolNames = append(symbolNames, v.Symbol.String())
-				_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+				//_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
 			}
 
 			if _, err = orderCache.Get(v.OrderUUID); err == cache.ErrKeyNotFound {
 				orderUUIDs = append(orderUUIDs, v.OrderUUID)
-				_ = orderCache.Set(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
+				//_ = orderCache.Set(v.OrderUUID, &entity.OrderBook{OrderUUID: v.OrderUUID})
 			}
 		}
 
@@ -323,7 +415,7 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 			return err
 		}
 
-		for _, _user := range users {
+		for _, _user = range users {
 			_ = userCache.Set(_user.UUID, _user)
 		}
 
@@ -333,7 +425,7 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 			return err
 		}
 
-		for _, _symbol := range symbols {
+		for _, _symbol = range symbols {
 			_ = symbolCache.Set(_symbol.Name, _symbol)
 		}
 
@@ -349,7 +441,7 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 		//	return err
 		//}
 
-		for _, _order := range orders {
+		for _, _order = range orders {
 			_ = orderCache.Set(_order.OrderUUID, _order)
 		}
 
@@ -394,7 +486,7 @@ func (o *orderService) LimitOrderPartialFillInBatch(event []*grpc_order.OrderPar
 		}
 
 		return o.orderRepository.BatchInsertOrderMatchingHistory(tx, orderMatchingHistories)
-	}, &sql.TxOptions{Isolation: sql.LevelRepeatableRead}); err != nil {
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return event, err
 	}
 
@@ -419,12 +511,12 @@ func (o *orderService) LimitOrderInitializeInBatch(event []*grpc_order.OrderInit
 		for _, v := range event {
 			if _, err = userCache.Get(v.UserUUID); err == cache.ErrKeyNotFound {
 				userUUIDs = append(userUUIDs, v.UserUUID)
-				_ = userCache.Set(v.UserUUID, &entity.User{UUID: v.UserUUID})
+				//_ = userCache.Set(v.UserUUID, &entity.User{UUID: v.UserUUID})
 			}
 
 			if _, err = symbolCache.Get(v.Symbol.String()); err == cache.ErrKeyNotFound {
 				symbolNames = append(symbolNames, v.Symbol.String())
-				_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
+				//_ = symbolCache.Set(v.Symbol.String(), &entity.OrderSymbol{Name: v.Symbol.String()})
 			}
 		}
 
@@ -490,7 +582,6 @@ func (o *orderService) ChartDraw(event []*grpc_order.OrderMatching) (err error) 
 		var poleIDs []uint
 		var pole *entity.Chart
 
-		// cache symbol
 		var symbolCache = cache.NewDefaultKeyValueStore[entity.OrderSymbol](len(event))
 
 		// cache price for each symbol
@@ -612,11 +703,12 @@ func (o *orderService) LimitOrderCancellationInBatch(event []*grpc_order.OrderCa
 	if err = o.Conn().Transaction(func(tx *gorm.DB) error {
 		var orderUUIDs []string
 		var orders []*entity.OrderBook
-		var orderCache = cache.NewDefaultKeyValueStore[entity.OrderBook](len(event))
 
 		for _, v := range event {
 			orderUUIDs = append(orderUUIDs, v.OrderUUID)
 		}
+
+		var orderCache = cache.NewDefaultKeyValueStore[entity.OrderBook](len(event))
 
 		orders, err = o.orderRepository.FindManyOrderByUUID(tx, orderUUIDs)
 		if err != nil {
@@ -633,16 +725,20 @@ func (o *orderService) LimitOrderCancellationInBatch(event []*grpc_order.OrderCa
 			}
 		}
 
+		for _, uuid := range orderUUIDs {
+			orderCache.ConcurrentDelete(uuid)
+		}
+
 		return o.orderRepository.BatchUpdateOrderBookStatus(tx, orderUUIDs, types.Cancelled)
 
-	}, &sql.TxOptions{Isolation: sql.LevelRepeatableRead}); err != nil {
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
 		return event, err
 	}
 
 	return remain, err
 }
 
-func (o *orderService) HandleOrderInterval(name types.Duration, duration time.Duration) (err error) {
+func (o *orderService) InsertOrderInterval(name types.Duration, duration time.Duration) (err error) {
 	return o.Conn().Transaction(func(tx *gorm.DB) error {
 		var recentInterval *entity.OrderInterval
 		var recentPoles []*entity.Chart
@@ -702,5 +798,9 @@ func (o *orderService) CtxWithCancel(ctx context.Context) (context.Context, cont
 }
 
 func newOrderService(db *gorm.DB) *orderService {
-	return &orderService{orderRepository: newOrderRepository(db), userRepository: user.NewRepository(db), userCache: cache.NewDefaultKeyValueStore[entity.User](math.MaxInt)}
+
+	return &orderService{
+		orderRepository: newOrderRepository(db),
+		userRepository:  user.NewRepository(db),
+	}
 }

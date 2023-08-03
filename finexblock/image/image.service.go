@@ -14,7 +14,7 @@ type imageService struct {
 	basePath string
 }
 
-func (i *imageService) FindAllImages(tx *gorm.DB, limit, offset int) (result []*entity.Image, err error) {
+func (i *imageService) FindAllImages(limit, offset int) (result []*entity.Image, err error) {
 	if err = i.repo.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = i.repo.FindAllImages(tx, limit, offset)
 		return err

@@ -10,6 +10,14 @@ type service struct {
 	repository Repository
 }
 
+func (s *service) TxPipeline() redis.Pipeliner {
+	return s.repository.TxPipeline()
+}
+
+func (s *service) XAddPipeline(tx redis.Pipeliner, ctx context.Context, args *redis.XAddArgs) (err error) {
+	return s.repository.XAddPipeline(tx, ctx, args)
+}
+
 func (s *service) XInfoStream(stream string) (*redis.XInfoStream, error) {
 	return s.repository.XInfoStream(context.Background(), stream)
 }
@@ -54,7 +62,7 @@ func (s *service) Get(key string) (value string, err error) {
 	return s.repository.Get(context.Background(), key)
 }
 
-func (s *service) Set(key string, value interface{}, exp time.Duration) (err error) {
+func (s *service) Set(key string, value string, exp time.Duration) (err error) {
 	return s.repository.Set(context.Background(), key, value, exp)
 }
 

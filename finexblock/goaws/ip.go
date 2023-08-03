@@ -1,25 +1,36 @@
 package goaws
 
 import (
-	"io"
-	"net/http"
+	"fmt"
+	"net"
 )
 
 func OwnPrivateIP() (ip string, err error) {
-	var response *http.Response
-	var bytes []byte
-
-	response, err = http.Get("http://169.254.169.254/latest/meta-data/local-ipv4")
+	interfaces, err := net.Interfaces()
 	if err != nil {
-		return
-	}
-	defer func(Body io.ReadCloser) {
-		_ = Body.Close()
-	}(response.Body)
-	bytes, err = io.ReadAll(response.Body)
-	if err != nil {
-		return "", err
+		panic(err)
 	}
 
-	return string(bytes), nil
+	for _, i := range interfaces {
+		addresses, err := i.Addrs()
+		if err != nil {
+			panic(err)
+		}
+
+		for _, addr := range addresses {
+			var ip net.IP
+			switch v := addr.(type) {
+			case *net.IPNet:
+				ip = v.IP
+			case *net.IPAddr:
+				ip = v.IP
+			}
+
+			if ip != nil && ip.IsPrivate() {
+				return ip.String(), nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("no private ip found")
 }

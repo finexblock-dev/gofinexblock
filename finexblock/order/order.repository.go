@@ -23,7 +23,7 @@ func (o *orderRepository) FindManySymbolByName(tx *gorm.DB, names []string) (res
 func (o *orderRepository) BatchInsertOrderBook(tx *gorm.DB, orders []*entity.OrderBook) (err error) {
 	var _table *entity.OrderBook
 
-	if err = tx.Table(_table.TableName()).CreateInBatches(&orders, len(orders)).Error; err != nil {
+	if err = tx.Table(_table.TableName()).CreateInBatches(&orders, 100).Error; err != nil {
 		return err
 	}
 	return nil
@@ -32,7 +32,7 @@ func (o *orderRepository) BatchInsertOrderBook(tx *gorm.DB, orders []*entity.Ord
 func (o *orderRepository) BatchUpdateOrderBookStatus(tx *gorm.DB, orderUUIDs []string, status types.OrderStatus) (err error) {
 	var _table *entity.OrderBook
 
-	if err = tx.Table(_table.TableName()).Where("uuid IN ?", orderUUIDs).Update("status", status).Error; err != nil {
+	if err = tx.Table(_table.TableName()).Where("order_uuid IN ?", orderUUIDs).Update("status", status).Error; err != nil {
 		return err
 	}
 	return nil
@@ -41,7 +41,7 @@ func (o *orderRepository) BatchUpdateOrderBookStatus(tx *gorm.DB, orderUUIDs []s
 func (o *orderRepository) BatchInsertOrderBookDifference(tx *gorm.DB, differences []*entity.OrderBookDifference) (err error) {
 	var _table *entity.OrderBookDifference
 
-	if err = tx.Table(_table.TableName()).CreateInBatches(&differences, len(differences)).Error; err != nil {
+	if err = tx.Table(_table.TableName()).CreateInBatches(&differences, 100).Error; err != nil {
 		return err
 	}
 	return nil
@@ -73,7 +73,7 @@ func (o *orderRepository) InsertOrderInterval(tx *gorm.DB, interval *entity.Orde
 func (o *orderRepository) FindChartByInterval(tx *gorm.DB, intervalID uint) (result []*entity.Chart, err error) {
 	var _table *entity.Chart
 
-	if err = tx.Table(_table.TableName()).Where("interval_id = ?", intervalID).Find(&result).Error; err != nil {
+	if err = tx.Table(_table.TableName()).Where("order_interval_id = ?", intervalID).Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -94,7 +94,7 @@ func (o *orderRepository) FindChartByCond(tx *gorm.DB, intervalIDs []uint, symbo
 func (o *orderRepository) BatchInsertChart(tx *gorm.DB, charts []*entity.Chart) (err error) {
 	var _table *entity.Chart
 
-	if err = tx.Table(_table.TableName()).CreateInBatches(&charts, len(charts)).Error; err != nil {
+	if err = tx.Table(_table.TableName()).CreateInBatches(&charts, 100).Error; err != nil {
 		return err
 	}
 	return nil
@@ -103,7 +103,7 @@ func (o *orderRepository) BatchInsertChart(tx *gorm.DB, charts []*entity.Chart) 
 func (o *orderRepository) BatchInsertOrderMatchingHistory(tx *gorm.DB, histories []*entity.OrderMatchingHistory) (err error) {
 	var _table *entity.OrderMatchingHistory
 
-	if err = tx.Table(_table.TableName()).CreateInBatches(&histories, len(histories)).Error; err != nil {
+	if err = tx.Table(_table.TableName()).CreateInBatches(&histories, 100).Error; err != nil {
 		return err
 	}
 	return nil
@@ -112,7 +112,7 @@ func (o *orderRepository) BatchInsertOrderMatchingHistory(tx *gorm.DB, histories
 func (o *orderRepository) BatchInsertOrderMatchingEvent(tx *gorm.DB, events []*entity.OrderMatchingEvent) (err error) {
 	var _table *entity.OrderMatchingEvent
 
-	if err = tx.Table(_table.TableName()).CreateInBatches(&events, len(events)).Error; err != nil {
+	if err = tx.Table(_table.TableName()).CreateInBatches(&events, 100).Error; err != nil {
 		return err
 	}
 	return nil
@@ -124,6 +124,14 @@ func (o *orderRepository) InsertSnapshot(tx *gorm.DB, _snapshot *entity.Snapshot
 	}
 
 	return _snapshot, nil
+}
+
+func (o *orderRepository) FindSnapshotByOrderSymbolID(tx *gorm.DB, symbolID uint) (result *entity.SnapshotOrderBook, err error) {
+	if err = tx.Table(result.TableName()).Where("order_symbol_id = ?", symbolID).Order("created_at DESC").First(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (o *orderRepository) FindSymbolByName(tx *gorm.DB, name string) (result *entity.OrderSymbol, err error) {
@@ -145,7 +153,7 @@ func (o *orderRepository) FindSymbolByID(tx *gorm.DB, id uint) (result *entity.O
 func (o *orderRepository) FindManyOrderByUUID(tx *gorm.DB, uuids []string) (result []*entity.OrderBook, err error) {
 	var _table = &entity.OrderBook{}
 
-	if err = tx.Table(_table.TableName()).Where("uuid IN ?", uuids).Find(&result).Error; err != nil {
+	if err = tx.Table(_table.TableName()).Where("order_uuid IN ?", uuids).Find(&result).Error; err != nil {
 		return nil, err
 	}
 	return result, nil
