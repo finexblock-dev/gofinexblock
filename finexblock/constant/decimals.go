@@ -1,5 +1,7 @@
 package constant
 
+import "github.com/shopspring/decimal"
+
 const (
 	BtcDecimal   = 100_000_000
 	EthDecimal   = 1_000_000_000_000_000_000
@@ -17,4 +19,15 @@ const (
 	OpDecimal    = 1_000_000_000_000_000_000
 	AvaxDecimal  = 1_000_000_000_000_000_000
 	ArbDecimal   = 1_000_000_000_000_000_000
+)
+
+var (
+	BitcoinDecimal  = decimal.NewFromFloat(100_000_000)
+	EthereumDecimal = decimal.NewFromFloat(1_000_000_000_000_000_000)
+	PolygonDecimal  = decimal.NewFromFloat(1_000_000_000_000_000_000)
+)
+
+var (
+	PolygonMinimumGatheringAmount  = decimal.NewFromFloat(40000000000000000)
+	EthereumMinimumGatheringAmount = decimal.NewFromFloat(40000000000000000)
 )
