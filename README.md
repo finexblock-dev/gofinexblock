@@ -38,6 +38,27 @@ Dockerfile들은 전부 `build` 디렉토리에 위치합니다.
 > 현재 EC2에서 사용하던 buildspec, appspec은 `scripts` 디렉토리에 위치하고 있습니다.   
 > ECS에서 사용할 buildspec 및 기타 파일들이 있다면 `deployments` 디렉토리에 작업 부탁드립니다.
 
+## Deploy
+
+배포에 필요한 `buildspec`, `appspec`은 [deployments](deployments) 디렉토리에 위치합니다.
+
+## Branch
+
+- master: 운영서버 배포용 브랜치
+    - release->master 로 merge후 master 브랜치에서 각 application의 배포용 브랜치로 merge
+- release: 개발서버 배포용 브랜치
+- ${application_name}/release: 각 application의 개발서버 배포용 브랜치
+    - dev->release 로 merge후 release 브랜치에서 각 application의 배포용 브랜치로 merge
+- dev: 개발용 브랜치
+  - feat/fix/refac/... -> dev로 merge
+
+
+### `dev`, `release`, `master` 브랜치는 절대 빌드가 깨져서는 안됩니다.
+
+> 2021-08-03 현재 빌드 자동화 작업 중입니다.  
+> TODO: husky hook을 통해서 테스트와 빌드를 자동화할 예정입니다.
+
+
 ## Applications
 
 ### Backoffice
