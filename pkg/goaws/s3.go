@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
+	"github.com/finexblock-dev/gofinexblock/pkg/entity"
 	"mime/multipart"
 	"strings"
 	"time"
