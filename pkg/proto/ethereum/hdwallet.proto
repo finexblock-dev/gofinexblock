@@ -1,0 +1,11 @@
+syntax = "proto3";
+package ethereum;
+option go_package = "/ethereum";
+
+
+import "pkg/proto/ethereum/hdwallet.message.proto";
+
+service HDWallet {
+  rpc CreateWallet(CreateWalletInput) returns (CreateWalletOutput);
+  rpc GetBalance(GetBalanceInput) returns (GetBalanceOutput);
+}

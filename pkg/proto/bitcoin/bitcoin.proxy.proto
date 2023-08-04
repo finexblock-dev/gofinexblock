@@ -1,0 +1,13 @@
+syntax = "proto3";
+package bitcoin;
+option go_package = "/bitcoin";
+
+import "pkg/proto/bitcoin/hdwallet.message.proto";
+import "pkg/proto/bitcoin/transaction.message.proto";
+
+service BitcoinProxy {
+  rpc GetRawTransaction(GetRawTransactionInput) returns (GetRawTransactionOutput);
+  rpc ListUnspent(ListUnspentInput) returns (ListUnspentOutput);
+  rpc SendToAddress(SendToAddressInput) returns (SendToAddressOutput);
+  rpc GetNewAddress(GetNewAddressInput) returns (GetNewAddressOutput);
+}
