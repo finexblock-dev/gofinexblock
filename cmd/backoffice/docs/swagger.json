@@ -1,0 +1,3531 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Finexblock backoffice API Documentation",
+        "title": "Finexblock backoffice API Documentation",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/admin": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Find admin list.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.PartialAdmin"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete admin user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "adminId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/block": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Block entity.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "description": "BlockAdminInput",
+                        "name": "BlockAdminInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.BlockAdminInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/email": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update email.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "description": "UpdateEmailInput",
+                        "name": "UpdateEmailInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateEmailInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/grade": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Find admin list by grade.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "SUPERUSER, MAINTAINER, SUPPORT",
+                        "name": "grade",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.PartialAdmin"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update grade.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "description": "UpdateGradeInput",
+                        "name": "UpdateGradeInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateGradeInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/log/api/search": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Search api log for matching condition.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "adminId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "endTime",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "endpoint",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "GET, POST, PATCH, PUT, DELETE...",
+                        "name": "method",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "startTime",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.AdminApiLog"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/log/delete/search": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Search admin delete log for matching condition.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "endTime",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "executor",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "startTime",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "target",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.AdminDeleteLog"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/log/failed": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Find login failed log of entity.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "name": "adminId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.AdminLoginFailedLog"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/log/grade/search": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Search grade update log for matching condition.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "endTime",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "executor",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "startTime",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "target",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.AdminGradeUpdateLog"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/log/login": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Find login history of admin user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "name": "adminId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.AdminLoginHistory"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/log/password/search": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Search password update log for matching condition.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "endTime",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "executor",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "startTime",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "target",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.AdminPasswordLog"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/online": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Find online admin user for now.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Admin"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/password": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update password.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "description": "UpdatePasswordInput",
+                        "name": "UpdatePasswordInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdatePasswordInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/unblock": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Unblock entity.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "parameters": [
+                    {
+                        "description": "UnblockAdminInput",
+                        "name": "UnblockAdminInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UnblockAdminInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/announcement": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Find single announcement by id.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Announcement"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Announcement"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Insert announcement.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Announcement"
+                ],
+                "parameters": [
+                    {
+                        "description": "CreateAnnouncementInput",
+                        "name": "CreateAnnouncementInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateAnnouncementInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete announcement.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Announcement"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "name": "announcementId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update announcement.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Announcement"
+                ],
+                "parameters": [
+                    {
+                        "description": "UpdateAnnouncementInput",
+                        "name": "UpdateAnnouncementInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateAnnouncementInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/announcement/all": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Find all announcement.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Announcement"
+                ],
+                "parameters": [
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Announcement"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/announcement/category": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Find all categories.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Announcement"
+                ],
+                "parameters": [
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.AnnouncementCategory"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create announcement category.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Announcement"
+                ],
+                "parameters": [
+                    {
+                        "description": "CreateCategoryInput",
+                        "name": "CreateCategoryInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateCategoryInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete announcement category.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Announcement"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update announcement category.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Announcement"
+                ],
+                "parameters": [
+                    {
+                        "description": "UpdateCategoryInput",
+                        "name": "UpdateCategoryInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateCategoryInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/announcement/search": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Search announcement.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Announcement"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "categoryId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "pinned",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "visible",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "word",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Announcement"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/asset": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Find asset by user id.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asset"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "userId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/structs.Asset"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/balance/log": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Find user balance update log",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asset"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "userId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.CoinTransfer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "description": "Login API for backoffice admin user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "description": "LoginInput",
+                        "name": "LoginInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Register new admin user, only superuser can call this api",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "description": "RegisterInput",
+                        "name": "RegisterInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AdminRegisterInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/image": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "List all images.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Image"
+                ],
+                "parameters": [
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Image"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload image.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Image"
+                ],
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "file"
+                        },
+                        "description": "Upload file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Image"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/redis/del": {
+            "delete": {
+                "description": "Del command.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Redis"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "key",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/redis/get": {
+            "get": {
+                "description": "Get command.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Redis"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "key",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/redis/set": {
+            "post": {
+                "description": "Set command.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Redis"
+                ],
+                "parameters": [
+                    {
+                        "description": "SetInput",
+                        "name": "SetInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SetInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/redis/xinfostream": {
+            "get": {
+                "description": "XInfoStream command.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Redis"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "stream",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/redis/xrange": {
+            "get": {
+                "description": "XRange command.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Redis"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "end",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "stream",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Find user by user id.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "userId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.UserMetadata"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/block": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Force block user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "description": "BlockUserInput",
+                        "name": "BlockUserInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.BlockUserInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/memo": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Force block user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "description": "CreateMemoInput",
+                        "name": "CreateMemoInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateMemoInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/search": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Search user by given condition.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "description",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "fullname",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "gradeId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "isBlock",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "isDormant",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "isDropOutUser",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "isMetaverseUser",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "nickname",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "phoneNumber",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "userType",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "uuid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.UserMetadata"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/unblock": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Force block user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "description": "UnblockUserInput",
+                        "name": "UnblockUserInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UnblockUserInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/withdraw": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Find all withdrawal request using limit, offset.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Withdraw"
+                ],
+                "parameters": [
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "SUBMITTED",
+                        "example": "SUBMITTED, APPROVED, CANCELED, REJECTED, PENDING, COMPLETED, FAILED",
+                        "name": "status",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.WithdrawalRequest"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/withdraw/approve": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Approve withdrawal requests",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Withdraw"
+                ],
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/withdraw/reject": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Reject withdrawal requests",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Withdraw"
+                ],
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/withdraw/user": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Find withdrawal request by user id using limit, offset.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Withdraw"
+                ],
+                "parameters": [
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "userId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.WithdrawalRequest"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.AdminRegisterInput": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "default": "finexblock@gmail.com"
+                },
+                "password": {
+                    "type": "string",
+                    "default": "Metaverse123!"
+                }
+            }
+        },
+        "dto.BlockAdminInput": {
+            "type": "object",
+            "required": [
+                "adminId"
+            ],
+            "properties": {
+                "adminId": {
+                    "type": "integer",
+                    "default": 1
+                }
+            }
+        },
+        "dto.BlockUserInput": {
+            "type": "object",
+            "required": [
+                "userId"
+            ],
+            "properties": {
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.CreateAnnouncementInput": {
+            "type": "object",
+            "required": [
+                "categoryId",
+                "chinese",
+                "chineseTitle",
+                "english",
+                "englishTitle",
+                "korean",
+                "koreanTitle",
+                "pinned",
+                "visible"
+            ],
+            "properties": {
+                "categoryId": {
+                    "type": "integer",
+                    "default": 1
+                },
+                "chinese": {
+                    "type": "string",
+                    "default": "是公告事项测试"
+                },
+                "chineseTitle": {
+                    "type": "string",
+                    "default": "测验"
+                },
+                "english": {
+                    "type": "string",
+                    "default": "This is an announcement test."
+                },
+                "englishTitle": {
+                    "type": "string",
+                    "default": "test"
+                },
+                "korean": {
+                    "type": "string",
+                    "default": "공지사항 테스트입니다."
+                },
+                "koreanTitle": {
+                    "type": "string",
+                    "default": "테스트"
+                },
+                "pinned": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "visible": {
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+        "dto.CreateCategoryInput": {
+            "type": "object",
+            "required": [
+                "chineseType",
+                "englishType",
+                "koreanType"
+            ],
+            "properties": {
+                "chineseType": {
+                    "type": "string",
+                    "default": "南贤宇"
+                },
+                "englishType": {
+                    "type": "string",
+                    "default": "Hyunwoo Nam"
+                },
+                "koreanType": {
+                    "type": "string",
+                    "default": "남현우"
+                }
+            }
+        },
+        "dto.CreateMemoInput": {
+            "type": "object",
+            "required": [
+                "description",
+                "userId"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "default": "example memo"
+                },
+                "userId": {
+                    "type": "integer",
+                    "default": 79
+                }
+            }
+        },
+        "dto.LoginInput": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "default": "finexblock@gmail.com"
+                },
+                "password": {
+                    "type": "string",
+                    "default": "Metaverse123!"
+                }
+            }
+        },
+        "dto.LoginOutput": {
+            "type": "object",
+            "required": [
+                "accessToken"
+            ],
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SetInput": {
+            "type": "object",
+            "required": [
+                "key",
+                "value"
+            ],
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UnblockAdminInput": {
+            "type": "object",
+            "required": [
+                "adminId"
+            ],
+            "properties": {
+                "adminId": {
+                    "type": "integer",
+                    "default": 1
+                }
+            }
+        },
+        "dto.UnblockUserInput": {
+            "type": "object",
+            "required": [
+                "userId"
+            ],
+            "properties": {
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.UpdateAnnouncementInput": {
+            "type": "object",
+            "required": [
+                "ID",
+                "categoryId",
+                "chinese",
+                "chineseTitle",
+                "english",
+                "englishTitle",
+                "korean",
+                "koreanTitle",
+                "pinned",
+                "visible"
+            ],
+            "properties": {
+                "ID": {
+                    "type": "integer",
+                    "default": 1
+                },
+                "categoryId": {
+                    "type": "integer"
+                },
+                "chinese": {
+                    "type": "string",
+                    "default": "是公告事项测试"
+                },
+                "chineseTitle": {
+                    "type": "string",
+                    "default": "测验"
+                },
+                "english": {
+                    "type": "string",
+                    "default": "This is an announcement test."
+                },
+                "englishTitle": {
+                    "type": "string",
+                    "default": "test"
+                },
+                "korean": {
+                    "type": "string",
+                    "default": "공지사항 테스트입니다."
+                },
+                "koreanTitle": {
+                    "type": "string",
+                    "default": "테스트"
+                },
+                "pinned": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "visible": {
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+        "dto.UpdateCategoryInput": {
+            "type": "object",
+            "required": [
+                "chineseType",
+                "englishType",
+                "id",
+                "koreanType"
+            ],
+            "properties": {
+                "chineseType": {
+                    "type": "string",
+                    "default": "椅子"
+                },
+                "englishType": {
+                    "type": "string",
+                    "default": "chair"
+                },
+                "id": {
+                    "type": "integer",
+                    "default": 1
+                },
+                "koreanType": {
+                    "type": "string",
+                    "default": "의자"
+                }
+            }
+        },
+        "dto.UpdateEmailInput": {
+            "type": "object",
+            "required": [
+                "adminId",
+                "email"
+            ],
+            "properties": {
+                "adminId": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateGradeInput": {
+            "type": "object",
+            "required": [
+                "adminId",
+                "grade"
+            ],
+            "properties": {
+                "adminId": {
+                    "type": "integer",
+                    "default": 3
+                },
+                "grade": {
+                    "type": "string",
+                    "default": "M",
+                    "example": "M"
+                }
+            }
+        },
+        "dto.UpdatePasswordInput": {
+            "type": "object",
+            "required": [
+                "adminId",
+                "newPassword",
+                "prevPassword"
+            ],
+            "properties": {
+                "adminId": {
+                    "type": "integer"
+                },
+                "newPassword": {
+                    "type": "string"
+                },
+                "prevPassword": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.Admin": {
+            "type": "object",
+            "required": [
+                "adminAccessToken",
+                "adminApiLog",
+                "adminLoginFailedLog",
+                "adminLoginHistory",
+                "createdAt",
+                "deletedAt",
+                "email",
+                "executeDeleteLog",
+                "executeGradeUpdateLog",
+                "executePasswordLog",
+                "grade",
+                "id",
+                "initialLogin",
+                "isBlocked",
+                "password",
+                "pwdUpdatedAt",
+                "targetDeleteLog",
+                "targetGradeUpdateLog",
+                "targetPasswordLog",
+                "updatedAt"
+            ],
+            "properties": {
+                "adminAccessToken": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.AdminAccessToken"
+                    }
+                },
+                "adminApiLog": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.AdminApiLog"
+                    }
+                },
+                "adminLoginFailedLog": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.AdminLoginFailedLog"
+                    }
+                },
+                "adminLoginHistory": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.AdminLoginHistory"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "executeDeleteLog": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.AdminDeleteLog"
+                    }
+                },
+                "executeGradeUpdateLog": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.AdminGradeUpdateLog"
+                    }
+                },
+                "executePasswordLog": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.AdminPasswordLog"
+                    }
+                },
+                "grade": {
+                    "$ref": "#/definitions/entity.GradeType"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "initialLogin": {
+                    "type": "boolean"
+                },
+                "isBlocked": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "pwdUpdatedAt": {
+                    "type": "string"
+                },
+                "targetDeleteLog": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.AdminDeleteLog"
+                    }
+                },
+                "targetGradeUpdateLog": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.AdminGradeUpdateLog"
+                    }
+                },
+                "targetPasswordLog": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.AdminPasswordLog"
+                    }
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.AdminAccessToken": {
+            "type": "object",
+            "required": [
+                "adminId",
+                "createdAt",
+                "expiredAt",
+                "id",
+                "updatedAt"
+            ],
+            "properties": {
+                "adminId": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "expiredAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.AdminApiLog": {
+            "type": "object",
+            "required": [
+                "adminId",
+                "createdAt",
+                "endpoint",
+                "id",
+                "ip",
+                "method",
+                "updatedAt"
+            ],
+            "properties": {
+                "adminId": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "endpoint": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "method": {
+                    "$ref": "#/definitions/entity.ApiMethod"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.AdminDeleteLog": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "executorId",
+                "id",
+                "targetId",
+                "updatedAt"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "executorId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "targetId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.AdminGradeUpdateLog": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "currGrade",
+                "executorId",
+                "id",
+                "prevGrade",
+                "targetId",
+                "updatedAt"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "currGrade": {
+                    "$ref": "#/definitions/entity.GradeType"
+                },
+                "executorId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "prevGrade": {
+                    "$ref": "#/definitions/entity.GradeType"
+                },
+                "targetId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.AdminLoginFailedLog": {
+            "type": "object",
+            "required": [
+                "adminId",
+                "failedAt",
+                "id"
+            ],
+            "properties": {
+                "adminId": {
+                    "type": "integer"
+                },
+                "failedAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entity.AdminLoginHistory": {
+            "type": "object",
+            "required": [
+                "adminId",
+                "id",
+                "loggedAt"
+            ],
+            "properties": {
+                "adminId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "loggedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.AdminPasswordLog": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "executorId",
+                "id",
+                "targetId",
+                "updatedAt"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "executorId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "targetId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.Announcement": {
+            "type": "object",
+            "required": [
+                "category",
+                "categoryId",
+                "chinese",
+                "chineseTitle",
+                "createdAt",
+                "english",
+                "englishTitle",
+                "id",
+                "korean",
+                "koreanTitle",
+                "pinned",
+                "updatedAt",
+                "visible"
+            ],
+            "properties": {
+                "category": {
+                    "$ref": "#/definitions/entity.AnnouncementCategory"
+                },
+                "categoryId": {
+                    "type": "integer"
+                },
+                "chinese": {
+                    "type": "string"
+                },
+                "chineseTitle": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "english": {
+                    "type": "string"
+                },
+                "englishTitle": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "korean": {
+                    "type": "string"
+                },
+                "koreanTitle": {
+                    "type": "string"
+                },
+                "pinned": {
+                    "type": "boolean"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "visible": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "entity.AnnouncementCategory": {
+            "type": "object",
+            "required": [
+                "chineseType",
+                "englishType",
+                "id",
+                "koreanType"
+            ],
+            "properties": {
+                "chineseType": {
+                    "type": "string"
+                },
+                "englishType": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "koreanType": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.ApiMethod": {
+            "type": "string",
+            "enum": [
+                "GET",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE"
+            ],
+            "x-enum-varnames": [
+                "GetMethod",
+                "PostMethod",
+                "PutMethod",
+                "PatchMethod",
+                "DeleteMethod"
+            ]
+        },
+        "entity.CoinTransaction": {
+            "type": "object",
+            "required": [
+                "coinTransferId",
+                "createdAt",
+                "id",
+                "status",
+                "txHash",
+                "updatedAt"
+            ],
+            "properties": {
+                "coinTransferId": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "$ref": "#/definitions/entity.TransactionStatus"
+                },
+                "txHash": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.CoinTransfer": {
+            "type": "object",
+            "required": [
+                "amount",
+                "coinTransaction",
+                "createdAt",
+                "id",
+                "transferType",
+                "updatedAt",
+                "wallet",
+                "walletId",
+                "withdrawalRequest"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "coinTransaction": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.CoinTransaction"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "transferType": {
+                    "$ref": "#/definitions/entity.TransferType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "wallet": {
+                    "$ref": "#/definitions/entity.Wallet"
+                },
+                "walletId": {
+                    "type": "integer"
+                },
+                "withdrawalRequest": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.WithdrawalRequest"
+                    }
+                }
+            }
+        },
+        "entity.GradeType": {
+            "type": "string",
+            "enum": [
+                "M",
+                "U",
+                "S"
+            ],
+            "x-enum-varnames": [
+                "MAINTAINER",
+                "SUPERUSER",
+                "SUPPORT"
+            ]
+        },
+        "entity.Image": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "id",
+                "key",
+                "updatedAt",
+                "url"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.PartialAdmin": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "email",
+                "grade",
+                "id",
+                "initialLogin",
+                "isBlocked",
+                "pwdUpdatedAt",
+                "updatedAt"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "grade": {
+                    "$ref": "#/definitions/entity.GradeType"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "initialLogin": {
+                    "type": "boolean"
+                },
+                "isBlocked": {
+                    "type": "boolean"
+                },
+                "pwdUpdatedAt": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.TransactionStatus": {
+            "type": "string",
+            "enum": [
+                "INIT",
+                "DONE",
+                "REVERT"
+            ],
+            "x-enum-varnames": [
+                "INIT",
+                "DONE",
+                "REVERT"
+            ]
+        },
+        "entity.TransferType": {
+            "type": "string",
+            "enum": [
+                "DEPOSIT",
+                "WITHDRAWAL",
+                "TRADE"
+            ],
+            "x-enum-varnames": [
+                "Deposit",
+                "Withdrawal",
+                "Trade"
+            ]
+        },
+        "entity.UserMemo": {
+            "type": "object",
+            "required": [
+                "description",
+                "id",
+                "userId"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entity.UserMetadata": {
+            "type": "object",
+            "required": [
+                "btc",
+                "createdAt",
+                "fullname",
+                "id",
+                "isAppleUser",
+                "isBlock",
+                "isDormant",
+                "isEmailSignUpUser",
+                "isGoogleUser",
+                "isMetaverseUser",
+                "nickname",
+                "phoneNumber",
+                "updatedAt",
+                "userMemo",
+                "userType",
+                "uuid"
+            ],
+            "properties": {
+                "btc": {
+                    "type": "number"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "fullname": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isAppleUser": {
+                    "type": "boolean"
+                },
+                "isBlock": {
+                    "type": "boolean"
+                },
+                "isDormant": {
+                    "type": "boolean"
+                },
+                "isEmailSignUpUser": {
+                    "type": "boolean"
+                },
+                "isGoogleUser": {
+                    "type": "boolean"
+                },
+                "isMetaverseUser": {
+                    "type": "boolean"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "phoneNumber": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userMemo": {
+                    "$ref": "#/definitions/entity.UserMemo"
+                },
+                "userType": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.Wallet": {
+            "type": "object",
+            "required": [
+                "address",
+                "coinId",
+                "coinTransfer",
+                "createdAt",
+                "id",
+                "updatedAt",
+                "userId"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "coinId": {
+                    "type": "integer"
+                },
+                "coinTransfer": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.CoinTransfer"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entity.WithdrawalRequest": {
+            "type": "object",
+            "required": [
+                "amount",
+                "coinTransfer",
+                "coinTransferId",
+                "createdAt",
+                "fee",
+                "id",
+                "status",
+                "toAddress",
+                "updatedAt"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "coinTransfer": {
+                    "$ref": "#/definitions/entity.CoinTransfer"
+                },
+                "coinTransferId": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "fee": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "$ref": "#/definitions/entity.WithdrawalStatus"
+                },
+                "toAddress": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.WithdrawalStatus": {
+            "type": "string",
+            "enum": [
+                "SUBMITTED",
+                "APPROVED",
+                "CANCELED",
+                "REJECTED",
+                "PENDING",
+                "COMPLETED",
+                "FAILED"
+            ],
+            "x-enum-varnames": [
+                "SUBMITTED",
+                "APPROVED",
+                "CANCELED",
+                "REJECTED",
+                "PENDING",
+                "COMPLETED",
+                "FAILED"
+            ]
+        },
+        "presenter.ErrResponse": {
+            "type": "object",
+            "required": [
+                "message",
+                "status"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "presenter.MsgResponse": {
+            "type": "object",
+            "required": [
+                "code",
+                "message",
+                "status"
+            ],
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "structs.Asset": {
+            "type": "object",
+            "required": [
+                "balance",
+                "coinId"
+            ],
+            "properties": {
+                "balance": {
+                    "type": "number"
+                },
+                "coinId": {
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

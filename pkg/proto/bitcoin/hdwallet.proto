@@ -1,0 +1,11 @@
+syntax = "proto3";
+package bitcoin;
+option go_package = "/bitcoin";
+
+import "pkg/proto/bitcoin/hdwallet.message.proto";
+
+service HDWallet {
+  rpc GetNewAddress(GetNewAddressInput) returns (GetNewAddressOutput);
+  rpc ListUnspent(ListUnspentInput) returns (ListUnspentOutput);
+  rpc SendToAddress(SendToAddressInput) returns (SendToAddressOutput);
+}
