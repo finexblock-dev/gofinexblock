@@ -44,6 +44,10 @@ Dockerfile들은 전부 `build` 디렉토리에 위치합니다.
 
 ## Branch
 
+작업 있을 시 Github issue 제작 후 `Create branch` 이용해서 이슈 번호로 분기해주세요.
+
+### 반드시 dev 브랜치, 혹은 그 하위 브랜치에서 분기해주세요.
+
 - master: 운영서버 배포용 브랜치
     - release->master 로 merge후 master 브랜치에서 각 application의 배포용 브랜치로 merge
 - release: 개발서버 배포용 브랜치
