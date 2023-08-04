@@ -21,10 +21,6 @@ RUN go mod vendor
 
 RUN make ethereum-daemon
 
-FROM scratch as release
-
-COPY --from=build /build/init/ethereum_daemon /ethereum_daemon
-
-ENTRYPOINT ["ethereum_daemon"]
+ENTRYPOINT ["init/ethereum_daemon"]
 
 EXPOSE 50051

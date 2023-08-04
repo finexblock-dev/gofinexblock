@@ -21,10 +21,6 @@ RUN go mod vendor
 
 RUN make event-subscriber
 
-FROM scratch as release
-
-COPY --from=build /build/init/event_subscriber /event_subscriber
-
-ENTRYPOINT ["event_subscriber"]
+ENTRYPOINT ["init/event_subscriber"]
 
 EXPOSE 50051

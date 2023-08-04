@@ -21,15 +21,8 @@ RUN go mod vendor
 
 RUN make proxy
 
-RUN chmod +x /build/init/proxy && \
-    chmod +x /build/deployments/proxy/run.sh
+RUN chmod +x /build/init/proxy
 
-
-FROM scratch as release
-
-COPY --from=build /build/init/proxy .
-COPY --from=build /build/deployments/proxy/run.sh .
-
-ENTRYPOINT ["run.sh"]
+CMD ["init/proxy"]
 
 EXPOSE 50051

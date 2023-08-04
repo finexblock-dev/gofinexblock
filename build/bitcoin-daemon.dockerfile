@@ -21,10 +21,6 @@ RUN go mod vendor
 
 RUN make bitcoin-daemon
 
-FROM scratch as release
-
-COPY --from=build /build/init/bitcoin_daemon /bitcoin_daemon
-
-ENTRYPOINT ["bitcoin_daemon"]
+ENTRYPOINT ["init/bitcoin_daemon"]
 
 EXPOSE 50051
