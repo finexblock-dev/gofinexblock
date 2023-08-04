@@ -21,10 +21,8 @@ RUN go mod vendor
 
 RUN make proxy
 
-RUN chmod +x /build/init/proxy && \
-    chmod +x /build/deployments/proxy/run.sh
+RUN chmod +x /build/init/proxy
 
-
-CMD ["make", "run-proxy"]
+CMD ["init/proxy"]
 
 EXPOSE 50051

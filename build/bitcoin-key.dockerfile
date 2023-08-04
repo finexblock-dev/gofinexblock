@@ -21,10 +21,6 @@ RUN go mod vendor
 
 RUN make bitcoin-key
 
-FROM scratch as release
-
-COPY --from=build /build/init/bitcoin_key /bitcoin_key
-
-ENTRYPOINT ["bitcoin_key"]
+ENTRYPOINT ["init/bitcoin_key"]
 
 EXPOSE 50051
