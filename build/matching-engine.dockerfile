@@ -21,10 +21,6 @@ RUN go mod vendor
 
 RUN make matching-engine
 
-FROM scratch as release
-
-COPY --from=build /build/init/matching_engine /matching_engine
-
-ENTRYPOINT ["matching_engine"]
+ENTRYPOINT ["init/matching_engine"]
 
 EXPOSE 50051

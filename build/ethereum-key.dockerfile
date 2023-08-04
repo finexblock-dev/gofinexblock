@@ -21,10 +21,6 @@ RUN go mod vendor
 
 RUN make ethereum-key
 
-FROM scratch as release
-
-COPY --from=build /build/init/ethereum_key /ethereum_key
-
-ENTRYPOINT ["ethereum_key"]
+ENTRYPOINT ["init/ethereum_key"]
 
 EXPOSE 50051

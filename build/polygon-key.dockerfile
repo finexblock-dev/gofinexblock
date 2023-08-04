@@ -21,10 +21,8 @@ RUN go mod vendor
 
 RUN make polygon-key
 
-FROM scratch as release
+RUN chmod +x /build/init/polygon_key
 
-COPY --from=build /build/init/polygon_key /polygon_key
-
-ENTRYPOINT ["polygon_key"]
+ENTRYPOINT ["init/polygon_key"]
 
 EXPOSE 50051

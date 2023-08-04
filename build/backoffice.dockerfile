@@ -22,10 +22,6 @@ RUN go mod vendor
 
 RUN make backoffice
 
-FROM scratch as release
-
-COPY --from=build /build/init/backoffice /backoffice
-
-ENTRYPOINT ["backoffice"]
+ENTRYPOINT ["init/backoffice"]
 
 EXPOSE 80 443 50051

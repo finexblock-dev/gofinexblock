@@ -21,10 +21,6 @@ RUN go mod vendor
 
 RUN make polygon-daemon
 
-FROM scratch as release
-
-COPY --from=build /build/init/polygon_daemon /polygon_daemon
-
-ENTRYPOINT ["polygon_daemon"]
+ENTRYPOINT ["init/polygon_daemon"]
 
 EXPOSE 50051
