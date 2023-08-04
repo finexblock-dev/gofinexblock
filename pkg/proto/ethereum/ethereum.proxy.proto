@@ -1,0 +1,16 @@
+syntax = "proto3";
+package ethereum;
+option go_package = "/ethereum";
+
+import "pkg/proto/ethereum/hdwallet.message.proto";
+import "pkg/proto/ethereum/transaction.message.proto";
+
+service EthereumProxy {
+  rpc CreateWallet(ethereum.CreateWalletInput) returns (ethereum.CreateWalletOutput);
+  rpc GetReceipt(ethereum.GetReceiptInput) returns (ethereum.GetReceiptOutput);
+  rpc GetBalance(ethereum.GetBalanceInput) returns (ethereum.GetBalanceOutput);
+  rpc SendRawTransaction(ethereum.SendRawTransactionInput) returns (ethereum.SendRawTransactionOutput);
+  rpc CreateRawTransaction(ethereum.CreateRawTransactionInput) returns (ethereum.CreateRawTransactionOutput);
+  rpc GetBlockNumber(ethereum.GetBlockNumberInput) returns (ethereum.GetBlockNumberOutput);
+  rpc GetBlocks(ethereum.GetBlocksInput) returns (ethereum.GetBlocksOutput);
+}

@@ -1,0 +1,23 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ec2-user/go/src
+    description: /home/ec2-user/go/src
+file_exists_behavior: OVERWRITE
+permissions:
+  - object: /
+    pattern: "**"
+    owner: ec2-user
+    group: ec2-user 
+    
+hooks:
+  BeforeInstall:
+    - location: scripts/bitcoin_daemon/prod/before_install.sh
+      runas: ec2-user
+  AfterInstall:
+    - location: scripts/bitcoin_daemon/prod/after_install.sh
+      runas: ec2-user
+      environment:
+        variables:
+          GOROOT: $PATH:/usr/local/go/bin:$GOROOT

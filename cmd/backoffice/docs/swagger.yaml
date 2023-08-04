@@ -1,0 +1,2352 @@
+definitions:
+  dto.AdminRegisterInput:
+    properties:
+      email:
+        default: finexblock@gmail.com
+        type: string
+      password:
+        default: Metaverse123!
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.BlockAdminInput:
+    properties:
+      adminId:
+        default: 1
+        type: integer
+    required:
+    - adminId
+    type: object
+  dto.BlockUserInput:
+    properties:
+      userId:
+        type: integer
+    required:
+    - userId
+    type: object
+  dto.CreateAnnouncementInput:
+    properties:
+      categoryId:
+        default: 1
+        type: integer
+      chinese:
+        default: 是公告事项测试
+        type: string
+      chineseTitle:
+        default: 测验
+        type: string
+      english:
+        default: This is an announcement test.
+        type: string
+      englishTitle:
+        default: test
+        type: string
+      korean:
+        default: 공지사항 테스트입니다.
+        type: string
+      koreanTitle:
+        default: 테스트
+        type: string
+      pinned:
+        default: true
+        type: boolean
+      visible:
+        default: true
+        type: boolean
+    required:
+    - categoryId
+    - chinese
+    - chineseTitle
+    - english
+    - englishTitle
+    - korean
+    - koreanTitle
+    - pinned
+    - visible
+    type: object
+  dto.CreateCategoryInput:
+    properties:
+      chineseType:
+        default: 南贤宇
+        type: string
+      englishType:
+        default: Hyunwoo Nam
+        type: string
+      koreanType:
+        default: 남현우
+        type: string
+    required:
+    - chineseType
+    - englishType
+    - koreanType
+    type: object
+  dto.CreateMemoInput:
+    properties:
+      description:
+        default: example memo
+        type: string
+      userId:
+        default: 79
+        type: integer
+    required:
+    - description
+    - userId
+    type: object
+  dto.LoginInput:
+    properties:
+      email:
+        default: finexblock@gmail.com
+        type: string
+      password:
+        default: Metaverse123!
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.LoginOutput:
+    properties:
+      accessToken:
+        type: string
+    required:
+    - accessToken
+    type: object
+  dto.SetInput:
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+    required:
+    - key
+    - value
+    type: object
+  dto.UnblockAdminInput:
+    properties:
+      adminId:
+        default: 1
+        type: integer
+    required:
+    - adminId
+    type: object
+  dto.UnblockUserInput:
+    properties:
+      userId:
+        type: integer
+    required:
+    - userId
+    type: object
+  dto.UpdateAnnouncementInput:
+    properties:
+      ID:
+        default: 1
+        type: integer
+      categoryId:
+        type: integer
+      chinese:
+        default: 是公告事项测试
+        type: string
+      chineseTitle:
+        default: 测验
+        type: string
+      english:
+        default: This is an announcement test.
+        type: string
+      englishTitle:
+        default: test
+        type: string
+      korean:
+        default: 공지사항 테스트입니다.
+        type: string
+      koreanTitle:
+        default: 테스트
+        type: string
+      pinned:
+        default: true
+        type: boolean
+      visible:
+        default: true
+        type: boolean
+    required:
+    - ID
+    - categoryId
+    - chinese
+    - chineseTitle
+    - english
+    - englishTitle
+    - korean
+    - koreanTitle
+    - pinned
+    - visible
+    type: object
+  dto.UpdateCategoryInput:
+    properties:
+      chineseType:
+        default: 椅子
+        type: string
+      englishType:
+        default: chair
+        type: string
+      id:
+        default: 1
+        type: integer
+      koreanType:
+        default: 의자
+        type: string
+    required:
+    - chineseType
+    - englishType
+    - id
+    - koreanType
+    type: object
+  dto.UpdateEmailInput:
+    properties:
+      adminId:
+        type: integer
+      email:
+        type: string
+    required:
+    - adminId
+    - email
+    type: object
+  dto.UpdateGradeInput:
+    properties:
+      adminId:
+        default: 3
+        type: integer
+      grade:
+        default: M
+        example: M
+        type: string
+    required:
+    - adminId
+    - grade
+    type: object
+  dto.UpdatePasswordInput:
+    properties:
+      adminId:
+        type: integer
+      newPassword:
+        type: string
+      prevPassword:
+        type: string
+    required:
+    - adminId
+    - newPassword
+    - prevPassword
+    type: object
+  entity.Admin:
+    properties:
+      adminAccessToken:
+        items:
+          $ref: '#/definitions/entity.AdminAccessToken'
+        type: array
+      adminApiLog:
+        items:
+          $ref: '#/definitions/entity.AdminApiLog'
+        type: array
+      adminLoginFailedLog:
+        items:
+          $ref: '#/definitions/entity.AdminLoginFailedLog'
+        type: array
+      adminLoginHistory:
+        items:
+          $ref: '#/definitions/entity.AdminLoginHistory'
+        type: array
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      email:
+        type: string
+      executeDeleteLog:
+        items:
+          $ref: '#/definitions/entity.AdminDeleteLog'
+        type: array
+      executeGradeUpdateLog:
+        items:
+          $ref: '#/definitions/entity.AdminGradeUpdateLog'
+        type: array
+      executePasswordLog:
+        items:
+          $ref: '#/definitions/entity.AdminPasswordLog'
+        type: array
+      grade:
+        $ref: '#/definitions/entity.GradeType'
+      id:
+        type: integer
+      initialLogin:
+        type: boolean
+      isBlocked:
+        type: boolean
+      password:
+        type: string
+      pwdUpdatedAt:
+        type: string
+      targetDeleteLog:
+        items:
+          $ref: '#/definitions/entity.AdminDeleteLog'
+        type: array
+      targetGradeUpdateLog:
+        items:
+          $ref: '#/definitions/entity.AdminGradeUpdateLog'
+        type: array
+      targetPasswordLog:
+        items:
+          $ref: '#/definitions/entity.AdminPasswordLog'
+        type: array
+      updatedAt:
+        type: string
+    required:
+    - adminAccessToken
+    - adminApiLog
+    - adminLoginFailedLog
+    - adminLoginHistory
+    - createdAt
+    - deletedAt
+    - email
+    - executeDeleteLog
+    - executeGradeUpdateLog
+    - executePasswordLog
+    - grade
+    - id
+    - initialLogin
+    - isBlocked
+    - password
+    - pwdUpdatedAt
+    - targetDeleteLog
+    - targetGradeUpdateLog
+    - targetPasswordLog
+    - updatedAt
+    type: object
+  entity.AdminAccessToken:
+    properties:
+      adminId:
+        type: integer
+      createdAt:
+        type: string
+      expiredAt:
+        type: string
+      id:
+        type: integer
+      updatedAt:
+        type: string
+    required:
+    - adminId
+    - createdAt
+    - expiredAt
+    - id
+    - updatedAt
+    type: object
+  entity.AdminApiLog:
+    properties:
+      adminId:
+        type: integer
+      createdAt:
+        type: string
+      endpoint:
+        type: string
+      id:
+        type: integer
+      ip:
+        type: string
+      method:
+        $ref: '#/definitions/entity.ApiMethod'
+      updatedAt:
+        type: string
+    required:
+    - adminId
+    - createdAt
+    - endpoint
+    - id
+    - ip
+    - method
+    - updatedAt
+    type: object
+  entity.AdminDeleteLog:
+    properties:
+      createdAt:
+        type: string
+      executorId:
+        type: integer
+      id:
+        type: integer
+      targetId:
+        type: integer
+      updatedAt:
+        type: string
+    required:
+    - createdAt
+    - executorId
+    - id
+    - targetId
+    - updatedAt
+    type: object
+  entity.AdminGradeUpdateLog:
+    properties:
+      createdAt:
+        type: string
+      currGrade:
+        $ref: '#/definitions/entity.GradeType'
+      executorId:
+        type: integer
+      id:
+        type: integer
+      prevGrade:
+        $ref: '#/definitions/entity.GradeType'
+      targetId:
+        type: integer
+      updatedAt:
+        type: string
+    required:
+    - createdAt
+    - currGrade
+    - executorId
+    - id
+    - prevGrade
+    - targetId
+    - updatedAt
+    type: object
+  entity.AdminLoginFailedLog:
+    properties:
+      adminId:
+        type: integer
+      failedAt:
+        type: string
+      id:
+        type: integer
+    required:
+    - adminId
+    - failedAt
+    - id
+    type: object
+  entity.AdminLoginHistory:
+    properties:
+      adminId:
+        type: integer
+      id:
+        type: integer
+      loggedAt:
+        type: string
+    required:
+    - adminId
+    - id
+    - loggedAt
+    type: object
+  entity.AdminPasswordLog:
+    properties:
+      createdAt:
+        type: string
+      executorId:
+        type: integer
+      id:
+        type: integer
+      targetId:
+        type: integer
+      updatedAt:
+        type: string
+    required:
+    - createdAt
+    - executorId
+    - id
+    - targetId
+    - updatedAt
+    type: object
+  entity.Announcement:
+    properties:
+      category:
+        $ref: '#/definitions/entity.AnnouncementCategory'
+      categoryId:
+        type: integer
+      chinese:
+        type: string
+      chineseTitle:
+        type: string
+      createdAt:
+        type: string
+      english:
+        type: string
+      englishTitle:
+        type: string
+      id:
+        type: integer
+      korean:
+        type: string
+      koreanTitle:
+        type: string
+      pinned:
+        type: boolean
+      updatedAt:
+        type: string
+      visible:
+        type: boolean
+    required:
+    - category
+    - categoryId
+    - chinese
+    - chineseTitle
+    - createdAt
+    - english
+    - englishTitle
+    - id
+    - korean
+    - koreanTitle
+    - pinned
+    - updatedAt
+    - visible
+    type: object
+  entity.AnnouncementCategory:
+    properties:
+      chineseType:
+        type: string
+      englishType:
+        type: string
+      id:
+        type: integer
+      koreanType:
+        type: string
+    required:
+    - chineseType
+    - englishType
+    - id
+    - koreanType
+    type: object
+  entity.ApiMethod:
+    enum:
+    - GET
+    - POST
+    - PUT
+    - PATCH
+    - DELETE
+    type: string
+    x-enum-varnames:
+    - GetMethod
+    - PostMethod
+    - PutMethod
+    - PatchMethod
+    - DeleteMethod
+  entity.CoinTransaction:
+    properties:
+      coinTransferId:
+        type: integer
+      createdAt:
+        type: string
+      id:
+        type: integer
+      status:
+        $ref: '#/definitions/entity.TransactionStatus'
+      txHash:
+        type: string
+      updatedAt:
+        type: string
+    required:
+    - coinTransferId
+    - createdAt
+    - id
+    - status
+    - txHash
+    - updatedAt
+    type: object
+  entity.CoinTransfer:
+    properties:
+      amount:
+        type: number
+      coinTransaction:
+        items:
+          $ref: '#/definitions/entity.CoinTransaction'
+        type: array
+      createdAt:
+        type: string
+      id:
+        type: integer
+      transferType:
+        $ref: '#/definitions/entity.TransferType'
+      updatedAt:
+        type: string
+      wallet:
+        $ref: '#/definitions/entity.Wallet'
+      walletId:
+        type: integer
+      withdrawalRequest:
+        items:
+          $ref: '#/definitions/entity.WithdrawalRequest'
+        type: array
+    required:
+    - amount
+    - coinTransaction
+    - createdAt
+    - id
+    - transferType
+    - updatedAt
+    - wallet
+    - walletId
+    - withdrawalRequest
+    type: object
+  entity.GradeType:
+    enum:
+    - M
+    - U
+    - S
+    type: string
+    x-enum-varnames:
+    - MAINTAINER
+    - SUPERUSER
+    - SUPPORT
+  entity.Image:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      key:
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+    required:
+    - createdAt
+    - id
+    - key
+    - updatedAt
+    - url
+    type: object
+  entity.PartialAdmin:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      grade:
+        $ref: '#/definitions/entity.GradeType'
+      id:
+        type: integer
+      initialLogin:
+        type: boolean
+      isBlocked:
+        type: boolean
+      pwdUpdatedAt:
+        type: string
+      updatedAt:
+        type: string
+    required:
+    - createdAt
+    - email
+    - grade
+    - id
+    - initialLogin
+    - isBlocked
+    - pwdUpdatedAt
+    - updatedAt
+    type: object
+  entity.TransactionStatus:
+    enum:
+    - INIT
+    - DONE
+    - REVERT
+    type: string
+    x-enum-varnames:
+    - INIT
+    - DONE
+    - REVERT
+  entity.TransferType:
+    enum:
+    - DEPOSIT
+    - WITHDRAWAL
+    - TRADE
+    type: string
+    x-enum-varnames:
+    - Deposit
+    - Withdrawal
+    - Trade
+  entity.UserMemo:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      userId:
+        type: integer
+    required:
+    - description
+    - id
+    - userId
+    type: object
+  entity.UserMetadata:
+    properties:
+      btc:
+        type: number
+      createdAt:
+        type: string
+      fullname:
+        type: string
+      id:
+        type: integer
+      isAppleUser:
+        type: boolean
+      isBlock:
+        type: boolean
+      isDormant:
+        type: boolean
+      isEmailSignUpUser:
+        type: boolean
+      isGoogleUser:
+        type: boolean
+      isMetaverseUser:
+        type: boolean
+      nickname:
+        type: string
+      phoneNumber:
+        type: string
+      updatedAt:
+        type: string
+      userMemo:
+        $ref: '#/definitions/entity.UserMemo'
+      userType:
+        type: string
+      uuid:
+        type: string
+    required:
+    - btc
+    - createdAt
+    - fullname
+    - id
+    - isAppleUser
+    - isBlock
+    - isDormant
+    - isEmailSignUpUser
+    - isGoogleUser
+    - isMetaverseUser
+    - nickname
+    - phoneNumber
+    - updatedAt
+    - userMemo
+    - userType
+    - uuid
+    type: object
+  entity.Wallet:
+    properties:
+      address:
+        type: string
+      coinId:
+        type: integer
+      coinTransfer:
+        items:
+          $ref: '#/definitions/entity.CoinTransfer'
+        type: array
+      createdAt:
+        type: string
+      id:
+        type: integer
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+    required:
+    - address
+    - coinId
+    - coinTransfer
+    - createdAt
+    - id
+    - updatedAt
+    - userId
+    type: object
+  entity.WithdrawalRequest:
+    properties:
+      amount:
+        type: number
+      coinTransfer:
+        $ref: '#/definitions/entity.CoinTransfer'
+      coinTransferId:
+        type: integer
+      createdAt:
+        type: string
+      fee:
+        type: number
+      id:
+        type: integer
+      status:
+        $ref: '#/definitions/entity.WithdrawalStatus'
+      toAddress:
+        type: string
+      updatedAt:
+        type: string
+    required:
+    - amount
+    - coinTransfer
+    - coinTransferId
+    - createdAt
+    - fee
+    - id
+    - status
+    - toAddress
+    - updatedAt
+    type: object
+  entity.WithdrawalStatus:
+    enum:
+    - SUBMITTED
+    - APPROVED
+    - CANCELED
+    - REJECTED
+    - PENDING
+    - COMPLETED
+    - FAILED
+    type: string
+    x-enum-varnames:
+    - SUBMITTED
+    - APPROVED
+    - CANCELED
+    - REJECTED
+    - PENDING
+    - COMPLETED
+    - FAILED
+  presenter.ErrResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: boolean
+    required:
+    - message
+    - status
+    type: object
+  presenter.MsgResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      status:
+        type: boolean
+    required:
+    - code
+    - message
+    - status
+    type: object
+  structs.Asset:
+    properties:
+      balance:
+        type: number
+      coinId:
+        type: integer
+    required:
+    - balance
+    - coinId
+    type: object
+info:
+  contact: {}
+  description: Finexblock backoffice API Documentation
+  title: Finexblock backoffice API Documentation
+  version: "1.0"
+paths:
+  /admin:
+    delete:
+      consumes:
+      - application/json
+      description: Delete admin user.
+      parameters:
+      - in: query
+        name: adminId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+    get:
+      consumes:
+      - application/json
+      description: Find admin list.
+      parameters:
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.PartialAdmin'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+  /admin/block:
+    patch:
+      consumes:
+      - application/json
+      description: Block entity.
+      parameters:
+      - description: BlockAdminInput
+        in: body
+        name: BlockAdminInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BlockAdminInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+  /admin/email:
+    patch:
+      consumes:
+      - application/json
+      description: Update email.
+      parameters:
+      - description: UpdateEmailInput
+        in: body
+        name: UpdateEmailInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateEmailInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+  /admin/grade:
+    get:
+      consumes:
+      - application/json
+      description: Find admin list by grade.
+      parameters:
+      - example: SUPERUSER, MAINTAINER, SUPPORT
+        in: query
+        name: grade
+        required: true
+        type: string
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.PartialAdmin'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+    patch:
+      consumes:
+      - application/json
+      description: Update grade.
+      parameters:
+      - description: UpdateGradeInput
+        in: body
+        name: UpdateGradeInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateGradeInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+  /admin/log/api/search:
+    get:
+      consumes:
+      - application/json
+      description: Search api log for matching condition.
+      parameters:
+      - in: query
+        name: adminId
+        required: true
+        type: integer
+      - in: query
+        name: endTime
+        required: true
+        type: string
+      - in: query
+        name: endpoint
+        required: true
+        type: string
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - example: GET, POST, PATCH, PUT, DELETE...
+        in: query
+        name: method
+        required: true
+        type: string
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      - in: query
+        name: startTime
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.AdminApiLog'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+  /admin/log/delete/search:
+    get:
+      consumes:
+      - application/json
+      description: Search admin delete log for matching condition.
+      parameters:
+      - in: query
+        name: endTime
+        required: true
+        type: string
+      - in: query
+        name: executor
+        required: true
+        type: integer
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      - in: query
+        name: startTime
+        required: true
+        type: string
+      - in: query
+        name: target
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.AdminDeleteLog'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+  /admin/log/failed:
+    get:
+      consumes:
+      - application/json
+      description: Find login failed log of entity.
+      parameters:
+      - default: 1
+        in: query
+        name: adminId
+        required: true
+        type: integer
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.AdminLoginFailedLog'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+  /admin/log/grade/search:
+    get:
+      consumes:
+      - application/json
+      description: Search grade update log for matching condition.
+      parameters:
+      - in: query
+        name: endTime
+        required: true
+        type: string
+      - in: query
+        name: executor
+        required: true
+        type: integer
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      - in: query
+        name: startTime
+        required: true
+        type: string
+      - in: query
+        name: target
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.AdminGradeUpdateLog'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+  /admin/log/login:
+    get:
+      consumes:
+      - application/json
+      description: Find login history of admin user
+      parameters:
+      - default: 1
+        in: query
+        name: adminId
+        required: true
+        type: integer
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.AdminLoginHistory'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+  /admin/log/password/search:
+    get:
+      consumes:
+      - application/json
+      description: Search password update log for matching condition.
+      parameters:
+      - in: query
+        name: endTime
+        required: true
+        type: string
+      - in: query
+        name: executor
+        required: true
+        type: integer
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      - in: query
+        name: startTime
+        required: true
+        type: string
+      - in: query
+        name: target
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.AdminPasswordLog'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+  /admin/online:
+    get:
+      consumes:
+      - application/json
+      description: Find online admin user for now.
+      parameters:
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.Admin'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+  /admin/password:
+    patch:
+      consumes:
+      - application/json
+      description: Update password.
+      parameters:
+      - description: UpdatePasswordInput
+        in: body
+        name: UpdatePasswordInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdatePasswordInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+  /admin/unblock:
+    patch:
+      consumes:
+      - application/json
+      description: Unblock entity.
+      parameters:
+      - description: UnblockAdminInput
+        in: body
+        name: UnblockAdminInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UnblockAdminInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Admin
+  /announcement:
+    delete:
+      consumes:
+      - application/json
+      description: Delete announcement.
+      parameters:
+      - default: 1
+        in: query
+        name: announcementId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Announcement
+    get:
+      consumes:
+      - application/json
+      description: Find single announcement by id.
+      parameters:
+      - in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/entity.Announcement'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Announcement
+    patch:
+      consumes:
+      - application/json
+      description: Update announcement.
+      parameters:
+      - description: UpdateAnnouncementInput
+        in: body
+        name: UpdateAnnouncementInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAnnouncementInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Announcement
+    post:
+      consumes:
+      - application/json
+      description: Insert announcement.
+      parameters:
+      - description: CreateAnnouncementInput
+        in: body
+        name: CreateAnnouncementInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateAnnouncementInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Announcement
+  /announcement/all:
+    get:
+      consumes:
+      - application/json
+      description: Find all announcement.
+      parameters:
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.Announcement'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Announcement
+  /announcement/category:
+    delete:
+      consumes:
+      - application/json
+      description: Delete announcement category.
+      parameters:
+      - default: 1
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Announcement
+    get:
+      consumes:
+      - application/json
+      description: Find all categories.
+      parameters:
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.AnnouncementCategory'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Announcement
+    patch:
+      consumes:
+      - application/json
+      description: Update announcement category.
+      parameters:
+      - description: UpdateCategoryInput
+        in: body
+        name: UpdateCategoryInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCategoryInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Announcement
+    post:
+      consumes:
+      - application/json
+      description: Create announcement category.
+      parameters:
+      - description: CreateCategoryInput
+        in: body
+        name: CreateCategoryInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCategoryInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Announcement
+  /announcement/search:
+    get:
+      consumes:
+      - application/json
+      description: Search announcement.
+      parameters:
+      - in: query
+        name: categoryId
+        required: true
+        type: integer
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      - in: query
+        name: pinned
+        required: true
+        type: boolean
+      - in: query
+        name: title
+        required: true
+        type: string
+      - in: query
+        name: visible
+        required: true
+        type: boolean
+      - in: query
+        name: word
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.Announcement'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Announcement
+  /asset:
+    get:
+      consumes:
+      - application/json
+      description: Find asset by user id.
+      parameters:
+      - in: query
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/structs.Asset'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Asset
+  /asset/balance/log:
+    get:
+      consumes:
+      - application/json
+      description: Find user balance update log
+      parameters:
+      - in: query
+        name: limit
+        required: true
+        type: integer
+      - in: query
+        name: offset
+        required: true
+        type: integer
+      - in: query
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.CoinTransfer'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Asset
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login API for backoffice admin user
+      parameters:
+      - description: LoginInput
+        in: body
+        name: LoginInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/dto.LoginOutput'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register new admin user, only superuser can call this api
+      parameters:
+      - description: RegisterInput
+        in: body
+        name: RegisterInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminRegisterInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      tags:
+      - Auth
+  /image:
+    get:
+      consumes:
+      - application/json
+      description: List all images.
+      parameters:
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.Image'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Image
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload image.
+      parameters:
+      - description: Upload file
+        in: formData
+        items:
+          type: file
+        name: file
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.Image'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Image
+  /redis/del:
+    delete:
+      consumes:
+      - application/json
+      description: Del command.
+      parameters:
+      - in: query
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      tags:
+      - Redis
+  /redis/get:
+    get:
+      consumes:
+      - application/json
+      description: Get command.
+      parameters:
+      - in: query
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      tags:
+      - Redis
+  /redis/set:
+    post:
+      consumes:
+      - application/json
+      description: Set command.
+      parameters:
+      - description: SetInput
+        in: body
+        name: SetInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SetInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      tags:
+      - Redis
+  /redis/xinfostream:
+    get:
+      consumes:
+      - application/json
+      description: XInfoStream command.
+      parameters:
+      - in: query
+        name: stream
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      tags:
+      - Redis
+  /redis/xrange:
+    get:
+      consumes:
+      - application/json
+      description: XRange command.
+      parameters:
+      - in: query
+        name: end
+        required: true
+        type: string
+      - in: query
+        name: start
+        required: true
+        type: string
+      - in: query
+        name: stream
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      tags:
+      - Redis
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: Find user by user id.
+      parameters:
+      - in: query
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/entity.UserMetadata'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - User
+  /user/block:
+    patch:
+      consumes:
+      - application/json
+      description: Force block user.
+      parameters:
+      - description: BlockUserInput
+        in: body
+        name: BlockUserInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BlockUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - User
+  /user/memo:
+    post:
+      consumes:
+      - application/json
+      description: Force block user.
+      parameters:
+      - description: CreateMemoInput
+        in: body
+        name: CreateMemoInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateMemoInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - User
+  /user/search:
+    get:
+      consumes:
+      - application/json
+      description: Search user by given condition.
+      parameters:
+      - in: query
+        name: description
+        required: true
+        type: string
+      - in: query
+        name: email
+        required: true
+        type: string
+      - in: query
+        name: fullname
+        required: true
+        type: string
+      - in: query
+        name: gradeId
+        required: true
+        type: integer
+      - in: query
+        name: id
+        required: true
+        type: integer
+      - in: query
+        name: isBlock
+        required: true
+        type: boolean
+      - in: query
+        name: isDormant
+        required: true
+        type: boolean
+      - in: query
+        name: isDropOutUser
+        required: true
+        type: boolean
+      - in: query
+        name: isMetaverseUser
+        required: true
+        type: boolean
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - in: query
+        name: nickname
+        required: true
+        type: string
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      - in: query
+        name: phoneNumber
+        required: true
+        type: string
+      - in: query
+        name: userType
+        required: true
+        type: string
+      - in: query
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.UserMetadata'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - User
+  /user/unblock:
+    patch:
+      consumes:
+      - application/json
+      description: Force block user.
+      parameters:
+      - description: UnblockUserInput
+        in: body
+        name: UnblockUserInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UnblockUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - User
+  /withdraw:
+    get:
+      consumes:
+      - application/json
+      description: Find all withdrawal request using limit, offset.
+      parameters:
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      - default: SUBMITTED
+        example: SUBMITTED, APPROVED, CANCELED, REJECTED, PENDING, COMPLETED, FAILED
+        in: query
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.WithdrawalRequest'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Withdraw
+  /withdraw/approve:
+    patch:
+      consumes:
+      - application/json
+      description: Approve withdrawal requests
+      parameters:
+      - in: query
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Withdraw
+  /withdraw/reject:
+    patch:
+      consumes:
+      - application/json
+      description: Reject withdrawal requests
+      parameters:
+      - in: query
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Withdraw
+  /withdraw/user:
+    get:
+      consumes:
+      - application/json
+      description: Find withdrawal request by user id using limit, offset.
+      parameters:
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
+      - in: query
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.WithdrawalRequest'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Withdraw
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

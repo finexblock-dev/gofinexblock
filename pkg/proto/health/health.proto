@@ -1,0 +1,24 @@
+syntax = "proto3";
+package health;
+option go_package = "/health";
+
+message HealthCheckInput {
+  string name = 1;
+}
+
+message HealthCheckOutput {
+  string message = 1;
+}
+
+message WhoAmIInput {
+  string name = 1;
+}
+
+message WhoAmIOutput {
+  string message = 1;
+}
+
+service HealthCheck {
+  rpc Check(HealthCheckInput) returns (HealthCheckOutput);
+  rpc WhoAmI(WhoAmIInput) returns (WhoAmIOutput);
+}
