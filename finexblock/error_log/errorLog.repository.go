@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/finexblock-dev/gofinexblock/finexblock/entity"
+	"github.com/finexblock-dev/gofinexblock/finexblock/files"
 	"github.com/finexblock-dev/gofinexblock/finexblock/goaws"
 	instance "github.com/finexblock-dev/gofinexblock/finexblock/instance"
 	"github.com/finexblock-dev/gofinexblock/finexblock/secure"
@@ -16,6 +17,11 @@ import (
 type repository struct {
 	db           *gorm.DB
 	instanceRepo instance.Repository
+	logger       files.Writer
+}
+
+func (r *repository) Log(v ...any) {
+	r.logger.Println(v)
 }
 
 func (r *repository) UploadErrorLogS3(errorLog *entity.FinexblockErrorLog, bucket string) (err error) {
@@ -54,6 +60,6 @@ func (r *repository) CtxWithCancel(ctx context.Context) (context.Context, contex
 	return context.WithCancel(ctx)
 }
 
-func newRepository(db *gorm.DB, instanceRepo instance.Repository) *repository {
-	return &repository{db: db, instanceRepo: instanceRepo}
+func newRepository(db *gorm.DB, instanceRepo instance.Repository, logger files.Writer) *repository {
+	return &repository{db: db, instanceRepo: instanceRepo, logger: logger}
 }

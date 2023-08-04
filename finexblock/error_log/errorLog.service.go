@@ -4,16 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"gorm.io/gorm"
-	"log"
 )
 
 type service struct {
 	repo Repository
-}
-
-func (a *service) Log(v ...any) {
-	log.Println(v)
-	//a.logger.Println(v)
 }
 
 func newService(repo Repository) *service {
