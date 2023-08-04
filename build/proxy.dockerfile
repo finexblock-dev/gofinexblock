@@ -25,11 +25,6 @@ RUN chmod +x /build/init/proxy && \
     chmod +x /build/deployments/proxy/run.sh
 
 
-FROM scratch as release
-
-COPY --from=build /build/init/proxy .
-COPY --from=build /build/deployments/proxy/run.sh .
-
-ENTRYPOINT ["run.sh"]
+CMD ["make", "run-proxy"]
 
 EXPOSE 50051
