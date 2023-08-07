@@ -21,6 +21,17 @@ type walletService struct {
 	userRepository   user.Repository
 }
 
+func (w *walletService) ScanWithdrawalRequestByCondWithLimitOffset(coinID uint, status entity.WithdrawalStatus, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
+	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = w.walletRepository.ScanWithdrawalRequestByCondWithLimitOffset(tx, coinID, status, limit, offset)
+		return err
+	}, &sql.TxOptions{ReadOnly: true}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (w *walletService) ScanWithdrawalRequestByStatusWithLimitOffset(status entity.WithdrawalStatus, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.walletRepository.ScanWithdrawalRequestByStatusWithLimitOffset(tx, status, limit, offset)
@@ -32,9 +43,9 @@ func (w *walletService) ScanWithdrawalRequestByStatusWithLimitOffset(status enti
 	return result, nil
 }
 
-func (w *walletService) ScanWithdrawalRequestByUser(userID uint, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
+func (w *walletService) ScanWithdrawalRequestByUser(userID, coinID uint, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.walletRepository.ScanWithdrawalRequestByUser(tx, userID, limit, offset)
+		result, err = w.walletRepository.ScanWithdrawalRequestByUser(tx, userID, coinID, limit, offset)
 		return err
 	}, &sql.TxOptions{ReadOnly: true}); err != nil {
 		return nil, err
