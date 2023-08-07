@@ -6,8 +6,8 @@ import (
 )
 
 func Swagger(router fiber.Router) {
-	router.Get("/api/*", swagger.HandlerDefault)
-	router.Get("/api/*", swagger.New(swagger.Config{
+	router.Get("/api-docs/*", swagger.HandlerDefault)
+	router.Get("/api-docs/*", swagger.New(swagger.Config{
 		InstanceName: "Finexblock Backoffice API Documentation",
 		Title:        "Finexblock Backoffice API Documentation",
 		DocExpansion: "full",
