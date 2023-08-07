@@ -113,6 +113,13 @@ definitions:
     required:
     - accessToken
     type: object
+  dto.ProxyHealthCheckOutput:
+    properties:
+      message:
+        type: string
+    required:
+    - message
+    type: object
   dto.SetInput:
     properties:
       key:
@@ -1826,6 +1833,29 @@ paths:
             $ref: '#/definitions/presenter.ErrResponse'
       tags:
       - Auth
+  /gRPC/health:
+    get:
+      consumes:
+      - application/json
+      description: gRPC Health check in same VPC.
+      parameters:
+      - in: query
+        name: domain
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/dto.ProxyHealthCheckOutput'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      tags:
+      - gRPC
   /image:
     get:
       consumes:
@@ -2216,6 +2246,11 @@ paths:
       - application/json
       description: Find all withdrawal request using limit, offset.
       parameters:
+      - default: 3
+        in: query
+        name: coinId
+        required: true
+        type: integer
       - default: 20
         in: query
         maximum: 100
@@ -2310,6 +2345,11 @@ paths:
       - application/json
       description: Find withdrawal request by user id using limit, offset.
       parameters:
+      - default: 3
+        in: query
+        name: coinId
+        required: true
+        type: integer
       - default: 20
         in: query
         maximum: 100

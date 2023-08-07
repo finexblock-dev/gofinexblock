@@ -1545,6 +1545,42 @@
                 }
             }
         },
+        "/gRPC/health": {
+            "get": {
+                "description": "gRPC Health check in same VPC.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gRPC"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "domain",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProxyHealthCheckOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/image": {
             "get": {
                 "security": [
@@ -2166,6 +2202,13 @@
                 ],
                 "parameters": [
                     {
+                        "type": "integer",
+                        "default": 3,
+                        "name": "coinId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "maximum": 100,
                         "minimum": 1,
                         "type": "integer",
@@ -2312,6 +2355,13 @@
                     "Withdraw"
                 ],
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 3,
+                        "name": "coinId",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "maximum": 100,
                         "minimum": 1,
@@ -2512,6 +2562,17 @@
             ],
             "properties": {
                 "accessToken": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ProxyHealthCheckOutput": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
                     "type": "string"
                 }
             }
