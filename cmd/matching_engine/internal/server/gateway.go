@@ -2,7 +2,10 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"github.com/finexblock-dev/gofinexblock/pkg/gen/grpc_order"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/health"
+	"github.com/finexblock-dev/gofinexblock/pkg/goaws"
 	"github.com/finexblock-dev/gofinexblock/pkg/orderbook"
 	"github.com/finexblock-dev/gofinexblock/pkg/trade"
 	"github.com/finexblock-dev/gofinexblock/pkg/utils"
@@ -27,22 +30,19 @@ type Gateway struct {
 	grpc_order.UnimplementedLimitOrderServer
 	grpc_order.UnimplementedMarketOrderServer
 	grpc_order.UnimplementedOrderBookServer
+	health.HealthCheckServer
 }
 
-func New(
-	cluster *redis.ClusterClient,
-	db *gorm.DB,
-	conn *grpc.ClientConn,
-) *Gateway {
-	return &Gateway{
-		tradeManager:                   trade.New(cluster),
-		orderBook:                      orderbook.New(cluster, db),
-		event:                          grpc_order.NewEventClient(conn),
-		UnimplementedCancelOrderServer: grpc_order.UnimplementedCancelOrderServer{},
-		UnimplementedLimitOrderServer:  grpc_order.UnimplementedLimitOrderServer{},
-		UnimplementedMarketOrderServer: grpc_order.UnimplementedMarketOrderServer{},
-		UnimplementedOrderBookServer:   grpc_order.UnimplementedOrderBookServer{},
+func (g *Gateway) Check(ctx context.Context, input *health.HealthCheckInput) (*health.HealthCheckOutput, error) {
+	return &health.HealthCheckOutput{Message: fmt.Sprintf("Hello %s", input.Name)}, nil
+}
+
+func (g *Gateway) WhoAmI(ctx context.Context, input *health.WhoAmIInput) (*health.WhoAmIOutput, error) {
+	privateIP, err := goaws.OwnPrivateIP()
+	if err != nil {
+		return nil, status.Errorf(codes.Unknown, err.Error())
 	}
+	return &health.WhoAmIOutput{Message: fmt.Sprintf("Hello %s, I am %s", input.Name, privateIP)}, nil
 }
 
 func (g *Gateway) CancelOrder(_ context.Context, in *grpc_order.OrderCancellation) (*grpc_order.Ack, error) {
@@ -337,6 +337,27 @@ func (g *Gateway) GetOrderBook(_ context.Context, _ *grpc_order.GetOrderBookInpu
 		Bids: bidResult,
 		Asks: askResult,
 	}, nil
+}
+
+func New(
+	cluster *redis.ClusterClient,
+	db *gorm.DB,
+	conn *grpc.ClientConn,
+) *Gateway {
+	return &Gateway{
+		tradeManager:                   trade.New(cluster),
+		orderBook:                      orderbook.New(cluster, db),
+		event:                          grpc_order.NewEventClient(conn),
+		UnimplementedCancelOrderServer: grpc_order.UnimplementedCancelOrderServer{},
+		UnimplementedLimitOrderServer:  grpc_order.UnimplementedLimitOrderServer{},
+		UnimplementedMarketOrderServer: grpc_order.UnimplementedMarketOrderServer{},
+		UnimplementedOrderBookServer:   grpc_order.UnimplementedOrderBookServer{},
+	}
+}
+
+func (g *Gateway) mustEmbedUnimplementedHealthCheckServer() {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (g *Gateway) mustEmbedUnimplementedOrderBookServer() {

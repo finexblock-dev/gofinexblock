@@ -113,6 +113,13 @@ definitions:
     required:
     - accessToken
     type: object
+  dto.ProxyHealthCheckOutput:
+    properties:
+      message:
+        type: string
+    required:
+    - message
+    type: object
   dto.SetInput:
     properties:
       key:
@@ -869,30 +876,19 @@ paths:
     get:
       consumes:
       - application/json
-      description: Find admin list.
+      description: gRPC Health check in same VPC.
       parameters:
-      - default: 20
-        in: query
-        maximum: 100
-        minimum: 1
-        name: limit
+      - in: query
+        name: domain
         required: true
-        type: integer
-      - default: 0
-        in: query
-        minimum: 0
-        name: offset
-        required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: Success
           schema:
-            items:
-              $ref: '#/definitions/entity.PartialAdmin'
-            type: array
+            $ref: '#/definitions/dto.ProxyHealthCheckOutput'
         "400":
           description: Failed
           schema:
@@ -900,7 +896,7 @@ paths:
       security:
       - BearerAuth: []
       tags:
-      - Admin
+      - gRPC
   /admin/block:
     patch:
       consumes:
