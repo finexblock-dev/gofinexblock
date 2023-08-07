@@ -5,17 +5,16 @@ import (
 	"github.com/finexblock-dev/gofinexblock/pkg/safety"
 	"github.com/finexblock-dev/gofinexblock/pkg/trade"
 	"log"
-	"time"
 )
 
 func LoadOrderBook(manager orderbook.Manager) {
-	var err error
-	if err = manager.LoadOrderBook(); err != nil {
-		log.Fatalln(err)
-	}
+	//var err error
+	//if err = manager.LoadOrderBook(); err != nil {
+	//	log.Fatalln(err)
+	//}
 
 	go safety.InfinitySubscribe(manager)
-	go manager.SnapshotCron(time.Minute * 5)
+	//go manager.SnapshotCron(time.Minute * 5)
 }
 
 func LoadStream(manager trade.Manager) {
