@@ -31,16 +31,14 @@ func (s *Server) Check(ctx context.Context, input *health.HealthCheckInput) (*he
 }
 
 // ProxyHealthCheck @ProxyHealthCheck
-//
-//	@security		BearerAuth
-//	@description	gRPC Health check in same VPC.
-//	@tags			gRPC
-//	@accept			json
-//	@produce		json
-//	@param			ProxyHealthCheckInput	query		dto.ProxyHealthCheckInput	true	"ProxyHealthCheckInput"
-//	@success		200					{object}	dto.ProxyHealthCheckOutput	"Success"
-//	@failure		400					{object}	presenter.ErrResponse	"Failed"
-//	@router			/admin [get]
+// @description	gRPC Health check in same VPC.
+// @tags			gRPC
+// @accept			json
+// @produce		json
+// @param			ProxyHealthCheckInput	query		dto.ProxyHealthCheckInput	true	"ProxyHealthCheckInput"
+// @success		200					{object}	dto.ProxyHealthCheckOutput	"Success"
+// @failure		400					{object}	presenter.ErrResponse	"Failed"
+// @router			/gRPC/health [get]
 func ProxyHealthCheck() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var client health.HealthCheckClient
