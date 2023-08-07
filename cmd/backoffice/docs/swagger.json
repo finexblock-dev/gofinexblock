@@ -14,7 +14,7 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Find admin list.",
+                "description": "gRPC Health check in same VPC.",
                 "consumes": [
                     "application/json"
                 ],
@@ -22,23 +22,12 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "gRPC"
                 ],
                 "parameters": [
                     {
-                        "maximum": 100,
-                        "minimum": 1,
-                        "type": "integer",
-                        "default": 20,
-                        "name": "limit",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "minimum": 0,
-                        "type": "integer",
-                        "default": 0,
-                        "name": "offset",
+                        "type": "string",
+                        "name": "domain",
                         "in": "query",
                         "required": true
                     }
@@ -47,10 +36,7 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/entity.PartialAdmin"
-                            }
+                            "$ref": "#/definitions/dto.ProxyHealthCheckOutput"
                         }
                     },
                     "400": {
@@ -2512,6 +2498,17 @@
             ],
             "properties": {
                 "accessToken": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ProxyHealthCheckOutput": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
                     "type": "string"
                 }
             }

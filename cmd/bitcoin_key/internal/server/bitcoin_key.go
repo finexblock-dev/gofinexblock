@@ -12,6 +12,8 @@ import (
 	"github.com/finexblock-dev/gofinexblock/pkg/btcd"
 	"github.com/finexblock-dev/gofinexblock/pkg/constant"
 	"github.com/finexblock-dev/gofinexblock/pkg/gen/bitcoin"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/health"
+	"github.com/finexblock-dev/gofinexblock/pkg/goaws"
 	"github.com/shopspring/decimal"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -32,52 +34,19 @@ type BitcoinKey struct {
 
 	bitcoin.UnimplementedHDWalletServer
 	bitcoin.UnimplementedTransactionServer
+	health.UnimplementedHealthCheckServer
 }
 
-func (b *BitcoinKey) Listen(gRPCServer *grpc.Server, port string) {
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%v", port))
+func (b *BitcoinKey) Check(ctx context.Context, input *health.HealthCheckInput) (*health.HealthCheckOutput, error) {
+	return &health.HealthCheckOutput{Message: fmt.Sprintf("Hello %s", input.Name)}, nil
+}
+
+func (b *BitcoinKey) WhoAmI(ctx context.Context, input *health.WhoAmIInput) (*health.WhoAmIOutput, error) {
+	privateIP, err := goaws.OwnPrivateIP()
 	if err != nil {
-		log.Fatalf("Error occurred while listening port on %v : %v", port, err)
+		return nil, status.Errorf(codes.Unknown, err.Error())
 	}
-	log.Println("GRPC SERVER START")
-	if err := gRPCServer.Serve(listener); err != nil {
-		log.Fatalf("Error occurred while serve listener... : %v", err)
-	}
-}
-
-func (b *BitcoinKey) Register(grpcServer *grpc.Server) {
-	bitcoin.RegisterHDWalletServer(grpcServer, b)
-	bitcoin.RegisterTransactionServer(grpcServer, b)
-}
-
-func NewBitcoinKey(configuration *config.BitcoinKeyConfiguration) (*BitcoinKey, error) {
-	var params *chaincfg.Params
-	switch os.Getenv("APPMODE") {
-	case "PROD":
-		params = &chaincfg.MainNetParams
-	default:
-		params = &chaincfg.TestNet3Params
-	}
-
-	cfg := &rpcclient.ConnConfig{
-		Host:         fmt.Sprintf("%v:%v", configuration.RpcHost, configuration.RpcPort),
-		User:         configuration.RpcUser,
-		Pass:         configuration.RpcPassword,
-		DisableTLS:   true,
-		HTTPPostMode: true,
-		Params:       params.Name,
-	}
-	btcClient := btcd.CreateClient(cfg)
-
-	return &BitcoinKey{
-		btcClient:                      btcClient,
-		key:                            configuration.Mnemonic,
-		account:                        configuration.WalletAccount,
-		walletType:                     configuration.WalletType,
-		chainParams:                    params,
-		UnimplementedHDWalletServer:    bitcoin.UnimplementedHDWalletServer{},
-		UnimplementedTransactionServer: bitcoin.UnimplementedTransactionServer{},
-	}, nil
+	return &health.WhoAmIOutput{Message: fmt.Sprintf("Hello %s, I am %s", input.Name, privateIP)}, nil
 }
 
 func (b *BitcoinKey) GetNewAddress(_ context.Context, _ *bitcoin.GetNewAddressInput) (*bitcoin.GetNewAddressOutput, error) {
@@ -215,6 +184,53 @@ func (b *BitcoinKey) GetRawTransaction(_ context.Context, request *bitcoin.GetRa
 	}, nil
 }
 
+func (b *BitcoinKey) Listen(gRPCServer *grpc.Server, port string) {
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%v", port))
+	if err != nil {
+		log.Fatalf("Error occurred while listening port on %v : %v", port, err)
+	}
+	log.Println("GRPC SERVER START")
+	if err := gRPCServer.Serve(listener); err != nil {
+		log.Fatalf("Error occurred while serve listener... : %v", err)
+	}
+}
+
+func (b *BitcoinKey) Register(grpcServer *grpc.Server) {
+	bitcoin.RegisterHDWalletServer(grpcServer, b)
+	bitcoin.RegisterTransactionServer(grpcServer, b)
+	health.RegisterHealthCheckServer(grpcServer, b)
+}
+
+func NewBitcoinKey(configuration *config.BitcoinKeyConfiguration) (*BitcoinKey, error) {
+	var params *chaincfg.Params
+	switch os.Getenv("APPMODE") {
+	case "PROD":
+		params = &chaincfg.MainNetParams
+	default:
+		params = &chaincfg.TestNet3Params
+	}
+
+	cfg := &rpcclient.ConnConfig{
+		Host:         fmt.Sprintf("%v:%v", configuration.RpcHost, configuration.RpcPort),
+		User:         configuration.RpcUser,
+		Pass:         configuration.RpcPassword,
+		DisableTLS:   true,
+		HTTPPostMode: true,
+		Params:       params.Name,
+	}
+	btcClient := btcd.CreateClient(cfg)
+
+	return &BitcoinKey{
+		btcClient:                      btcClient,
+		key:                            configuration.Mnemonic,
+		account:                        configuration.WalletAccount,
+		walletType:                     configuration.WalletType,
+		chainParams:                    params,
+		UnimplementedHDWalletServer:    bitcoin.UnimplementedHDWalletServer{},
+		UnimplementedTransactionServer: bitcoin.UnimplementedTransactionServer{},
+	}, nil
+}
+
 func (b *BitcoinKey) mustEmbedUnimplementedBlockchainServer() {
 	//TODO implement me
 	panic("implement me")
@@ -228,4 +244,8 @@ func (b *BitcoinKey) mustEmbedUnimplementedHDWalletServer() {
 func (b *BitcoinKey) mustEmbedUnimplementedTransactionServer() {
 	//TODO implement me
 	panic("implement me")
+}
+
+func (b *BitcoinKey) mustEmbedUnimplementedHealthCheckServer() {
+
 }
