@@ -11,6 +11,8 @@ import (
 	geth "github.com/finexblock-dev/gofinexblock/pkg/ethereum"
 	"github.com/finexblock-dev/gofinexblock/pkg/ethereum/hdwallet"
 	"github.com/finexblock-dev/gofinexblock/pkg/gen/ethereum"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/health"
+	"github.com/finexblock-dev/gofinexblock/pkg/goaws"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -25,6 +27,19 @@ type EthereumKey struct {
 
 	ethereum.UnimplementedTransactionServer
 	ethereum.UnimplementedHDWalletServer
+	health.UnimplementedHealthCheckServer
+}
+
+func (e *EthereumKey) Check(ctx context.Context, input *health.HealthCheckInput) (*health.HealthCheckOutput, error) {
+	return &health.HealthCheckOutput{Message: fmt.Sprintf("Hello %s", input.Name)}, nil
+}
+
+func (e *EthereumKey) WhoAmI(ctx context.Context, input *health.WhoAmIInput) (*health.WhoAmIOutput, error) {
+	privateIP, err := goaws.OwnPrivateIP()
+	if err != nil {
+		return nil, status.Errorf(codes.Unknown, err.Error())
+	}
+	return &health.WhoAmIOutput{Message: fmt.Sprintf("Hello %s, I am %s", input.Name, privateIP)}, nil
 }
 
 func NewEthereumKey(cfg *config.EthereumKeyConfiguration) (*EthereumKey, error) {
@@ -63,6 +78,7 @@ func (e *EthereumKey) Listen(gRPCServer *grpc.Server, port string) {
 func (e *EthereumKey) Register(grpcServer *grpc.Server) {
 	ethereum.RegisterTransactionServer(grpcServer, e)
 	ethereum.RegisterHDWalletServer(grpcServer, e)
+	health.RegisterHealthCheckServer(grpcServer, e)
 }
 
 // CreateWallet for user
@@ -201,6 +217,11 @@ func (e *EthereumKey) mustEmbedUnimplementedTransactionServer() {
 }
 
 func (e *EthereumKey) mustEmbedUnimplementedHDWalletServer() {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (e *EthereumKey) mustEmbedUnimplementedHealthCheckServer() {
 	//TODO implement me
 	panic("implement me")
 }
