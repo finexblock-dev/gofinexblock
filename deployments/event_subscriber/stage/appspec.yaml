@@ -13,10 +13,10 @@ permissions:
 
 hooks:
   BeforeInstall:
-    - location: scripts/release/before_install.sh
+    - location: deployments/event_subscriber/stage/before_install.sh
       runas: ec2-user
   AfterInstall:
-    - location: scripts/release/after_install.sh
+    - location: deployments/event_subscriber/stage/after_install.sh
       runas: ec2-user
       environment:
         variables:

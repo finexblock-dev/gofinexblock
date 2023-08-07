@@ -7,7 +7,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - cp scripts/release/appspec.yml .
+      - cp deployments/event_subscriber/stage/appspec.yml .
       - ls
   post_build:
     commands:
