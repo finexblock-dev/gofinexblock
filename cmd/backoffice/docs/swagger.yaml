@@ -876,19 +876,30 @@ paths:
     get:
       consumes:
       - application/json
-      description: gRPC Health check in same VPC.
+      description: Find admin list.
       parameters:
-      - in: query
-        name: domain
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
         required: true
-        type: string
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/dto.ProxyHealthCheckOutput'
+            items:
+              $ref: '#/definitions/entity.PartialAdmin'
+            type: array
         "400":
           description: Failed
           schema:
@@ -896,7 +907,7 @@ paths:
       security:
       - BearerAuth: []
       tags:
-      - gRPC
+      - Admin
   /admin/block:
     patch:
       consumes:
@@ -1822,6 +1833,29 @@ paths:
             $ref: '#/definitions/presenter.ErrResponse'
       tags:
       - Auth
+  /gRPC/health:
+    get:
+      consumes:
+      - application/json
+      description: gRPC Health check in same VPC.
+      parameters:
+      - in: query
+        name: domain
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/dto.ProxyHealthCheckOutput'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      tags:
+      - gRPC
   /image:
     get:
       consumes:
@@ -2212,6 +2246,11 @@ paths:
       - application/json
       description: Find all withdrawal request using limit, offset.
       parameters:
+      - default: 3
+        in: query
+        name: coinId
+        required: true
+        type: integer
       - default: 20
         in: query
         maximum: 100
@@ -2306,6 +2345,11 @@ paths:
       - application/json
       description: Find withdrawal request by user id using limit, offset.
       parameters:
+      - default: 3
+        in: query
+        name: coinId
+        required: true
+        type: integer
       - default: 20
         in: query
         maximum: 100
