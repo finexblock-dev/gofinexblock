@@ -62,12 +62,6 @@ func (e *engine) Do(event *grpc_order.OrderCancelled) (err error) {
 		amount = decimal.NewFromFloat(quantity).Mul(utils.CoinDecimal(currency))
 	}
 
-	balanceUpdate = utils.NewBalanceUpdate(userUUID, amount, currency, grpc_order.Reason_REFUND)
-
-	if e.tradeManager.SendBalanceUpdateStream(balanceUpdate) != nil {
-		return err
-	}
-
 	if _, err = e.eventSubscriber.OrderCancellationEvent(ctx, event); err != nil {
 		// FIXME: How to fix this?
 		return err
@@ -75,6 +69,12 @@ func (e *engine) Do(event *grpc_order.OrderCancelled) (err error) {
 
 	if _, err = e.chartServer.OrderCancellationEvent(ctx, event); err != nil {
 		// FIXME: How to fix this?
+		return err
+	}
+
+	balanceUpdate = utils.NewBalanceUpdate(userUUID, amount, currency, grpc_order.Reason_REFUND)
+
+	if e.tradeManager.SendBalanceUpdateStream(balanceUpdate) != nil {
 		return err
 	}
 

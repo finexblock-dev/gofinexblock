@@ -6,6 +6,7 @@ import (
 	"github.com/finexblock-dev/gofinexblock/cmd/matching_engine/internal/engine"
 	"github.com/finexblock-dev/gofinexblock/pkg/database"
 	"github.com/finexblock-dev/gofinexblock/pkg/gen/grpc_order"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/health"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -22,6 +23,7 @@ func RegisterServer(server *Gateway, grpcServer *grpc.Server) {
 	grpc_order.RegisterMarketOrderServer(grpcServer, server)
 	grpc_order.RegisterLimitOrderServer(grpcServer, server)
 	grpc_order.RegisterOrderBookServer(grpcServer, server)
+	health.RegisterHealthCheckServer(grpcServer, server)
 	reflection.Register(grpcServer)
 }
 
