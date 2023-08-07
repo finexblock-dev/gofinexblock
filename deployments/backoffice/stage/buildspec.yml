@@ -10,7 +10,7 @@ phases:
       - echo Building the Docker image...
       - aws s3 cp s3://finexblock-backoffice/dev/.env ./.env
       - ls -la
-      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG -f ./build/backoffice.dockerfile -m 4g .
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG -f ./build/backoffice.dockerfile
   post_build:
     commands:
       - echo Build completed on `date`
