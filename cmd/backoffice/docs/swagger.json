@@ -314,20 +314,17 @@
                     {
                         "type": "integer",
                         "name": "adminId",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "name": "endTime",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "name": "endpoint",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "maximum": 100,
@@ -342,8 +339,7 @@
                         "type": "string",
                         "example": "GET, POST, PATCH, PUT, DELETE...",
                         "name": "method",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "minimum": 0,
@@ -356,8 +352,7 @@
                     {
                         "type": "string",
                         "name": "startTime",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -400,14 +395,12 @@
                     {
                         "type": "string",
                         "name": "endTime",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "integer",
                         "name": "executor",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "maximum": 100,
@@ -429,14 +422,12 @@
                     {
                         "type": "string",
                         "name": "startTime",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "integer",
                         "name": "target",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -541,14 +532,12 @@
                     {
                         "type": "string",
                         "name": "endTime",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "integer",
                         "name": "executor",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "maximum": 100,
@@ -570,14 +559,12 @@
                     {
                         "type": "string",
                         "name": "startTime",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "integer",
                         "name": "target",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -682,14 +669,12 @@
                     {
                         "type": "string",
                         "name": "endTime",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "integer",
                         "name": "executor",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "maximum": 100,
@@ -711,14 +696,12 @@
                     {
                         "type": "string",
                         "name": "startTime",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "integer",
                         "name": "target",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -986,8 +969,7 @@
                         "type": "integer",
                         "default": 1,
                         "name": "announcementId",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1220,8 +1202,7 @@
                         "type": "integer",
                         "default": 1,
                         "name": "id",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1303,8 +1284,7 @@
                     {
                         "type": "integer",
                         "name": "categoryId",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "maximum": 100,
@@ -1325,27 +1305,25 @@
                     },
                     {
                         "type": "boolean",
+                        "default": true,
                         "name": "pinned",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "name": "title",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "boolean",
+                        "default": true,
                         "name": "visible",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "name": "word",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1561,8 +1539,7 @@
                     {
                         "type": "string",
                         "name": "domain",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1570,6 +1547,41 @@
                         "description": "Success",
                         "schema": {
                             "$ref": "#/definitions/dto.ProxyHealthCheckOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/gRPC/whoami": {
+            "get": {
+                "description": "gRPC Health check in same VPC.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gRPC"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "domain",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProxyWhoAmIOutput"
                         }
                     },
                     "400": {
@@ -2027,56 +2039,52 @@
                     {
                         "type": "string",
                         "name": "description",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "name": "email",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "name": "fullname",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "integer",
                         "name": "gradeId",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "integer",
                         "name": "id",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "isAdult",
+                        "in": "query"
                     },
                     {
                         "type": "boolean",
                         "name": "isBlock",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "boolean",
                         "name": "isDormant",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "boolean",
                         "name": "isDropOutUser",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "boolean",
                         "name": "isMetaverseUser",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "maximum": 100,
@@ -2090,8 +2098,7 @@
                     {
                         "type": "string",
                         "name": "nickname",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "minimum": 0,
@@ -2104,20 +2111,17 @@
                     {
                         "type": "string",
                         "name": "phoneNumber",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "name": "userType",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "name": "uuid",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2409,10 +2413,6 @@
     "definitions": {
         "dto.AdminRegisterInput": {
             "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
             "properties": {
                 "email": {
                     "type": "string",
@@ -2426,9 +2426,6 @@
         },
         "dto.BlockAdminInput": {
             "type": "object",
-            "required": [
-                "adminId"
-            ],
             "properties": {
                 "adminId": {
                     "type": "integer",
@@ -2449,17 +2446,6 @@
         },
         "dto.CreateAnnouncementInput": {
             "type": "object",
-            "required": [
-                "categoryId",
-                "chinese",
-                "chineseTitle",
-                "english",
-                "englishTitle",
-                "korean",
-                "koreanTitle",
-                "pinned",
-                "visible"
-            ],
             "properties": {
                 "categoryId": {
                     "type": "integer",
@@ -2501,11 +2487,6 @@
         },
         "dto.CreateCategoryInput": {
             "type": "object",
-            "required": [
-                "chineseType",
-                "englishType",
-                "koreanType"
-            ],
             "properties": {
                 "chineseType": {
                     "type": "string",
@@ -2540,10 +2521,6 @@
         },
         "dto.LoginInput": {
             "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
             "properties": {
                 "email": {
                     "type": "string",
@@ -2557,9 +2534,6 @@
         },
         "dto.LoginOutput": {
             "type": "object",
-            "required": [
-                "accessToken"
-            ],
             "properties": {
                 "accessToken": {
                     "type": "string"
@@ -2568,9 +2542,14 @@
         },
         "dto.ProxyHealthCheckOutput": {
             "type": "object",
-            "required": [
-                "message"
-            ],
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ProxyWhoAmIOutput": {
+            "type": "object",
             "properties": {
                 "message": {
                     "type": "string"
@@ -2594,9 +2573,6 @@
         },
         "dto.UnblockAdminInput": {
             "type": "object",
-            "required": [
-                "adminId"
-            ],
             "properties": {
                 "adminId": {
                     "type": "integer",
@@ -2617,18 +2593,6 @@
         },
         "dto.UpdateAnnouncementInput": {
             "type": "object",
-            "required": [
-                "ID",
-                "categoryId",
-                "chinese",
-                "chineseTitle",
-                "english",
-                "englishTitle",
-                "korean",
-                "koreanTitle",
-                "pinned",
-                "visible"
-            ],
             "properties": {
                 "ID": {
                     "type": "integer",
@@ -2673,12 +2637,6 @@
         },
         "dto.UpdateCategoryInput": {
             "type": "object",
-            "required": [
-                "chineseType",
-                "englishType",
-                "id",
-                "koreanType"
-            ],
             "properties": {
                 "chineseType": {
                     "type": "string",
@@ -2752,28 +2710,6 @@
         },
         "entity.Admin": {
             "type": "object",
-            "required": [
-                "adminAccessToken",
-                "adminApiLog",
-                "adminLoginFailedLog",
-                "adminLoginHistory",
-                "createdAt",
-                "deletedAt",
-                "email",
-                "executeDeleteLog",
-                "executeGradeUpdateLog",
-                "executePasswordLog",
-                "grade",
-                "id",
-                "initialLogin",
-                "isBlocked",
-                "password",
-                "pwdUpdatedAt",
-                "targetDeleteLog",
-                "targetGradeUpdateLog",
-                "targetPasswordLog",
-                "updatedAt"
-            ],
             "properties": {
                 "adminAccessToken": {
                     "type": "array",
@@ -2869,13 +2805,6 @@
         },
         "entity.AdminAccessToken": {
             "type": "object",
-            "required": [
-                "adminId",
-                "createdAt",
-                "expiredAt",
-                "id",
-                "updatedAt"
-            ],
             "properties": {
                 "adminId": {
                     "type": "integer"
@@ -2896,15 +2825,6 @@
         },
         "entity.AdminApiLog": {
             "type": "object",
-            "required": [
-                "adminId",
-                "createdAt",
-                "endpoint",
-                "id",
-                "ip",
-                "method",
-                "updatedAt"
-            ],
             "properties": {
                 "adminId": {
                     "type": "integer"
@@ -2931,13 +2851,6 @@
         },
         "entity.AdminDeleteLog": {
             "type": "object",
-            "required": [
-                "createdAt",
-                "executorId",
-                "id",
-                "targetId",
-                "updatedAt"
-            ],
             "properties": {
                 "createdAt": {
                     "type": "string"
@@ -2958,15 +2871,6 @@
         },
         "entity.AdminGradeUpdateLog": {
             "type": "object",
-            "required": [
-                "createdAt",
-                "currGrade",
-                "executorId",
-                "id",
-                "prevGrade",
-                "targetId",
-                "updatedAt"
-            ],
             "properties": {
                 "createdAt": {
                     "type": "string"
@@ -2993,11 +2897,6 @@
         },
         "entity.AdminLoginFailedLog": {
             "type": "object",
-            "required": [
-                "adminId",
-                "failedAt",
-                "id"
-            ],
             "properties": {
                 "adminId": {
                     "type": "integer"
@@ -3012,11 +2911,6 @@
         },
         "entity.AdminLoginHistory": {
             "type": "object",
-            "required": [
-                "adminId",
-                "id",
-                "loggedAt"
-            ],
             "properties": {
                 "adminId": {
                     "type": "integer"
@@ -3031,13 +2925,6 @@
         },
         "entity.AdminPasswordLog": {
             "type": "object",
-            "required": [
-                "createdAt",
-                "executorId",
-                "id",
-                "targetId",
-                "updatedAt"
-            ],
             "properties": {
                 "createdAt": {
                     "type": "string"
@@ -3058,21 +2945,6 @@
         },
         "entity.Announcement": {
             "type": "object",
-            "required": [
-                "category",
-                "categoryId",
-                "chinese",
-                "chineseTitle",
-                "createdAt",
-                "english",
-                "englishTitle",
-                "id",
-                "korean",
-                "koreanTitle",
-                "pinned",
-                "updatedAt",
-                "visible"
-            ],
             "properties": {
                 "category": {
                     "$ref": "#/definitions/entity.AnnouncementCategory"
@@ -3117,12 +2989,6 @@
         },
         "entity.AnnouncementCategory": {
             "type": "object",
-            "required": [
-                "chineseType",
-                "englishType",
-                "id",
-                "koreanType"
-            ],
             "properties": {
                 "chineseType": {
                     "type": "string"
@@ -3157,14 +3023,6 @@
         },
         "entity.CoinTransaction": {
             "type": "object",
-            "required": [
-                "coinTransferId",
-                "createdAt",
-                "id",
-                "status",
-                "txHash",
-                "updatedAt"
-            ],
             "properties": {
                 "coinTransferId": {
                     "type": "integer"
@@ -3188,17 +3046,6 @@
         },
         "entity.CoinTransfer": {
             "type": "object",
-            "required": [
-                "amount",
-                "coinTransaction",
-                "createdAt",
-                "id",
-                "transferType",
-                "updatedAt",
-                "wallet",
-                "walletId",
-                "withdrawalRequest"
-            ],
             "properties": {
                 "amount": {
                     "type": "number"
@@ -3250,13 +3097,6 @@
         },
         "entity.Image": {
             "type": "object",
-            "required": [
-                "createdAt",
-                "id",
-                "key",
-                "updatedAt",
-                "url"
-            ],
             "properties": {
                 "createdAt": {
                     "type": "string"
@@ -3277,16 +3117,6 @@
         },
         "entity.PartialAdmin": {
             "type": "object",
-            "required": [
-                "createdAt",
-                "email",
-                "grade",
-                "id",
-                "initialLogin",
-                "isBlocked",
-                "pwdUpdatedAt",
-                "updatedAt"
-            ],
             "properties": {
                 "createdAt": {
                     "type": "string"
@@ -3342,11 +3172,6 @@
         },
         "entity.UserMemo": {
             "type": "object",
-            "required": [
-                "description",
-                "id",
-                "userId"
-            ],
             "properties": {
                 "description": {
                     "type": "string"
@@ -3361,24 +3186,6 @@
         },
         "entity.UserMetadata": {
             "type": "object",
-            "required": [
-                "btc",
-                "createdAt",
-                "fullname",
-                "id",
-                "isAppleUser",
-                "isBlock",
-                "isDormant",
-                "isEmailSignUpUser",
-                "isGoogleUser",
-                "isMetaverseUser",
-                "nickname",
-                "phoneNumber",
-                "updatedAt",
-                "userMemo",
-                "userType",
-                "uuid"
-            ],
             "properties": {
                 "btc": {
                     "type": "number"
@@ -3386,11 +3193,17 @@
                 "createdAt": {
                     "type": "string"
                 },
+                "email": {
+                    "type": "string"
+                },
                 "fullname": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
+                },
+                "isAdult": {
+                    "type": "boolean"
                 },
                 "isAppleUser": {
                     "type": "boolean"
@@ -3432,15 +3245,6 @@
         },
         "entity.Wallet": {
             "type": "object",
-            "required": [
-                "address",
-                "coinId",
-                "coinTransfer",
-                "createdAt",
-                "id",
-                "updatedAt",
-                "userId"
-            ],
             "properties": {
                 "address": {
                     "type": "string"
@@ -3470,17 +3274,6 @@
         },
         "entity.WithdrawalRequest": {
             "type": "object",
-            "required": [
-                "amount",
-                "coinTransfer",
-                "coinTransferId",
-                "createdAt",
-                "fee",
-                "id",
-                "status",
-                "toAddress",
-                "updatedAt"
-            ],
             "properties": {
                 "amount": {
                     "type": "number"
@@ -3534,10 +3327,6 @@
         },
         "presenter.ErrResponse": {
             "type": "object",
-            "required": [
-                "message",
-                "status"
-            ],
             "properties": {
                 "message": {
                     "type": "string"
@@ -3549,11 +3338,6 @@
         },
         "presenter.MsgResponse": {
             "type": "object",
-            "required": [
-                "code",
-                "message",
-                "status"
-            ],
             "properties": {
                 "code": {
                     "type": "integer"

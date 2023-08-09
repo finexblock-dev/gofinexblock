@@ -17,8 +17,8 @@ type (
 	SearchAnnouncementInput struct {
 		Word       string `json:"word" query:"word"`
 		Title      string `json:"title" query:"title"`
-		Visible    bool   `json:"visible" query:"visible"`
-		Pinned     bool   `json:"pinned" query:"pinned"`
+		Visible    bool   `json:"visible" query:"visible" default:"true"`
+		Pinned     bool   `json:"pinned" query:"pinned" default:"true"`
 		CategoryID uint   `json:"categoryId" query:"categoryId"`
 		Limit      int    `json:"limit" query:"limit" binding:"required" default:"20" validate:"min=1,max=100"`
 		Offset     int    `json:"offset" query:"offset" binding:"required" default:"0" validate:"min=0"`
@@ -34,8 +34,8 @@ type (
 		Korean       string `json:"korean" default:"공지사항 테스트입니다."`
 		English      string `json:"english" default:"This is an announcement test."`
 		Chinese      string `json:"chinese" default:"是公告事项测试"`
-		Visible      bool   `json:"visible" default:"true" `
-		Pinned       bool   `json:"pinned" default:"true" `
+		Visible      bool   `json:"visible" default:"true"`
+		Pinned       bool   `json:"pinned" default:"true"`
 	}
 )
 
