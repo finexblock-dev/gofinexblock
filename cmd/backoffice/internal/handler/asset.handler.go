@@ -82,7 +82,7 @@ func FindUserBalanceUpdateLog(service wallet.Service) fiber.Handler {
 func FindUserAssetsByCondInput(service wallet.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var query = new(dto.FindUserAssetsByCondInput)
-		var assets *structs.Asset
+		var assets = new(structs.Asset)
 		var err error
 
 		if err = c.QueryParser(query); err != nil {

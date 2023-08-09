@@ -9,10 +9,17 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
+	"time"
 )
 
 func Router(db *gorm.DB, cluster *redis.ClusterClient) *fiber.App {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ReadTimeout:        time.Hour,
+		WriteTimeout:       time.Hour,
+		AppName:            "finexblock-backoffice",
+		EnableIPValidation: true,
+		EnablePrintRoutes:  true,
+	})
 
 	app.Use(recover.New()).Use(cors.New()).Use(logger.New())
 
