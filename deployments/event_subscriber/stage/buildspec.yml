@@ -7,14 +7,12 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - cp deployments/event_subscriber/stage/appspec.yaml .
+      - cp deployments/event_subscriber/stage/appspec.yml .
       - ls
   post_build:
     commands:
       - echo Build completed on `date`
-      - printf '[{"name":"%s","imageUri":"%s"}]' "$EnvironmentName" "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG" > images.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' "$EnvironmentName" "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG" > imagedefinitions.json
 
 artifacts:
-  files:
-    - '**/*'
-  base-directory: '.'
+  files: imagedefinitions.json
