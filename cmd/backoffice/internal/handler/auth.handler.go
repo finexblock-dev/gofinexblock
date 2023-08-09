@@ -9,14 +9,14 @@ import (
 )
 
 // Register @Register
-// @description	Register new admin user, only superuser can call this api
-// @tags			Auth
-// @accept			json
-// @produce		json
-// @param			RegisterInput	body		dto.AdminRegisterInput	true	"RegisterInput"
-// @success		201				{object}	presenter.ErrResponse	"Success"
-// @failure		400				{object}	presenter.ErrResponse	"Failed"
-// @router			/auth/register [post]
+//	@description	Register new admin user, only superuser can call this api
+//	@tags			Auth
+//	@accept			json
+//	@produce		json
+//	@param			RegisterInput	body		dto.AdminRegisterInput	true	"RegisterInput"
+//	@success		201				{object}	presenter.ErrResponse	"Success"
+//	@failure		400				{object}	presenter.ErrResponse	"Failed"
+//	@router			/auth/register [post]
 func Register(service auth.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var body = new(dto.AdminRegisterInput)
