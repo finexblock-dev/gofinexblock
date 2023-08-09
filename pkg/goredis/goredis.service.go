@@ -11,7 +11,9 @@ type service struct {
 }
 
 func (s *service) Keys(pattern string) (result []string, err error) {
-	return s.repository.Keys(context.Background(), pattern)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Hour)
+	defer cancel()
+	return s.repository.Keys(ctx, pattern)
 }
 
 func (s *service) XRange(stream, start, end string) ([]redis.XMessage, error) {
