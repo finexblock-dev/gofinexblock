@@ -19,6 +19,7 @@ type Repository interface {
 	XGroupCreateConsumer(ctx context.Context, stream, group, consumer string) error
 	XGroupCreate(ctx context.Context, stream, group string) error
 	XGroupCreateMkStream(ctx context.Context, stream, group string) error
+	Keys(ctx context.Context, pattern string) (result []string, err error)
 	Get(ctx context.Context, key string) (value string, err error)
 	SetNX(ctx context.Context, key string, value interface{}, exp time.Duration) (ok bool, err error)
 	Set(ctx context.Context, key string, value string, exp time.Duration) (err error)
@@ -43,6 +44,7 @@ type Service interface {
 	Set(key string, value string, exp time.Duration) (err error)
 	SetNX(key string, value interface{}, exp time.Duration) (ok bool, err error)
 	Del(key string) (err error)
+	Keys(pattern string) (result []string, err error)
 
 	TxPipeline() redis.Pipeliner
 	XAddPipeline(tx redis.Pipeliner, ctx context.Context, args *redis.XAddArgs) (err error)
