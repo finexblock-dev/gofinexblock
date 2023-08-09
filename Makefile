@@ -182,7 +182,7 @@ matching-engine: ## Build matching engine
 
 ## Backoffice swagger
 backoffice-swagger: ## Generate backoffice swagger
-	@swag init -g $(CMD)/$(BACKOFFICE)/$(ENTRY) -q --output=./$(CMD)/$(BACKOFFICE)/docs --parseInternal --parseVendor --generatedTime --requiredByDefault
+	@swag init -g $(CMD)/$(BACKOFFICE)/$(ENTRY) -q --output=./$(CMD)/$(BACKOFFICE)/docs --parseInternal --parseVendor --generatedTime
 	@#swag fmt .
 
 ## Backoffice
@@ -229,6 +229,10 @@ run-event-subscriber: event-subscriber ## Run Event subscriber
 ## Run Matching engine
 run-matching-engine: matching-engine ## Run Matching engine
 	@$(INIT)/$(MATCHING_ENGINE_OUTFILE)
+
+## Run Backoffice
+run-backoffice: backoffice ## Run Backoffice server
+	@$(INIT)/$(BACKOFFICE_OUTFILE)
 
 ## Clean:
 clean: ## Clear all generated files

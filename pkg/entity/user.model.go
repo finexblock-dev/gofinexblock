@@ -31,12 +31,14 @@ type User struct {
 type UserMetadata struct {
 	ID                uint            `json:"id" query:"id"`
 	UUID              string          `json:"uuid" query:"uuid"`
+	Email             string          `json:"email" query:"email"`
 	UserType          string          `json:"userType" query:"userType"`
 	Nickname          string          `json:"nickname" query:"nickname"`
 	Fullname          string          `json:"fullname" query:"fullname"`
 	PhoneNumber       string          `json:"phoneNumber" query:"phoneNumber"`
 	BTC               decimal.Decimal `json:"btc" query:"btc"`
 	IsBlock           bool            `json:"isBlock" query:"isBlock"`
+	IsAdult           bool            `json:"isAdult" query:"isAdult"`
 	IsDormant         bool            `json:"isDormant" query:"isDormant"`
 	IsMetaverseUser   bool            `json:"isMetaverseUser" query:"isMetaverseUser"`
 	IsGoogleUser      bool            `json:"isGoogleUser" query:"isGoogleUser"`

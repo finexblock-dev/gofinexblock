@@ -21,6 +21,51 @@ type walletService struct {
 	userRepository   user.Repository
 }
 
+func (w *walletService) FindUserAssetsByCond(userID, coinID uint) (result *structs.Asset, err error) {
+	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
+		var _user *entity.User
+		var coin *entity.Coin
+		var balance decimal.Decimal
+
+		_user, err = w.userRepository.FindUserByID(tx, userID)
+		if err != nil {
+			return err
+		}
+
+		coin, err = w.walletRepository.FindCoinByID(tx, coinID)
+		if err != nil {
+			return err
+		}
+
+		balance, err = w.manager.GetBalance(_user.UUID, coin.Name)
+		if err != nil {
+			return err
+		}
+
+		result = &structs.Asset{
+			CoinID:  coinID,
+			Balance: balance,
+		}
+
+		return nil
+	}, &sql.TxOptions{ReadOnly: true}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (w *walletService) ScanWithdrawalRequestByCondWithLimitOffset(coinID uint, status entity.WithdrawalStatus, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
+	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = w.walletRepository.ScanWithdrawalRequestByCondWithLimitOffset(tx, coinID, status, limit, offset)
+		return err
+	}, &sql.TxOptions{ReadOnly: true}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (w *walletService) ScanWithdrawalRequestByStatusWithLimitOffset(status entity.WithdrawalStatus, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
 		result, err = w.walletRepository.ScanWithdrawalRequestByStatusWithLimitOffset(tx, status, limit, offset)
@@ -32,9 +77,9 @@ func (w *walletService) ScanWithdrawalRequestByStatusWithLimitOffset(status enti
 	return result, nil
 }
 
-func (w *walletService) ScanWithdrawalRequestByUser(userID uint, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
+func (w *walletService) ScanWithdrawalRequestByUser(userID, coinID uint, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.walletRepository.ScanWithdrawalRequestByUser(tx, userID, limit, offset)
+		result, err = w.walletRepository.ScanWithdrawalRequestByUser(tx, userID, coinID, limit, offset)
 		return err
 	}, &sql.TxOptions{ReadOnly: true}); err != nil {
 		return nil, err

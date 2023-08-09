@@ -6,7 +6,7 @@ import (
 
 type (
 	FindUserByIDInput struct {
-		UserID uint `json:"user_id,required" query:"user_id,required"`
+		UserID uint `json:"userId,required" query:"userId,required"`
 	}
 
 	FindUserByIDOutput struct {
@@ -21,21 +21,22 @@ type (
 
 type (
 	SearchUserInput struct {
-		ID              uint   `json:"id,required" query:"id,required"`
-		GradeID         uint   `json:"grade_id,required" query:"grade_id,required"`
-		UUID            string `json:"uuid,required" query:"uuid,required"`
-		Email           string `json:"email,required" query:"email,required"`
-		Nickname        string `json:"nickname,required" query:"nickname,required"`
-		Fullname        string `json:"fullname,required" query:"fullname,required"`
-		PhoneNumber     string `json:"phone_number,required" query:"phone_number,required"`
-		UserType        string `json:"user_type,required" query:"user_type,required"`
-		IsBlock         bool   `json:"is_block,required" query:"is_block,required"`
-		IsDormant       bool   `json:"is_dormant,required" query:"is_dormant,required"`
-		IsMetaverseUser bool   `json:"is_metaverse_user,required" query:"is_metaverse_user,required"`
-		IsDropOutUser   bool   `json:"is_drop_out_user,required" query:"is_drop_out_user,required"`
-		Description     string `json:"description,required" query:"description,required"`
-		Limit           int    `json:"limit,required,required" query:"limit,required,required" default:"20"`
-		Offset          int    `json:"offset,required,required" query:"offset,required,required" default:"0"`
+		ID              uint   `json:"id" query:"id"`
+		GradeID         uint   `json:"gradeId" query:"gradeId"`
+		UUID            string `json:"uuid" query:"uuid"`
+		Email           string `json:"email" query:"email"`
+		Nickname        string `json:"nickname" query:"nickname"`
+		Fullname        string `json:"fullname" query:"fullname"`
+		PhoneNumber     string `json:"phoneNumber" query:"phoneNumber"`
+		UserType        string `json:"userType" query:"userType"`
+		IsAdult         bool   `json:"isAdult" query:"isAdult"`
+		IsBlock         bool   `json:"isBlock" query:"isBlock"`
+		IsDormant       bool   `json:"isDormant" query:"isDormant"`
+		IsMetaverseUser bool   `json:"isMetaverseUser" query:"isMetaverseUser"`
+		IsDropOutUser   bool   `json:"isDropOutUser" query:"isDropOutUser"`
+		Description     string `json:"description" query:"description"`
+		Limit           int    `json:"limit,required" query:"limit,required" default:"20"`
+		Offset          int    `json:"offset,required" query:"offset,required" default:"0"`
 	}
 
 	SearchUserOutput struct {
@@ -50,7 +51,7 @@ type (
 
 type (
 	BlockUserInput struct {
-		UserID uint `json:"user_id,required" query:"user_id,required"`
+		UserID uint `json:"userId,required" query:"userId,required"`
 	}
 
 	BlockUserOutput struct {
@@ -65,7 +66,7 @@ type (
 
 type (
 	CreateMemoInput struct {
-		UserID      uint   `json:"user_id,required" default:"79"`
+		UserID      uint   `json:"userId,required" default:"79"`
 		Description string `json:"description,required" default:"example memo"`
 	}
 
