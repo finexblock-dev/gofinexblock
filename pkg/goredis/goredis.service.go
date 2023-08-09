@@ -10,6 +10,10 @@ type service struct {
 	repository Repository
 }
 
+func (s *service) Keys(pattern string) (result []string, err error) {
+	return s.repository.Keys(context.Background(), pattern)
+}
+
 func (s *service) XRange(stream, start, end string) ([]redis.XMessage, error) {
 	return s.repository.XRange(context.Background(), stream, start, end)
 }

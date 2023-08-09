@@ -29,6 +29,7 @@ type Repository interface {
 
 	ScanWalletByCoinID(tx *gorm.DB, coinID uint) (result []*entity.Wallet, err error)
 	ScanWalletByUserID(tx *gorm.DB, userID uint) (result []*entity.Wallet, err error)
+	ScanWalletByCond(tx *gorm.DB, userID, coinID uint) (result *entity.Wallet, err error)
 	GetContractAddressByCoinID(tx *gorm.DB, coinID uint) (result *entity.SmartContract, err error)
 
 	InsertWallet(tx *gorm.DB, wallet *entity.Wallet) (result *entity.Wallet, err error)
@@ -45,16 +46,18 @@ type Repository interface {
 	UpdateCoinTransactionHash(tx *gorm.DB, id uint, hash string) (result *entity.CoinTransaction, err error)
 	UpdateCoinTransactionStatus(tx *gorm.DB, id uint, txStatus entity.TransactionStatus) (result *entity.CoinTransaction, err error)
 
-	ScanWithdrawalRequestByUser(tx *gorm.DB, userID uint, limit, offset int) (result []*entity.WithdrawalRequest, err error)
+	ScanWithdrawalRequestByUser(tx *gorm.DB, userID, coinID uint, limit, offset int) (result []*entity.WithdrawalRequest, err error)
 	ScanWithdrawalRequestByStatus(tx *gorm.DB, status entity.WithdrawalStatus) (result []*entity.WithdrawalRequest, err error)
 	ScanWithdrawalRequestByStatusWithLimitOffset(tx *gorm.DB, status entity.WithdrawalStatus, limit, offset int) (result []*entity.WithdrawalRequest, err error)
 	ScanWithdrawalRequestByCond(tx *gorm.DB, coinID uint, status entity.WithdrawalStatus) (result []*entity.WithdrawalRequest, err error)
+	ScanWithdrawalRequestByCondWithLimitOffset(tx *gorm.DB, coinID uint, status entity.WithdrawalStatus, limit, offset int) (result []*entity.WithdrawalRequest, err error)
 	UpdateWithdrawalRequest(tx *gorm.DB, id uint, state entity.WithdrawalStatus) (result *entity.WithdrawalRequest, err error)
 }
 
 type Service interface {
 	types.Service
 	FindAllUserAssets(id uint) (result []*structs.Asset, err error)
+	FindUserAssetsByCond(userID, coinID uint) (result *structs.Asset, err error)
 	ScanCoinTransferByUser(userID uint, limit, offset int) (result []*entity.CoinTransfer, err error)
 
 	FindBlockchainByName(name string) (result *entity.Blockchain, err error)
@@ -89,11 +92,12 @@ type Service interface {
 	UpdateCoinTransactionHash(id uint, hash string) (result *entity.CoinTransaction, err error)
 	UpdateCoinTransactionStatus(id uint, txStatus entity.TransactionStatus) (result *entity.CoinTransaction, err error)
 
-	ScanWithdrawalRequestByUser(userID uint, limit, offset int) (result []*entity.WithdrawalRequest, err error)
+	ScanWithdrawalRequestByUser(userID, coinID uint, limit, offset int) (result []*entity.WithdrawalRequest, err error)
 	ScanWithdrawalRequestByStatus(status entity.WithdrawalStatus) (result []*entity.WithdrawalRequest, err error)
 	ScanWithdrawalRequestByStatusWithLimitOffset(status entity.WithdrawalStatus, limit, offset int) (result []*entity.WithdrawalRequest, err error)
 
 	ScanWithdrawalRequestByCond(coinID uint, status entity.WithdrawalStatus) (result []*entity.WithdrawalRequest, err error)
+	ScanWithdrawalRequestByCondWithLimitOffset(coinID uint, status entity.WithdrawalStatus, limit, offset int) (result []*entity.WithdrawalRequest, err error)
 	UpdateWithdrawalRequest(id uint, state entity.WithdrawalStatus) (result *entity.WithdrawalRequest, err error)
 
 	BalanceUpdateInBatch(event []*grpc_order.BalanceUpdate) (err error)

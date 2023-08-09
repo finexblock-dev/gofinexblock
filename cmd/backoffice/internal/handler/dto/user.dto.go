@@ -20,6 +20,7 @@ type (
 		IsDormant       bool   `json:"isDormant" query:"isDormant"`
 		IsMetaverseUser bool   `json:"isMetaverseUser" query:"isMetaverseUser"`
 		IsDropOutUser   bool   `json:"isDropOutUser" query:"isDropOutUser"`
+		IsAdult         bool   `json:"isAdult" query:"isAdult"`
 		Description     string `json:"description" query:"description"`
 		Limit           int    `json:"limit" query:"limit" binding:"required" default:"20" validate:"min=1,max=100"`
 		Offset          int    `json:"offset" query:"offset" binding:"required" default:"0" validate:"min=0"`

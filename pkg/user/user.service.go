@@ -53,6 +53,8 @@ func (u *userService) FindUserMetadata(id uint) (result *entity.UserMetadata, er
 	if err = u.Conn().Transaction(func(tx *gorm.DB) error {
 		var _user = new(entity.User)
 		var _profile = new(entity.UserProfile)
+		var _email = new(entity.UserEmailSignUp)
+		var _verification = new(entity.UserVerification)
 		var metaverseSSO = new(entity.UserSingleSignOnInfo)
 		var appleSSO = new(entity.UserSingleSignOnInfo)
 		var googleSSO = new(entity.UserSingleSignOnInfo)
@@ -72,6 +74,13 @@ func (u *userService) FindUserMetadata(id uint) (result *entity.UserMetadata, er
 		result.CreatedAt = _user.CreatedAt
 		result.UpdatedAt = _user.UpdatedAt
 		result.IsBlock = _user.IsBlock
+
+		_email, err = u.repo.FindUserEmailSignUpByUserID(tx, id)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			return err
+		}
+
+		result.Email = _email.Email
 
 		_profile, err = u.repo.FindUserProfileByUserID(tx, id)
 		if err != nil {
@@ -126,6 +135,17 @@ func (u *userService) FindUserMetadata(id uint) (result *entity.UserMetadata, er
 			result.UserMemo = nil
 		}
 
+		_verification, err = u.repo.FindUserVerificationByUserID(tx, id)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			return err
+		}
+
+		if _verification != nil {
+			result.IsAdult = _verification.AdultVerified
+		} else {
+			result.IsAdult = false
+		}
+
 		dormant, err = u.repo.FindUserDormantByUserID(tx, id)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			return err
@@ -155,7 +175,7 @@ func (u *userService) FindUserMetadata(id uint) (result *entity.UserMetadata, er
 func (u *userService) SearchUser(input *structs.SearchUserInput) (result []*entity.UserMetadata, err error) {
 	if err = u.Conn().Transaction(func(tx *gorm.DB) error {
 		var users []*entity.User
-		var metadata *entity.UserMetadata
+		var metadata = new(entity.UserMetadata)
 
 		users, err = u.repo.SearchUser(tx, input)
 		if err != nil {

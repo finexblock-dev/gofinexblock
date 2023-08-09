@@ -8,4 +8,12 @@ type (
 	ProxyHealthCheckOutput struct {
 		Message string `json:"message" required:"true"`
 	}
+
+	ProxyWhoAmIInput struct {
+		Domain string `json:"domain" required:"true"`
+	}
+
+	ProxyWhoAmIOutput struct {
+		Message string `json:"message" required:"true"`
+	}
 )

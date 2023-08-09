@@ -2,9 +2,9 @@ package handler
 
 import (
 	"errors"
-	"github.com/finexblock-dev/gofinexblock/cmd/backoffice/internal/types"
 	"github.com/finexblock-dev/gofinexblock/cmd/backoffice/internal/handler/dto"
 	"github.com/finexblock-dev/gofinexblock/cmd/backoffice/internal/presenter"
+	"github.com/finexblock-dev/gofinexblock/cmd/backoffice/internal/types"
 	"github.com/finexblock-dev/gofinexblock/pkg/entity"
 	"github.com/finexblock-dev/gofinexblock/pkg/wallet"
 	"github.com/gofiber/fiber/v2"
@@ -37,7 +37,7 @@ func ScanWithdrawalRequestByStatus(service wallet.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.WithdrawalErrResponse(fiber.StatusBadRequest, err))
 		}
 
-		result, err = service.ScanWithdrawalRequestByStatusWithLimitOffset(status, query.Limit, query.Offset)
+		result, err = service.ScanWithdrawalRequestByCondWithLimitOffset(query.CoinID, status, query.Limit, query.Offset)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.WithdrawalErrResponse(fiber.StatusBadRequest, err))
 		}
@@ -67,7 +67,7 @@ func FindWithdrawalRequestsByUserID(service wallet.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.WithdrawalErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseQuery, err)))
 		}
 
-		result, err = service.ScanWithdrawalRequestByUser(query.UserID, query.Limit, query.Offset)
+		result, err = service.ScanWithdrawalRequestByUser(query.UserID, query.CoinID, query.Limit, query.Offset)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.WithdrawalErrResponse(fiber.StatusBadRequest, err))
 		}

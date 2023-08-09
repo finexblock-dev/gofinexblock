@@ -42,16 +42,15 @@ func FindUserByID(service user.Service) fiber.Handler {
 }
 
 // SearchUser @SearchUser
-//
-//	@description	Search user by given condition.
-//	@security		BearerAuth
-//	@tags			User
-//	@accept			json
-//	@produce		json
-//	@param			SearchUserInput	query		dto.SearchUserInput		true	"SearchUserInput"
-//	@success		200				{object}	[]entity.UserMetadata	"Success"
-//	@failure		400				{object}	presenter.ErrResponse	"Failed"
-//	@router			/user/search [get]
+// @description	Search user by given condition.
+// @security		BearerAuth
+// @tags			User
+// @accept			json
+// @produce		json
+// @param			SearchUserInput	query		dto.SearchUserInput		true	"SearchUserInput"
+// @success		200				{object}	[]entity.UserMetadata	"Success"
+// @failure		400				{object}	presenter.ErrResponse	"Failed"
+// @router			/user/search [get]
 func SearchUser(service user.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
@@ -72,6 +71,7 @@ func SearchUser(service user.Service) fiber.Handler {
 			Fullname:        query.Fullname,
 			PhoneNumber:     query.PhoneNumber,
 			UserType:        query.UserType,
+			IsAdult:         query.IsAdult,
 			IsBlock:         query.IsBlock,
 			IsDormant:       query.IsDormant,
 			IsMetaverseUser: query.IsMetaverseUser,
@@ -91,16 +91,15 @@ func SearchUser(service user.Service) fiber.Handler {
 }
 
 // BlockUser @BlockUser
-//
-//	@description	Force block user.
-//	@security		BearerAuth
-//	@tags			User
-//	@accept			json
-//	@produce		json
-//	@param			BlockUserInput	body		dto.BlockUserInput		true	"BlockUserInput"
-//	@success		200				{object}	presenter.MsgResponse	"Success"
-//	@failure		400				{object}	presenter.ErrResponse	"Failed"
-//	@router			/user/block [patch]
+// @description	Force block user.
+// @security		BearerAuth
+// @tags			User
+// @accept			json
+// @produce		json
+// @param			BlockUserInput	body		dto.BlockUserInput		true	"BlockUserInput"
+// @success		200				{object}	presenter.MsgResponse	"Success"
+// @failure		400				{object}	presenter.ErrResponse	"Failed"
+// @router			/user/block [patch]
 func BlockUser(service user.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error

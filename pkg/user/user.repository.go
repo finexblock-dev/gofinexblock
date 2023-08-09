@@ -11,10 +11,19 @@ type userRepository struct {
 	db *gorm.DB
 }
 
+func (u *userRepository) FindUserVerificationByUserID(tx *gorm.DB, userID uint) (result *entity.UserVerification, err error) {
+	if err = tx.Table(result.TableName()).Where("user_id = ?", userID).First(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (u *userRepository) FindUserDormantByUserID(tx *gorm.DB, userID uint) (result *entity.UserDormant, err error) {
 	if err = tx.Table(result.TableName()).Where("user_id = ?", userID).First(&result).Error; err != nil {
 		return nil, err
 	}
+
 	return result, nil
 }
 
@@ -89,6 +98,7 @@ func (u *userRepository) SearchUser(tx *gorm.DB, input *structs.SearchUserInput)
 		query = query.Joins("JOIN user_profile on user_profile.user_id = user.id").
 			Where("user_profile.fullname = ?", input.Fullname)
 	}
+
 	if input.PhoneNumber != "" {
 		query = query.Joins("JOIN user_profile on user_profile.user_id = user.id").
 			Where("user_profile.phone_number = ?", input.PhoneNumber)
@@ -101,15 +111,14 @@ func (u *userRepository) SearchUser(tx *gorm.DB, input *structs.SearchUserInput)
 
 	if input.IsDormant {
 		query = query.Joins("JOIN user_dormant on user_dormant.user_id = user.id")
-	} else {
-		query = query.Joins("LEFT JOIN user_dormant on user_dormant.user_id = user.id").
-			Where("user_dormant.id IS NULL")
+	}
+
+	if input.IsAdult {
+		query = query.Joins("JOIN user_verification uv on uv.user_id = user.id")
 	}
 
 	if input.IsDropOutUser {
 		query = query.Where("user.deleted_at IS NOT NULL")
-	} else {
-		query = query.Where("user.deleted_at IS NULL")
 	}
 
 	if input.IsBlock {
