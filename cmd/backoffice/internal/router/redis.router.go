@@ -27,4 +27,7 @@ func RedisRouter(router fiber.Router, cluster *redis.ClusterClient) {
 	redisRouter.Get("/get", handler.Get(svc))
 	redisRouter.Post("/set", handler.Set(svc))
 	redisRouter.Delete("/del", handler.Del(svc))
+
+	redisRouter.Get("/keys", handler.Keys(svc))
+	redisRouter.Delete("/deleteRefreshToken", handler.DeleteAllRefreshTokens(svc))
 }

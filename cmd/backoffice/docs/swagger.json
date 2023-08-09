@@ -1352,7 +1352,7 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Find asset by user id.",
+                "description": "Find asset by cond.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1365,6 +1365,12 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "name": "coinId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
                         "name": "userId",
                         "in": "query",
                         "required": true
@@ -1374,10 +1380,7 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/structs.Asset"
-                            }
+                            "$ref": "#/definitions/structs.Asset"
                         }
                     },
                     "400": {
@@ -1730,6 +1733,34 @@
                 }
             }
         },
+        "/redis/deleteRefreshToken": {
+            "delete": {
+                "description": "DeleteAllRefreshTokens command.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Redis"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/redis/get": {
             "get": {
                 "description": "Get command.",
@@ -1746,6 +1777,42 @@
                     {
                         "type": "string",
                         "name": "key",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/redis/keys": {
+            "get": {
+                "description": "Keys command.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Redis"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "pattern",
                         "in": "query",
                         "required": true
                     }

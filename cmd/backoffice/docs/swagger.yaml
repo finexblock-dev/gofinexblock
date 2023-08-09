@@ -1508,8 +1508,12 @@ paths:
     get:
       consumes:
       - application/json
-      description: Find asset by user id.
+      description: Find asset by cond.
       parameters:
+      - in: query
+        name: coinId
+        required: true
+        type: integer
       - in: query
         name: userId
         required: true
@@ -1520,9 +1524,7 @@ paths:
         "200":
           description: Success
           schema:
-            items:
-              $ref: '#/definitions/structs.Asset'
-            type: array
+            $ref: '#/definitions/structs.Asset'
         "400":
           description: Failed
           schema:
@@ -1748,6 +1750,24 @@ paths:
             $ref: '#/definitions/presenter.ErrResponse'
       tags:
       - Redis
+  /redis/deleteRefreshToken:
+    delete:
+      consumes:
+      - application/json
+      description: DeleteAllRefreshTokens command.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      tags:
+      - Redis
   /redis/get:
     get:
       consumes:
@@ -1756,6 +1776,29 @@ paths:
       parameters:
       - in: query
         name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      tags:
+      - Redis
+  /redis/keys:
+    get:
+      consumes:
+      - application/json
+      description: Keys command.
+      parameters:
+      - in: query
+        name: pattern
         required: true
         type: string
       produces:

@@ -151,3 +151,61 @@ func Del(service goredis.Service) fiber.Handler {
 		return c.SendString("OK")
 	}
 }
+
+// Keys @Keys
+// @description	Keys command.
+// @tags			Redis
+// @accept			json
+// @produce		json
+// @param			KeysInput	query		dto.KeysInput			true	"KeysInput"
+// @success		200			{object}	interface{}				"Success"
+// @failure		400			{object}	presenter.ErrResponse	"Failed"
+// @router			/redis/keys [get]
+func Keys(service goredis.Service) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var query = new(dto.KeysInput)
+		var keys []string
+		var err error
+
+		if err = c.QueryParser(query); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseQuery, err)))
+		}
+
+		keys, err = service.Keys(query.Pattern)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, err))
+		}
+
+		return c.JSON(keys)
+	}
+}
+
+// DeleteAllRefreshTokens @DeleteAllRefreshTokens
+// @description	DeleteAllRefreshTokens command.
+// @tags			Redis
+// @accept			json
+// @produce		json
+// @success		200			{object}	interface{}				"Success"
+// @failure		400			{object}	presenter.ErrResponse	"Failed"
+// @router			/redis/deleteRefreshToken [delete]
+func DeleteAllRefreshTokens(service goredis.Service) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var err error
+		var keys []string
+
+		keys, err = service.Keys("finexblock:refreshToken:*")
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, err))
+		}
+
+		for _, key := range keys {
+			err = service.Del(key)
+			if err != nil {
+				return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, err))
+			}
+		}
+
+		return c.SendString("OK")
+
+	}
+}
