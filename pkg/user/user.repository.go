@@ -23,6 +23,7 @@ func (u *userRepository) FindUserDormantByUserID(tx *gorm.DB, userID uint) (resu
 	if err = tx.Table(result.TableName()).Where("user_id = ?", userID).First(&result).Error; err != nil {
 		return nil, err
 	}
+
 	return result, nil
 }
 
