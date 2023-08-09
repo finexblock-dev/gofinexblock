@@ -9,20 +9,20 @@ import (
 	_ "github.com/finexblock-dev/gofinexblock/cmd/backoffice/docs"
 )
 
-// @title						Finexblock backoffice API Documentation
-// @version					1.0
-// @description				Finexblock backoffice API Documentation
-// @securityDefinitions.apikey	BearerAuth
-// @type						apiKey
-// @in							header
-// @name						Authorization
-// @termsOfService				http://swagger.io/terms/
-// @contact.name				API Support
-// @contact.email				fiber@swagger.io
-// @license.name				Apache 2.0
-// @license.url				http://www.apache.org/licenses/LICENSE-2.0.html
-// @host						localhost:8000
-// @BasePath					/
+//	@title						Finexblock backoffice API Documentation
+//	@version					1.0
+//	@description				Finexblock backoffice API Documentation
+//	@securityDefinitions.apikey	BearerAuth
+//	@type						apiKey
+//	@in							header
+//	@name						Authorization
+//	@termsOfService				http://swagger.io/terms/
+//	@contact.name				API Support
+//	@contact.email				fiber@swagger.io
+//	@license.name				Apache 2.0
+//	@license.url				http://www.apache.org/licenses/LICENSE-2.0.html
+//	@host						localhost:3000
+//	@BasePath					/
 func main() {
 	log.Println("Launch finexblock backoffice server")
 

@@ -7,17 +7,12 @@ definitions:
       password:
         default: Metaverse123!
         type: string
-    required:
-    - email
-    - password
     type: object
   dto.BlockAdminInput:
     properties:
       adminId:
         default: 1
         type: integer
-    required:
-    - adminId
     type: object
   dto.BlockUserInput:
     properties:
@@ -55,16 +50,6 @@ definitions:
       visible:
         default: true
         type: boolean
-    required:
-    - categoryId
-    - chinese
-    - chineseTitle
-    - english
-    - englishTitle
-    - korean
-    - koreanTitle
-    - pinned
-    - visible
     type: object
   dto.CreateCategoryInput:
     properties:
@@ -77,10 +62,6 @@ definitions:
       koreanType:
         default: 남현우
         type: string
-    required:
-    - chineseType
-    - englishType
-    - koreanType
     type: object
   dto.CreateMemoInput:
     properties:
@@ -102,23 +83,21 @@ definitions:
       password:
         default: Metaverse123!
         type: string
-    required:
-    - email
-    - password
     type: object
   dto.LoginOutput:
     properties:
       accessToken:
         type: string
-    required:
-    - accessToken
     type: object
   dto.ProxyHealthCheckOutput:
     properties:
       message:
         type: string
-    required:
-    - message
+    type: object
+  dto.ProxyWhoAmIOutput:
+    properties:
+      message:
+        type: string
     type: object
   dto.SetInput:
     properties:
@@ -135,8 +114,6 @@ definitions:
       adminId:
         default: 1
         type: integer
-    required:
-    - adminId
     type: object
   dto.UnblockUserInput:
     properties:
@@ -176,17 +153,6 @@ definitions:
       visible:
         default: true
         type: boolean
-    required:
-    - ID
-    - categoryId
-    - chinese
-    - chineseTitle
-    - english
-    - englishTitle
-    - korean
-    - koreanTitle
-    - pinned
-    - visible
     type: object
   dto.UpdateCategoryInput:
     properties:
@@ -202,11 +168,6 @@ definitions:
       koreanType:
         default: 의자
         type: string
-    required:
-    - chineseType
-    - englishType
-    - id
-    - koreanType
     type: object
   dto.UpdateEmailInput:
     properties:
@@ -306,27 +267,6 @@ definitions:
         type: array
       updatedAt:
         type: string
-    required:
-    - adminAccessToken
-    - adminApiLog
-    - adminLoginFailedLog
-    - adminLoginHistory
-    - createdAt
-    - deletedAt
-    - email
-    - executeDeleteLog
-    - executeGradeUpdateLog
-    - executePasswordLog
-    - grade
-    - id
-    - initialLogin
-    - isBlocked
-    - password
-    - pwdUpdatedAt
-    - targetDeleteLog
-    - targetGradeUpdateLog
-    - targetPasswordLog
-    - updatedAt
     type: object
   entity.AdminAccessToken:
     properties:
@@ -340,12 +280,6 @@ definitions:
         type: integer
       updatedAt:
         type: string
-    required:
-    - adminId
-    - createdAt
-    - expiredAt
-    - id
-    - updatedAt
     type: object
   entity.AdminApiLog:
     properties:
@@ -363,14 +297,6 @@ definitions:
         $ref: '#/definitions/entity.ApiMethod'
       updatedAt:
         type: string
-    required:
-    - adminId
-    - createdAt
-    - endpoint
-    - id
-    - ip
-    - method
-    - updatedAt
     type: object
   entity.AdminDeleteLog:
     properties:
@@ -384,12 +310,6 @@ definitions:
         type: integer
       updatedAt:
         type: string
-    required:
-    - createdAt
-    - executorId
-    - id
-    - targetId
-    - updatedAt
     type: object
   entity.AdminGradeUpdateLog:
     properties:
@@ -407,14 +327,6 @@ definitions:
         type: integer
       updatedAt:
         type: string
-    required:
-    - createdAt
-    - currGrade
-    - executorId
-    - id
-    - prevGrade
-    - targetId
-    - updatedAt
     type: object
   entity.AdminLoginFailedLog:
     properties:
@@ -424,10 +336,6 @@ definitions:
         type: string
       id:
         type: integer
-    required:
-    - adminId
-    - failedAt
-    - id
     type: object
   entity.AdminLoginHistory:
     properties:
@@ -437,10 +345,6 @@ definitions:
         type: integer
       loggedAt:
         type: string
-    required:
-    - adminId
-    - id
-    - loggedAt
     type: object
   entity.AdminPasswordLog:
     properties:
@@ -454,12 +358,6 @@ definitions:
         type: integer
       updatedAt:
         type: string
-    required:
-    - createdAt
-    - executorId
-    - id
-    - targetId
-    - updatedAt
     type: object
   entity.Announcement:
     properties:
@@ -489,20 +387,6 @@ definitions:
         type: string
       visible:
         type: boolean
-    required:
-    - category
-    - categoryId
-    - chinese
-    - chineseTitle
-    - createdAt
-    - english
-    - englishTitle
-    - id
-    - korean
-    - koreanTitle
-    - pinned
-    - updatedAt
-    - visible
     type: object
   entity.AnnouncementCategory:
     properties:
@@ -514,11 +398,6 @@ definitions:
         type: integer
       koreanType:
         type: string
-    required:
-    - chineseType
-    - englishType
-    - id
-    - koreanType
     type: object
   entity.ApiMethod:
     enum:
@@ -548,13 +427,6 @@ definitions:
         type: string
       updatedAt:
         type: string
-    required:
-    - coinTransferId
-    - createdAt
-    - id
-    - status
-    - txHash
-    - updatedAt
     type: object
   entity.CoinTransfer:
     properties:
@@ -580,16 +452,6 @@ definitions:
         items:
           $ref: '#/definitions/entity.WithdrawalRequest'
         type: array
-    required:
-    - amount
-    - coinTransaction
-    - createdAt
-    - id
-    - transferType
-    - updatedAt
-    - wallet
-    - walletId
-    - withdrawalRequest
     type: object
   entity.GradeType:
     enum:
@@ -613,12 +475,6 @@ definitions:
         type: string
       url:
         type: string
-    required:
-    - createdAt
-    - id
-    - key
-    - updatedAt
-    - url
     type: object
   entity.PartialAdmin:
     properties:
@@ -638,15 +494,6 @@ definitions:
         type: string
       updatedAt:
         type: string
-    required:
-    - createdAt
-    - email
-    - grade
-    - id
-    - initialLogin
-    - isBlocked
-    - pwdUpdatedAt
-    - updatedAt
     type: object
   entity.TransactionStatus:
     enum:
@@ -676,10 +523,6 @@ definitions:
         type: integer
       userId:
         type: integer
-    required:
-    - description
-    - id
-    - userId
     type: object
   entity.UserMetadata:
     properties:
@@ -687,10 +530,14 @@ definitions:
         type: number
       createdAt:
         type: string
+      email:
+        type: string
       fullname:
         type: string
       id:
         type: integer
+      isAdult:
+        type: boolean
       isAppleUser:
         type: boolean
       isBlock:
@@ -715,23 +562,6 @@ definitions:
         type: string
       uuid:
         type: string
-    required:
-    - btc
-    - createdAt
-    - fullname
-    - id
-    - isAppleUser
-    - isBlock
-    - isDormant
-    - isEmailSignUpUser
-    - isGoogleUser
-    - isMetaverseUser
-    - nickname
-    - phoneNumber
-    - updatedAt
-    - userMemo
-    - userType
-    - uuid
     type: object
   entity.Wallet:
     properties:
@@ -751,14 +581,6 @@ definitions:
         type: string
       userId:
         type: integer
-    required:
-    - address
-    - coinId
-    - coinTransfer
-    - createdAt
-    - id
-    - updatedAt
-    - userId
     type: object
   entity.WithdrawalRequest:
     properties:
@@ -780,16 +602,6 @@ definitions:
         type: string
       updatedAt:
         type: string
-    required:
-    - amount
-    - coinTransfer
-    - coinTransferId
-    - createdAt
-    - fee
-    - id
-    - status
-    - toAddress
-    - updatedAt
     type: object
   entity.WithdrawalStatus:
     enum:
@@ -815,9 +627,6 @@ definitions:
         type: string
       status:
         type: boolean
-    required:
-    - message
-    - status
     type: object
   presenter.MsgResponse:
     properties:
@@ -827,10 +636,6 @@ definitions:
         type: string
       status:
         type: boolean
-    required:
-    - code
-    - message
-    - status
     type: object
   structs.Asset:
     properties:
@@ -1037,15 +842,12 @@ paths:
       parameters:
       - in: query
         name: adminId
-        required: true
         type: integer
       - in: query
         name: endTime
-        required: true
         type: string
       - in: query
         name: endpoint
-        required: true
         type: string
       - default: 20
         in: query
@@ -1057,7 +859,6 @@ paths:
       - example: GET, POST, PATCH, PUT, DELETE...
         in: query
         name: method
-        required: true
         type: string
       - default: 0
         in: query
@@ -1067,7 +868,6 @@ paths:
         type: integer
       - in: query
         name: startTime
-        required: true
         type: string
       produces:
       - application/json
@@ -1094,11 +894,9 @@ paths:
       parameters:
       - in: query
         name: endTime
-        required: true
         type: string
       - in: query
         name: executor
-        required: true
         type: integer
       - default: 20
         in: query
@@ -1115,11 +913,9 @@ paths:
         type: integer
       - in: query
         name: startTime
-        required: true
         type: string
       - in: query
         name: target
-        required: true
         type: integer
       produces:
       - application/json
@@ -1187,11 +983,9 @@ paths:
       parameters:
       - in: query
         name: endTime
-        required: true
         type: string
       - in: query
         name: executor
-        required: true
         type: integer
       - default: 20
         in: query
@@ -1208,11 +1002,9 @@ paths:
         type: integer
       - in: query
         name: startTime
-        required: true
         type: string
       - in: query
         name: target
-        required: true
         type: integer
       produces:
       - application/json
@@ -1280,11 +1072,9 @@ paths:
       parameters:
       - in: query
         name: endTime
-        required: true
         type: string
       - in: query
         name: executor
-        required: true
         type: integer
       - default: 20
         in: query
@@ -1301,11 +1091,9 @@ paths:
         type: integer
       - in: query
         name: startTime
-        required: true
         type: string
       - in: query
         name: target
-        required: true
         type: integer
       produces:
       - application/json
@@ -1423,7 +1211,6 @@ paths:
       - default: 1
         in: query
         name: announcementId
-        required: true
         type: integer
       produces:
       - application/json
@@ -1561,7 +1348,6 @@ paths:
       - default: 1
         in: query
         name: id
-        required: true
         type: integer
       produces:
       - application/json
@@ -1673,7 +1459,6 @@ paths:
       parameters:
       - in: query
         name: categoryId
-        required: true
         type: integer
       - default: 20
         in: query
@@ -1688,21 +1473,19 @@ paths:
         name: offset
         required: true
         type: integer
-      - in: query
+      - default: true
+        in: query
         name: pinned
-        required: true
         type: boolean
       - in: query
         name: title
-        required: true
         type: string
-      - in: query
+      - default: true
+        in: query
         name: visible
-        required: true
         type: boolean
       - in: query
         name: word
-        required: true
         type: string
       produces:
       - application/json
@@ -1841,7 +1624,6 @@ paths:
       parameters:
       - in: query
         name: domain
-        required: true
         type: string
       produces:
       - application/json
@@ -1850,6 +1632,28 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/dto.ProxyHealthCheckOutput'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.ErrResponse'
+      tags:
+      - gRPC
+  /gRPC/whoami:
+    get:
+      consumes:
+      - application/json
+      description: gRPC Health check in same VPC.
+      parameters:
+      - in: query
+        name: domain
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/dto.ProxyWhoAmIOutput'
         "400":
           description: Failed
           schema:
@@ -2133,39 +1937,33 @@ paths:
       parameters:
       - in: query
         name: description
-        required: true
         type: string
       - in: query
         name: email
-        required: true
         type: string
       - in: query
         name: fullname
-        required: true
         type: string
       - in: query
         name: gradeId
-        required: true
         type: integer
       - in: query
         name: id
-        required: true
         type: integer
       - in: query
+        name: isAdult
+        type: boolean
+      - in: query
         name: isBlock
-        required: true
         type: boolean
       - in: query
         name: isDormant
-        required: true
         type: boolean
       - in: query
         name: isDropOutUser
-        required: true
         type: boolean
       - in: query
         name: isMetaverseUser
-        required: true
         type: boolean
       - default: 20
         in: query
@@ -2176,7 +1974,6 @@ paths:
         type: integer
       - in: query
         name: nickname
-        required: true
         type: string
       - default: 0
         in: query
@@ -2186,15 +1983,12 @@ paths:
         type: integer
       - in: query
         name: phoneNumber
-        required: true
         type: string
       - in: query
         name: userType
-        required: true
         type: string
       - in: query
         name: uuid
-        required: true
         type: string
       produces:
       - application/json
