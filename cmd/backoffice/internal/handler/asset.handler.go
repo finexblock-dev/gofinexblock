@@ -12,16 +12,15 @@ import (
 )
 
 // FindUserAssets @FindAssetByUserID
-//
-//	@description	Find asset by user id.
-//	@security		BearerAuth
-//	@tags			Asset
-//	@accept			json
-//	@produce		json
-//	@param			wallet.FindUserAssetsInput	query		dto.FindUserAssetsInput	true	"FindUserAssetsInput"
-//	@success		200							{object}	[]structs.Asset			"Success"
-//	@failure		400							{object}	presenter.MsgResponse	"Failed"
-//	@router			/asset [get]
+// @description	Find asset by user id.
+// @security		BearerAuth
+// @tags			Asset
+// @accept			json
+// @produce		json
+// @param			wallet.FindUserAssetsInput	query		dto.FindUserAssetsInput	true	"FindUserAssetsInput"
+// @success		200							{object}	[]structs.Asset			"Success"
+// @failure		400							{object}	presenter.MsgResponse	"Failed"
+// @router			/asset [get]
 func FindUserAssets(service wallet.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var query = new(dto.FindUserAssetsInput)
@@ -42,16 +41,15 @@ func FindUserAssets(service wallet.Service) fiber.Handler {
 }
 
 // FindUserBalanceUpdateLog @FindUserBalanceUpdateLog
-//
-//	@description	Find user balance update log
-//	@security		BearerAuth
-//	@tags			Asset
-//	@accept			json
-//	@produce		json
-//	@param			wallet.FindUserBalanceUpdateLogInput	query		dto.FindUserBalanceUpdateLogInput	true	"FindUserBalanceUpdateLogInput"
-//	@success		200										{object}	[]entity.CoinTransfer				"Success"
-//	@failure		400										{object}	presenter.MsgResponse				"Failed"
-//	@router			/asset/balance/log [get]
+// @description	Find user balance update log
+// @security		BearerAuth
+// @tags			Asset
+// @accept			json
+// @produce		json
+// @param			wallet.FindUserBalanceUpdateLogInput	query		dto.FindUserBalanceUpdateLogInput	true	"FindUserBalanceUpdateLogInput"
+// @success		200										{object}	[]entity.CoinTransfer				"Success"
+// @failure		400										{object}	presenter.MsgResponse				"Failed"
+// @router			/asset/balance/log [get]
 func FindUserBalanceUpdateLog(service wallet.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var query = new(dto.FindUserBalanceUpdateLogInput)
@@ -68,5 +66,34 @@ func FindUserBalanceUpdateLog(service wallet.Service) fiber.Handler {
 		}
 
 		return c.Status(fiber.StatusOK).JSON(coinTransfers)
+	}
+}
+
+// FindUserAssetsByCondInput @FindUserAssetsByCondInput
+// @description	Find asset by cond.
+// @security		BearerAuth
+// @tags			Asset
+// @accept			json
+// @produce		json
+// @param			wallet.FindUserAssetsByCondInputInput	query		dto.FindUserAssetsByCondInput	true	"FindUserAssetsByCondInputInput"
+// @success		200							{object}	structs.Asset			"Success"
+// @failure		400							{object}	presenter.MsgResponse	"Failed"
+// @router			/asset [get]
+func FindUserAssetsByCondInput(service wallet.Service) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var query = new(dto.FindUserAssetsByCondInput)
+		var assets *structs.Asset
+		var err error
+
+		if err = c.QueryParser(query); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(presenter.AssetErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseQuery, err)))
+		}
+
+		assets, err = service.FindUserAssetsByCond(query.UserID, query.CoinID)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(presenter.AssetErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToScanWallet, err)))
+		}
+
+		return c.Status(fiber.StatusOK).JSON(assets)
 	}
 }

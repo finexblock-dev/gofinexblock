@@ -12,6 +12,16 @@ type walletRepository struct {
 	db *gorm.DB
 }
 
+func (w *walletRepository) ScanWalletByCond(tx *gorm.DB, userID, coinID uint) (result *entity.Wallet, err error) {
+	var _wallet *entity.Wallet
+
+	if err = tx.Table(_wallet.TableName()).Where("user_id = ? AND coin_id = ?", userID, coinID).Find(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (w *walletRepository) ScanWithdrawalRequestByCondWithLimitOffset(tx *gorm.DB, coinID uint, status entity.WithdrawalStatus, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
 	var withdrawalRequests []*entity.WithdrawalRequest
 	var table *entity.WithdrawalRequest

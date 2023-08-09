@@ -29,6 +29,7 @@ type Repository interface {
 
 	ScanWalletByCoinID(tx *gorm.DB, coinID uint) (result []*entity.Wallet, err error)
 	ScanWalletByUserID(tx *gorm.DB, userID uint) (result []*entity.Wallet, err error)
+	ScanWalletByCond(tx *gorm.DB, userID, coinID uint) (result *entity.Wallet, err error)
 	GetContractAddressByCoinID(tx *gorm.DB, coinID uint) (result *entity.SmartContract, err error)
 
 	InsertWallet(tx *gorm.DB, wallet *entity.Wallet) (result *entity.Wallet, err error)
@@ -56,6 +57,7 @@ type Repository interface {
 type Service interface {
 	types.Service
 	FindAllUserAssets(id uint) (result []*structs.Asset, err error)
+	FindUserAssetsByCond(userID, coinID uint) (result *structs.Asset, err error)
 	ScanCoinTransferByUser(userID uint, limit, offset int) (result []*entity.CoinTransfer, err error)
 
 	FindBlockchainByName(name string) (result *entity.Blockchain, err error)
