@@ -14,23 +14,20 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type Server struct {
-	health.UnimplementedHealthCheckServer
+type GrpcAPI interface {
+	ProxyHealthCheck() fiber.Handler
+	ProxyWhoAmI() fiber.Handler
 }
 
-func (s *Server) WhoAmI(ctx context.Context, input *health.WhoAmIInput) (*health.WhoAmIOutput, error) {
-	privateIP, err := goaws.OwnPrivateIP()
-	if err != nil {
-		return nil, status.Errorf(codes.Unknown, err.Error())
-	}
-	return &health.WhoAmIOutput{Message: fmt.Sprintf("Hello %s, I am %s", input.Name, privateIP)}, nil
+type GrpcHandler struct {
 }
 
-func (s *Server) Check(ctx context.Context, input *health.HealthCheckInput) (*health.HealthCheckOutput, error) {
-	return &health.HealthCheckOutput{Message: fmt.Sprintf("Hello %s", input.Name)}, nil
+func NewGrpcHandler() *GrpcHandler {
+	return &GrpcHandler{}
 }
 
 // ProxyHealthCheck @ProxyHealthCheck
+//
 //	@description	gRPC Health check in same VPC.
 //	@tags			gRPC
 //	@accept			json
@@ -39,7 +36,7 @@ func (s *Server) Check(ctx context.Context, input *health.HealthCheckInput) (*he
 //	@success		200						{object}	dto.ProxyHealthCheckOutput	"Success"
 //	@failure		400						{object}	presenter.ErrResponse		"Failed"
 //	@router			/gRPC/health [get]
-func ProxyHealthCheck() fiber.Handler {
+func (g *GrpcHandler) ProxyHealthCheck() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var client health.HealthCheckClient
 		var conn *grpc.ClientConn
@@ -74,6 +71,7 @@ func ProxyHealthCheck() fiber.Handler {
 }
 
 // ProxyWhoAmI @ProxyWhoAmI
+//
 //	@description	gRPC Health check in same VPC.
 //	@tags			gRPC
 //	@accept			json
@@ -82,7 +80,7 @@ func ProxyHealthCheck() fiber.Handler {
 //	@success		200					{object}	dto.ProxyWhoAmIOutput	"Success"
 //	@failure		400					{object}	presenter.ErrResponse	"Failed"
 //	@router			/gRPC/whoami [get]
-func ProxyWhoAmI() fiber.Handler {
+func (g *GrpcHandler) ProxyWhoAmI() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var client health.HealthCheckClient
 		var conn *grpc.ClientConn
@@ -114,6 +112,22 @@ func ProxyWhoAmI() fiber.Handler {
 
 		return c.JSON(resp.Message)
 	}
+}
+
+type Server struct {
+	health.UnimplementedHealthCheckServer
+}
+
+func (s *Server) WhoAmI(ctx context.Context, input *health.WhoAmIInput) (*health.WhoAmIOutput, error) {
+	privateIP, err := goaws.OwnPrivateIP()
+	if err != nil {
+		return nil, status.Errorf(codes.Unknown, err.Error())
+	}
+	return &health.WhoAmIOutput{Message: fmt.Sprintf("Hello %s, I am %s", input.Name, privateIP)}, nil
+}
+
+func (s *Server) Check(ctx context.Context, input *health.HealthCheckInput) (*health.HealthCheckOutput, error) {
+	return &health.HealthCheckOutput{Message: fmt.Sprintf("Hello %s", input.Name)}, nil
 }
 
 func NewServer() *Server {

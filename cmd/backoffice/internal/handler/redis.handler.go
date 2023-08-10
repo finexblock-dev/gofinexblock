@@ -10,17 +10,34 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+type RedisAPI interface {
+	XRange() fiber.Handler
+	XInfoStream() fiber.Handler
+	Get() fiber.Handler
+	Set() fiber.Handler
+	Del() fiber.Handler
+	Keys() fiber.Handler
+	DeleteAllRefreshTokens() fiber.Handler
+}
+
+type RedisHandler struct {
+	redisService goredis.Service
+}
+
+func NewRedisHandler(redisService goredis.Service) RedisAPI {
+	return &RedisHandler{redisService: redisService}
+}
+
 // XRange @XRange
-//
-//	@description	XRange command.
-//	@tags			Redis
-//	@accept			json
-//	@produce		json
-//	@param			XRangeInput	query		dto.XRangeInput			true	"XRangeInput"
-//	@success		200			{object}	interface{}				"Success"
-//	@failure		400			{object}	presenter.ErrResponse	"Failed"
-//	@router			/redis/xrange [get]
-func XRange(service goredis.Service) fiber.Handler {
+// @description	XRange command.
+// @tags			Redis
+// @accept			json
+// @produce		json
+// @param			XRangeInput	query		dto.XRangeInput			true	"XRangeInput"
+// @success		200			{object}	interface{}				"Success"
+// @failure		400			{object}	presenter.ErrResponse	"Failed"
+// @router			/redis/xrange [get]
+func (r *RedisHandler) XRange() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var messages []redis.XMessage
 		var query = new(dto.XRangeInput)
@@ -30,7 +47,7 @@ func XRange(service goredis.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseQuery, err)))
 		}
 
-		messages, err = service.XRange(query.Stream, query.Start, query.End)
+		messages, err = r.redisService.XRange(query.Stream, query.Start, query.End)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, err))
 		}
@@ -49,7 +66,7 @@ func XRange(service goredis.Service) fiber.Handler {
 //	@success		200					{object}	interface{}				"Success"
 //	@failure		400					{object}	presenter.ErrResponse	"Failed"
 //	@router			/redis/xinfostream [get]
-func XInfoStream(service goredis.Service) fiber.Handler {
+func (r *RedisHandler) XInfoStream() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var info *redis.XInfoStream
 		var query = new(dto.XInfoStreamInput)
@@ -59,7 +76,7 @@ func XInfoStream(service goredis.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseQuery, err)))
 		}
 
-		info, err = service.XInfoStream(query.Stream)
+		info, err = r.redisService.XInfoStream(query.Stream)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, err))
 		}
@@ -77,7 +94,7 @@ func XInfoStream(service goredis.Service) fiber.Handler {
 //	@success		200			{object}	interface{}				"Success"
 //	@failure		400			{object}	presenter.ErrResponse	"Failed"
 //	@router			/redis/get [get]
-func Get(service goredis.Service) fiber.Handler {
+func (r *RedisHandler) Get() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var query = new(dto.GetInput)
 		var value string
@@ -87,7 +104,7 @@ func Get(service goredis.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseQuery, err)))
 		}
 
-		value, err = service.Get(query.Key)
+		value, err = r.redisService.Get(query.Key)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, err))
 		}
@@ -106,7 +123,7 @@ func Get(service goredis.Service) fiber.Handler {
 //	@success		200			{object}	interface{}				"Success"
 //	@failure		400			{object}	presenter.ErrResponse	"Failed"
 //	@router			/redis/set [post]
-func Set(service goredis.Service) fiber.Handler {
+func (r *RedisHandler) Set() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var body = new(dto.SetInput)
 		var err error
@@ -115,7 +132,7 @@ func Set(service goredis.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseQuery, err)))
 		}
 
-		err = service.Set(body.Key, body.Value, 0)
+		err = r.redisService.Set(body.Key, body.Value, 0)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, err))
 		}
@@ -134,7 +151,7 @@ func Set(service goredis.Service) fiber.Handler {
 //	@success		200			{object}	interface{}				"Success"
 //	@failure		400			{object}	presenter.ErrResponse	"Failed"
 //	@router			/redis/del [delete]
-func Del(service goredis.Service) fiber.Handler {
+func (r *RedisHandler) Del() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var query = new(dto.DelInput)
 		var err error
@@ -143,7 +160,7 @@ func Del(service goredis.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseQuery, err)))
 		}
 
-		err = service.Del(query.Key)
+		err = r.redisService.Del(query.Key)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, err))
 		}
@@ -161,7 +178,7 @@ func Del(service goredis.Service) fiber.Handler {
 // @success		200			{object}	interface{}				"Success"
 // @failure		400			{object}	presenter.ErrResponse	"Failed"
 // @router			/redis/keys [get]
-func Keys(service goredis.Service) fiber.Handler {
+func (r *RedisHandler) Keys() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var query = new(dto.KeysInput)
 		var keys []string
@@ -171,7 +188,7 @@ func Keys(service goredis.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseQuery, err)))
 		}
 
-		keys, err = service.Keys(query.Pattern)
+		keys, err = r.redisService.Keys(query.Pattern)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, err))
 		}
@@ -188,18 +205,18 @@ func Keys(service goredis.Service) fiber.Handler {
 // @success		200			{object}	interface{}				"Success"
 // @failure		400			{object}	presenter.ErrResponse	"Failed"
 // @router			/redis/deleteRefreshToken [delete]
-func DeleteAllRefreshTokens(service goredis.Service) fiber.Handler {
+func (r *RedisHandler) DeleteAllRefreshTokens() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var keys []string
 
-		keys, err = service.Keys("finexblock:refreshToken:*")
+		keys, err = r.redisService.Keys("finexblock:refreshToken:*")
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, err))
 		}
 
 		for _, key := range keys {
-			err = service.Del(key)
+			err = r.redisService.Del(key)
 			if err != nil {
 				return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, err))
 			}
