@@ -1508,12 +1508,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Find asset by cond.
+      description: Find asset by user id.
       parameters:
-      - in: query
-        name: coinId
-        required: true
-        type: integer
       - in: query
         name: userId
         required: true
@@ -1524,7 +1520,9 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/structs.Asset'
+            items:
+              $ref: '#/definitions/structs.Asset'
+            type: array
         "400":
           description: Failed
           schema:
@@ -1560,6 +1558,35 @@ paths:
             items:
               $ref: '#/definitions/entity.CoinTransfer'
             type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Asset
+  /asset/search:
+    get:
+      consumes:
+      - application/json
+      description: Find asset by cond.
+      parameters:
+      - in: query
+        name: coinId
+        required: true
+        type: integer
+      - in: query
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/structs.Asset'
         "400":
           description: Failed
           schema:

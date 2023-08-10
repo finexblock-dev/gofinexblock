@@ -352,6 +352,7 @@ func New(
 		UnimplementedLimitOrderServer:  grpc_order.UnimplementedLimitOrderServer{},
 		UnimplementedMarketOrderServer: grpc_order.UnimplementedMarketOrderServer{},
 		UnimplementedOrderBookServer:   grpc_order.UnimplementedOrderBookServer{},
+		HealthCheckServer:              health.UnimplementedHealthCheckServer{},
 	}
 }
 
