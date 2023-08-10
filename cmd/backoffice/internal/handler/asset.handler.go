@@ -69,7 +69,7 @@ func FindUserBalanceUpdateLog(service wallet.Service) fiber.Handler {
 	}
 }
 
-// FindUserAssetsByCondInput @FindUserAssetsByCondInput
+// FindUserAssetsByCond @FindUserAssetsByCond
 // @description	Find asset by cond.
 // @security		BearerAuth
 // @tags			Asset
@@ -78,8 +78,8 @@ func FindUserBalanceUpdateLog(service wallet.Service) fiber.Handler {
 // @param			wallet.FindUserAssetsByCondInputInput	query		dto.FindUserAssetsByCondInput	true	"FindUserAssetsByCondInputInput"
 // @success		200							{object}	structs.Asset			"Success"
 // @failure		400							{object}	presenter.MsgResponse	"Failed"
-// @router			/asset [get]
-func FindUserAssetsByCondInput(service wallet.Service) fiber.Handler {
+// @router			/asset/search [get]
+func FindUserAssetsByCond(service wallet.Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var query = new(dto.FindUserAssetsByCondInput)
 		var assets = new(structs.Asset)
