@@ -18,4 +18,5 @@ func AssetRouter(router fiber.Router, db *gorm.DB, cluster *redis.ClusterClient)
 
 	SupportRouter(assetRouter, adminService).Get("/", handler.FindUserAssets(walletService))
 	SupportRouter(assetRouter, adminService).Get("/balance/log", handler.FindUserBalanceUpdateLog(walletService))
+	SupportRouter(assetRouter, adminService).Get("/balance", handler.FindUserAssetsByCond(walletService))
 }

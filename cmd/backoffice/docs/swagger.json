@@ -1352,7 +1352,7 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Find asset by cond.",
+                "description": "Find asset by user id.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1365,12 +1365,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "name": "coinId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
                         "name": "userId",
                         "in": "query",
                         "required": true
@@ -1380,7 +1374,10 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/structs.Asset"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/structs.Asset"
+                            }
                         }
                     },
                     "400": {
@@ -1437,6 +1434,53 @@
                             "items": {
                                 "$ref": "#/definitions/entity.CoinTransfer"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/asset/search": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Find asset by cond.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asset"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "coinId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "userId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/structs.Asset"
                         }
                     },
                     "400": {
