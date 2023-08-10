@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"github.com/finexblock-dev/gofinexblock/cmd/backoffice/internal/config"
 	"github.com/finexblock-dev/gofinexblock/cmd/backoffice/internal/handler"
 	"github.com/finexblock-dev/gofinexblock/cmd/backoffice/internal/router"
 	"github.com/finexblock-dev/gofinexblock/pkg/database"
@@ -13,7 +14,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"strings"
 )
 
 func Bootstrap() {
@@ -22,23 +22,17 @@ func Bootstrap() {
 	var db *gorm.DB
 	var cluster *redis.ClusterClient
 
-	//configClient.Credentials(os.Getenv("SECRET_NAME"), configuration)
+	redisCfg := config.RedisConfig()
+	mysqlCfg := config.MySQLConfig()
 
 	if os.Getenv("APPMODE") == "LOCAL" {
-		db = database.GetTunnelledMySQL(
-			os.Getenv("SSH_HOST"),
-			os.Getenv("SSH_USER"),
-			os.Getenv("PEM"),
-			os.Getenv("MYSQL_HOST"),
-			os.Getenv("MYSQL_USER"),
-			os.Getenv("MYSQL_PASS"),
-			os.Getenv("MYSQL_DB"),
-			22,
-			6033,
-		)
+		//configClient.Credentials(os.Getenv("SECRET_NAME"), configuration)
+		sshCfg := config.SSHConfig()
+		db = database.GetTunnelledMySQLV2(sshCfg, mysqlCfg)
+		cluster = database.CreateRedisClusterWithSSH(sshCfg, redisCfg)
 	} else {
 		db = database.CreateMySQLClient(os.Getenv("MYSQL_USER"), os.Getenv("MYSQL_PASS"), os.Getenv("MYSQL_HOST"), os.Getenv("MYSQL_PORT"), os.Getenv("MYSQL_DB"))
-		cluster = database.CreateRedisCluster(strings.Split(os.Getenv("REDIS_HOST"), ","), os.Getenv("REDIS_USER"), os.Getenv("REDIS_PASS"))
+		cluster = database.CreateRedisCluster(redisCfg.RedisHost, redisCfg.RedisUser, redisCfg.RedisPass)
 	}
 
 	go func() {

@@ -18,7 +18,6 @@ func Router(db *gorm.DB, cluster *redis.ClusterClient) *fiber.App {
 		WriteTimeout:       time.Hour,
 		AppName:            "finexblock-backoffice",
 		EnableIPValidation: true,
-		EnablePrintRoutes:  true,
 	})
 
 	app.Use(recover.New()).Use(cors.New()).Use(logger.New())
