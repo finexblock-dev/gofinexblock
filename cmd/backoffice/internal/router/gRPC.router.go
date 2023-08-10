@@ -7,5 +7,9 @@ import (
 
 func GrpcRouter(router fiber.Router) {
 	r := router.Group("/gRPC")
-	r.Get("/health", handler.ProxyHealthCheck())
+
+	grpcHandler := handler.NewGrpcHandler()
+
+	r.Get("/health", grpcHandler.ProxyHealthCheck())
+	r.Get("/whoami", grpcHandler.ProxyWhoAmI())
 }
