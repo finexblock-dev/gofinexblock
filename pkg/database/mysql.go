@@ -10,12 +10,20 @@ import (
 	"time"
 )
 
-func getDSN(user, password, host, port string, name string) string {
-	return fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?parseTime=true", user, password, host, port, name)
+type MySqlConfig struct {
+	MySqlHost string
+	MySqlUser string
+	MySqlPass string
+	MySqlDB   string
+	MySqlPort string
+}
+
+func getMySqlDSN(user, password, host, port, name string) string {
+	return fmt.Sprintf("%v:%v@mysql+tcp(%v:%v)/%v?parseTime=true", user, password, host, port, name)
 }
 
 func getInstance(user, password, host, port string, name string) *gorm.DB {
-	dsn := getDSN(user, password, host, port, name)
+	dsn := getMySqlDSN(user, password, host, port, name)
 	timezone := "Asia/Seoul"
 	_, err := time.LoadLocation(timezone)
 	if err != nil {

@@ -15,8 +15,45 @@ import (
 	"time"
 )
 
+func GetTunnelledMySQLV2(sshCfg *SSHConfig, mysqlCfg *MySqlConfig) *gorm.DB {
+	sshConfig := clientConfig(sshCfg.SSHUser, sshCfg.SSHPem)
+
+	setAgentClient(sshCfg, sshConfig)
+
+	conn := sshConnection(sshCfg, sshConfig)
+
+	gomysql.RegisterDialContext("mysql+tcp", func(ctx context.Context, addr string) (net.Conn, error) {
+		dialer := &ViaSSHDialer{client: conn}
+		return dialer.Dial(addr)
+	})
+
+	dsn := getMySqlDSN(mysqlCfg.MySqlUser, mysqlCfg.MySqlPass, mysqlCfg.MySqlHost, mysqlCfg.MySqlPort, mysqlCfg.MySqlDB)
+	timezone := "Asia/Seoul"
+	_, err := time.LoadLocation(timezone)
+	if err != nil {
+		log.Panicf("Error loading location: %v", err.Error())
+	}
+
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.New(log.New(os.Stdout, "\r\n", log.LstdFlags),
+			logger.Config{
+				LogLevel: logger.Info, // Log level
+				Colorful: true,        // Disable color
+			}),
+		NowFunc: func() time.Time {
+			return time.Now().UTC()
+		},
+	})
+	if err != nil {
+		log.Panicf("Error opening connection: %v", err.Error())
+	}
+	log.Println("GET INSTANCE DONE")
+
+	return db
+}
+
 func GetTunnelledMySQL(sshHost, sshUser, sshPassword, remoteHost, remoteUser, remotePassword, remoteDatabase string, sshPort, remotePort int) *gorm.DB {
-	sshConfig := getSSHConfig(sshUser, sshPassword)
+	sshConfig := clientConfig(sshUser, sshPassword)
 
 	var agentClient agent.Agent
 	// Establish a connection to the local ssh-agent
@@ -53,7 +90,7 @@ func GetTunnelledMySQL(sshHost, sshUser, sshPassword, remoteHost, remoteUser, re
 		return dialer.Dial(addr)
 	})
 
-	dsn := fmt.Sprintf("%v:%v@mysql+tcp(%v:%v)/%v?parseTime=true", remoteUser, remotePassword, remoteHost, remotePort, remoteDatabase)
+	dsn := getMySqlDSN(remoteUser, remotePassword, remoteHost, fmt.Sprintf("%v", remotePort), remoteDatabase)
 	timezone := "Asia/Seoul"
 	_, err = time.LoadLocation(timezone)
 	if err != nil {
