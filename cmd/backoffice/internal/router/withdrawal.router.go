@@ -14,16 +14,17 @@ import (
 func WithdrawalRouter(router fiber.Router, db *gorm.DB, cluster *redis.ClusterClient) {
 	walletService := wallet.NewService(db, cluster)
 	adminService := admin.NewService(db)
+	withdrawalHandler := handler.NewWithdrawalHandler(walletService)
 
 	base := router.Group("/withdraw", middleware.BearerTokenMiddleware(), middleware.AdminApiLogMiddleware(adminService))
 	support := SupportRouter(base, adminService)
 	maintainer := MaintainerRouter(base, adminService)
 
-	support.Get("/", handler.ScanWithdrawalRequestByStatus(walletService))
+	support.Get("/", withdrawalHandler.ScanWithdrawalRequestByStatus())
 
-	maintainer.Get("/user", handler.FindWithdrawalRequestsByUserID(walletService))
+	maintainer.Get("/user", withdrawalHandler.FindWithdrawalRequestsByUserID())
 
-	maintainer.Patch("/reject", handler.RejectWithdrawalRequests(walletService))
+	maintainer.Patch("/reject", withdrawalHandler.RejectWithdrawalRequests())
 
-	maintainer.Patch("/approve", handler.ApproveWithdrawalRequests(walletService))
+	maintainer.Patch("/approve", withdrawalHandler.ApproveWithdrawalRequests())
 }

@@ -8,7 +8,21 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type AuthAPI interface {
+	Register() fiber.Handler
+	Login() fiber.Handler
+}
+
+type AuthHandler struct {
+	authService auth.Service
+}
+
+func NewAuthHandler(authService auth.Service) AuthAPI {
+	return &AuthHandler{authService: authService}
+}
+
 // Register @Register
+//
 //	@description	Register new admin user, only superuser can call this api
 //	@tags			Auth
 //	@accept			json
@@ -17,7 +31,7 @@ import (
 //	@success		201				{object}	presenter.ErrResponse	"Success"
 //	@failure		400				{object}	presenter.ErrResponse	"Failed"
 //	@router			/auth/register [post]
-func Register(service auth.Service) fiber.Handler {
+func (a *AuthHandler) Register() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var body = new(dto.AdminRegisterInput)
 		var err error
@@ -26,7 +40,7 @@ func Register(service auth.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AuthErrResponse(errors.Join(errors.New("invalid request body"), err)))
 		}
 
-		if _, err = service.AdminRegister(body.Email, body.Password); err != nil {
+		if _, err = a.authService.AdminRegister(body.Email, body.Password); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AuthErrResponse(errors.Join(errors.New("failed to register admin"), err)))
 		}
 
@@ -44,7 +58,7 @@ func Register(service auth.Service) fiber.Handler {
 //	@success		200			{object}	dto.LoginOutput			"Success"
 //	@failure		400			{object}	presenter.ErrResponse	"Failed"
 //	@router			/auth/login [post]
-func Login(authService auth.Service) fiber.Handler {
+func (a *AuthHandler) Login() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var body = new(dto.LoginInput)
 		var err error
@@ -54,7 +68,7 @@ func Login(authService auth.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AuthErrResponse(errors.Join(errors.New("invalid request body"), err)))
 		}
 
-		result, err = authService.AdminLogin(body.Email, body.Password)
+		result, err = a.authService.AdminLogin(body.Email, body.Password)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AuthErrResponse(errors.Join(errors.New("invalid email or password"), err)))
 		}

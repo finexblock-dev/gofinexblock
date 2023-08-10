@@ -13,15 +13,16 @@ import (
 func UserRouter(router fiber.Router, db *gorm.DB, cluster *redis.ClusterClient) {
 	userService := user.NewService(db, cluster)
 	adminService := admin.NewService(db)
+	userHandler := handler.NewUserHandler(userService)
 
 	base := router.Group("/user", middleware.BearerTokenMiddleware(), middleware.AdminApiLogMiddleware(adminService))
 	support := SupportRouter(base, adminService)
 	maintainer := MaintainerRouter(base, adminService)
 
-	support.Get("/", handler.FindUserByID(userService))
-	support.Get("/search", handler.SearchUser(userService))
+	support.Get("/", userHandler.FindUserByID())
+	support.Get("/search", userHandler.SearchUser())
 
-	maintainer.Patch("/block", handler.BlockUser(userService))
-	maintainer.Patch("/unblock", handler.UnblockUser(userService))
-	maintainer.Post("/memo", handler.CreateMemo(userService))
+	maintainer.Patch("/block", userHandler.BlockUser())
+	maintainer.Patch("/unblock", userHandler.UnblockUser())
+	maintainer.Post("/memo", userHandler.CreateMemo())
 }

@@ -13,20 +13,21 @@ func AnnouncementRouter(router fiber.Router, db *gorm.DB) {
 
 	announcementService := announcement.NewService(db)
 	adminService := admin.NewService(db)
+	announcementHandler := handler.NewAnnouncementHandler(announcementService)
 
 	base := router.Group("/announcement", middleware.BearerTokenMiddleware(), middleware.AdminApiLogMiddleware(adminService))
 	support := SupportRouter(base, adminService)
 	maintainer := MaintainerRouter(base, adminService)
 
-	support.Get("/", handler.FindAnnouncementByID(announcementService))
-	support.Get("/all", handler.FindAllAnnouncement(announcementService))
-	support.Get("/search", handler.SearchAnnouncement(announcementService))
-	support.Get("/category", handler.FindAllCategory(announcementService))
+	support.Get("/", announcementHandler.FindAnnouncementByID())
+	support.Get("/all", announcementHandler.FindAllAnnouncement())
+	support.Get("/search", announcementHandler.SearchAnnouncement())
+	support.Get("/category", announcementHandler.FindAllCategory())
 
-	maintainer.Post("/", handler.CreateAnnouncement(announcementService))
-	maintainer.Patch("/", handler.UpdateAnnouncement(announcementService))
-	maintainer.Delete("/", handler.DeleteAnnouncement(announcementService))
-	maintainer.Post("/category", handler.CreateCategory(announcementService))
-	maintainer.Patch("/category", handler.UpdateCategory(announcementService))
-	maintainer.Delete("/category", handler.DeleteCategory(announcementService))
+	maintainer.Post("/", announcementHandler.CreateAnnouncement())
+	maintainer.Patch("/", announcementHandler.UpdateAnnouncement())
+	maintainer.Delete("/", announcementHandler.DeleteAnnouncement())
+	maintainer.Post("/category", announcementHandler.CreateCategory())
+	maintainer.Patch("/category", announcementHandler.UpdateCategory())
+	maintainer.Delete("/category", announcementHandler.DeleteCategory())
 }

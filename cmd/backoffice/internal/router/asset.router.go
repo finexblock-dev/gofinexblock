@@ -13,11 +13,12 @@ import (
 func AssetRouter(router fiber.Router, db *gorm.DB, cluster *redis.ClusterClient) {
 	walletService := wallet.NewService(db, cluster)
 	adminService := admin.NewService(db)
+	assetHandler := handler.NewAssetHandler(walletService)
 
 	base := router.Group("/asset", middleware.BearerTokenMiddleware(), middleware.AdminApiLogMiddleware(adminService))
 	support := SupportRouter(base, adminService)
 
-	support.Get("/", handler.FindUserAssets(walletService))
-	support.Get("/balance/log", handler.FindUserBalanceUpdateLog(walletService))
-	support.Get("/search", handler.FindUserAssetsByCond(walletService))
+	support.Get("/", assetHandler.FindUserAssets())
+	support.Get("/balance/log", assetHandler.FindUserBalanceUpdateLog())
+	support.Get("/search", assetHandler.FindUserAssetsByCond())
 }

@@ -13,11 +13,12 @@ import (
 func ImageRouter(router fiber.Router, db *gorm.DB) {
 	imageService := image.NewService(db, os.Getenv("AWS_BUCKET"), os.Getenv("AWS_BASE_PATH"))
 	adminService := admin.NewService(db)
+	imageHandler := handler.NewImageHandler(imageService)
 
 	base := router.Group("/image", middleware.BearerTokenMiddleware(), middleware.AdminApiLogMiddleware(adminService))
 	support := SupportRouter(base, adminService)
 	maintainer := MaintainerRouter(base, adminService)
 
-	support.Get("/", handler.ListImage(imageService))
-	maintainer.Post("/", handler.UploadImage(imageService))
+	support.Get("/", imageHandler.ListImage())
+	maintainer.Post("/", imageHandler.UploadImage())
 }

@@ -12,11 +12,12 @@ import (
 func AuthRouter(router fiber.Router, db *gorm.DB) {
 	authService := auth.NewService(db)
 	adminService := admin.NewService(db)
+	authHandler := handler.NewAuthHandler(authService)
 
 	base := router.Group("/auth")
 
-	base.Post("/login", middleware.LoginMiddleware(adminService), handler.Login(authService))
+	base.Post("/login", middleware.LoginMiddleware(adminService), authHandler.Login())
 
-	//SuperUserRouter(base, adminService).Post("/register", middleware.AdminApiLogMiddleware(adminService), handler.Register(authService))
-	base.Post("/register", handler.Register(authService))
+	//SuperUserRouter(base, adminService).Post("/register", middleware.AdminApiLogMiddleware(adminService), authHandler.Register())
+	base.Post("/register", authHandler.Register())
 }
