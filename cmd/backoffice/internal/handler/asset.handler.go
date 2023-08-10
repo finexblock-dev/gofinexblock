@@ -60,7 +60,7 @@ func FindUserBalanceUpdateLog(service wallet.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AssetErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseQuery, err)))
 		}
 
-		coinTransfers, err = service.ScanCoinTransferByUser(query.UserID, query.Limit, query.Offset)
+		coinTransfers, err = service.ScanCoinTransferByCond(query.UserID, query.CoinID, query.Limit, query.Offset)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AssetErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToScanWallet, err)))
 		}

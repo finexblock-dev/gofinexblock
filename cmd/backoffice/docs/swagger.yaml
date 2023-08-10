@@ -1538,10 +1538,16 @@ paths:
       description: Find user balance update log
       parameters:
       - in: query
+        name: coinId
+        required: true
+        type: integer
+      - default: 20
+        in: query
         name: limit
         required: true
         type: integer
-      - in: query
+      - default: 0
+        in: query
         name: offset
         required: true
         type: integer
