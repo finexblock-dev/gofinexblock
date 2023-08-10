@@ -19,7 +19,7 @@ type MySqlConfig struct {
 }
 
 func getMySqlDSN(user, password, host, port, name string) string {
-	return fmt.Sprintf("%v:%v@mysql+tcp(%v:%v)/%v?parseTime=true", user, password, host, port, name)
+	return fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?parseTime=true", user, password, host, port, name)
 }
 
 func getInstance(user, password, host, port string, name string) *gorm.DB {
