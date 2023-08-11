@@ -1428,6 +1428,15 @@
                         "required": true
                     },
                     {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "transferTypes",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "name": "userId",
                         "in": "query",

@@ -1585,6 +1585,12 @@ paths:
         required: true
         type: integer
       - in: query
+        items:
+          type: string
+        name: transferTypes
+        required: true
+        type: array
+      - in: query
         name: userId
         required: true
         type: integer
