@@ -10,3 +10,10 @@ type MsgResponse struct {
 	Status  bool   `json:"status"`
 	Message string `json:"message"`
 }
+
+func NewErrResponse(err error) *ErrResponse {
+	return &ErrResponse{
+		Status:  false,
+		Message: err.Error(),
+	}
+}
