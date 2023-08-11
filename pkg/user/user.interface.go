@@ -29,6 +29,9 @@ type Repository interface {
 	FindUserDormantByUserID(tx *gorm.DB, userID uint) (result *entity.UserDormant, err error)
 
 	FindUserVerificationByUserID(tx *gorm.DB, userID uint) (result *entity.UserVerification, err error)
+
+	FindAllLoginLogByUserID(tx *gorm.DB, userID uint) (result []*entity.UserLoginLog, err error)
+	FindRecentLoginLogByUserID(tx *gorm.DB, userID uint) (result *entity.UserLoginLog, err error)
 }
 
 type Service interface {

@@ -3455,6 +3455,9 @@
                 "isMetaverseUser": {
                     "type": "boolean"
                 },
+                "lastLogin": {
+                    "type": "string"
+                },
                 "nickname": {
                     "type": "string"
                 },
