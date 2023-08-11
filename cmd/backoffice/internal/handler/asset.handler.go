@@ -68,13 +68,22 @@ func (a *AssetHandler) FindUserBalanceUpdateLog() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var query = new(dto.FindUserBalanceUpdateLogInput)
 		var coinTransfers []*entity.CoinTransfer
+		var transferTypes []entity.TransferType
 		var err error
 
 		if err = c.QueryParser(query); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AssetErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseQuery, err)))
 		}
 
-		coinTransfers, err = a.walletService.ScanCoinTransferByCond(query.UserID, query.CoinID, query.Limit, query.Offset)
+		for _, transferType := range query.TransferTypes {
+			if err = entity.TransferType(transferType).Validate(); err != nil {
+				return c.Status(fiber.StatusBadRequest).JSON(presenter.AssetErrResponse(fiber.StatusBadRequest, err))
+			}
+
+			transferTypes = append(transferTypes, entity.TransferType(transferType))
+		}
+
+		coinTransfers, err = a.walletService.ScanCoinTransferByCond(query.UserID, query.CoinID, transferTypes, query.Limit, query.Offset)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AssetErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToScanWallet, err)))
 		}
