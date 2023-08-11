@@ -476,6 +476,29 @@ definitions:
       url:
         type: string
     type: object
+  entity.OrderMatchingHistory:
+    properties:
+      createdAt:
+        type: string
+      fee:
+        type: number
+      filledQuantity:
+        type: number
+      id:
+        type: integer
+      orderSymbolId:
+        type: integer
+      orderType:
+        $ref: '#/definitions/types.OrderType'
+      orderUUID:
+        type: string
+      unitPrice:
+        type: number
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+    type: object
   entity.PartialAdmin:
     properties:
       createdAt:
@@ -647,6 +670,14 @@ definitions:
     - balance
     - coinId
     type: object
+  types.OrderType:
+    enum:
+    - BID
+    - ASK
+    type: string
+    x-enum-varnames:
+    - Bid
+    - Ask
 info:
   contact: {}
   description: Finexblock backoffice API Documentation
@@ -1926,6 +1957,57 @@ paths:
             $ref: '#/definitions/presenter.ErrResponse'
       tags:
       - Redis
+  /trade/search:
+    get:
+      consumes:
+      - application/json
+      description: Search trade history
+      parameters:
+      - default: "2022-01-01T00:00:00Z"
+        in: query
+        name: endTime
+        type: string
+      - default: 20
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
+      - default: 0
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      - default: 15
+        in: query
+        minimum: 1
+        name: orderSymbolId
+        type: integer
+      - default: "2022-01-01T00:00:00Z"
+        in: query
+        name: startTime
+        type: string
+      - in: query
+        minimum: 1
+        name: userId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/entity.OrderMatchingHistory'
+            type: array
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/presenter.MsgResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Trade
   /user:
     get:
       consumes:

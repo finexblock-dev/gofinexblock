@@ -27,7 +27,7 @@ func GetTunnelledMySQLV2(sshCfg *SSHConfig, mysqlCfg *MySqlConfig) *gorm.DB {
 		return dialer.Dial(addr)
 	})
 
-	dsn := getMySqlDSN(mysqlCfg.MySqlUser, mysqlCfg.MySqlPass, mysqlCfg.MySqlHost, mysqlCfg.MySqlPort, mysqlCfg.MySqlDB)
+	dsn := fmt.Sprintf("%v:%v@mysql+tcp(%v:%v)/%v?parseTime=true", mysqlCfg.MySqlUser, mysqlCfg.MySqlPass, mysqlCfg.MySqlHost, mysqlCfg.MySqlPort, mysqlCfg.MySqlDB)
 	timezone := "Asia/Seoul"
 	_, err := time.LoadLocation(timezone)
 	if err != nil {
