@@ -28,16 +28,15 @@ func NewUserHandler(userService user.Service) *UserHandler {
 }
 
 // FindUserByID @FindUserByID
-//
-//	@description	Find user by user id.
-//	@security		BearerAuth
-//	@tags			User
-//	@accept			json
-//	@produce		json
-//	@param			FindUserByIDInput	query		dto.FindUserByIDInput	true	"FindUserByIDInput"
-//	@success		200					{object}	entity.UserMetadata		"Success"
-//	@failure		400					{object}	presenter.ErrResponse	"Failed"
-//	@router			/user [get]
+// @description	Find user by user id.
+// @security		BearerAuth
+// @tags			User
+// @accept			json
+// @produce		json
+// @param			FindUserByIDInput	query		dto.FindUserByIDInput	true	"FindUserByIDInput"
+// @success		200					{object}	entity.UserMetadata		"Success"
+// @failure		400					{object}	presenter.ErrResponse	"Failed"
+// @router			/user [get]
 func (u *UserHandler) FindUserByID() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
