@@ -60,6 +60,7 @@ func (u *userService) FindUserMetadata(id uint) (result *entity.UserMetadata, er
 		var googleSSO = new(entity.UserSingleSignOnInfo)
 		var dormant = new(entity.UserDormant)
 		var memo = new(entity.UserMemo)
+		var loginLog = new(entity.UserLoginLog)
 		var btcTotal = decimal.Zero
 		result = new(entity.UserMetadata)
 
@@ -155,6 +156,15 @@ func (u *userService) FindUserMetadata(id uint) (result *entity.UserMetadata, er
 			result.IsDormant = true
 		} else {
 			result.IsDormant = false
+		}
+
+		loginLog, err = u.repo.FindRecentLoginLogByUserID(tx, id)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			return err
+		}
+
+		if loginLog != nil {
+			result.LastLogin = loginLog.CreatedAt
 		}
 
 		// Calculate the BTC balance

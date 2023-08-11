@@ -11,6 +11,26 @@ type userRepository struct {
 	db *gorm.DB
 }
 
+func (u *userRepository) FindAllLoginLogByUserID(tx *gorm.DB, userID uint) (result []*entity.UserLoginLog, err error) {
+	var table = new(entity.UserLoginLog)
+
+	if err = tx.Table(table.TableName()).Where("user_id = ?", userID).Find(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (u *userRepository) FindRecentLoginLogByUserID(tx *gorm.DB, userID uint) (result *entity.UserLoginLog, err error) {
+	var table = new(entity.UserLoginLog)
+
+	if err = tx.Table(table.TableName()).Where("user_id = ?", userID).Order("created_at DESC").First(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (u *userRepository) FindUserVerificationByUserID(tx *gorm.DB, userID uint) (result *entity.UserVerification, err error) {
 	if err = tx.Table(result.TableName()).Where("user_id = ?", userID).First(&result).Error; err != nil {
 		return nil, err
