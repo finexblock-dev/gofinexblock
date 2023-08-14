@@ -3,6 +3,7 @@ package order
 import (
 	"github.com/finexblock-dev/gofinexblock/pkg/entity"
 	"github.com/finexblock-dev/gofinexblock/pkg/gen/grpc_order"
+	"github.com/finexblock-dev/gofinexblock/pkg/order/structs"
 	"github.com/finexblock-dev/gofinexblock/pkg/types"
 	"gorm.io/gorm"
 	"time"
@@ -33,12 +34,15 @@ type Repository interface {
 	// BatchUpdateChart(tx *gorm.DB) TODO: implement this
 
 	BatchInsertOrderMatchingHistory(tx *gorm.DB, histories []*entity.OrderMatchingHistory) (err error)
+	SearchOrderMatchingHistory(tx *gorm.DB, input *structs.SearchOrderMatchingHistoryInput) (result []*entity.OrderMatchingHistory, err error)
 
 	BatchInsertOrderMatchingEvent(tx *gorm.DB, events []*entity.OrderMatchingEvent) (err error)
 }
 
 type Service interface {
 	types.Service
+
+	SearchOrderMatchingHistory(input *structs.SearchOrderMatchingHistoryInput) (result []*entity.OrderMatchingHistory, err error)
 
 	InsertSnapshot(symbolID uint, bid, ask []*grpc_order.Order) (result *entity.SnapshotOrderBook, err error)
 	FindSnapshotByOrderSymbolID(symbolID uint) (result *entity.SnapshotOrderBook, err error)

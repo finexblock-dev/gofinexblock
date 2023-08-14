@@ -4,10 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/finexblock-dev/gofinexblock/pkg/cache"
 	"github.com/finexblock-dev/gofinexblock/pkg/entity"
 	"github.com/finexblock-dev/gofinexblock/pkg/gen/grpc_order"
+	"github.com/finexblock-dev/gofinexblock/pkg/order/structs"
 	"github.com/finexblock-dev/gofinexblock/pkg/types"
 	"github.com/finexblock-dev/gofinexblock/pkg/user"
 	"github.com/shopspring/decimal"
@@ -19,6 +21,18 @@ import (
 type orderService struct {
 	orderRepository Repository
 	userRepository  user.Repository
+}
+
+func (o *orderService) SearchOrderMatchingHistory(input *structs.SearchOrderMatchingHistoryInput) (result []*entity.OrderMatchingHistory, err error) {
+	if err = o.Conn().Transaction(func(tx *gorm.DB) error {
+		result, err = o.orderRepository.SearchOrderMatchingHistory(tx, input)
+		return err
+	}, &sql.TxOptions{Isolation: sql.LevelReadCommitted}); err != nil {
+		var msg = errors.New("failed to get order matching history")
+		return nil, errors.Join(msg, err)
+	}
+
+	return result, nil
 }
 
 func (o *orderService) MarketOrderMatchingInBatch(event []*grpc_order.MarketOrderMatching) (err error) {

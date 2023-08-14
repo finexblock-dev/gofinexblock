@@ -88,9 +88,9 @@ func (w *walletService) ScanWithdrawalRequestByUser(userID, coinID uint, limit, 
 	return result, nil
 }
 
-func (w *walletService) ScanCoinTransferByCond(userID, coinID uint, limit, offset int) (result []*entity.CoinTransfer, err error) {
+func (w *walletService) ScanCoinTransferByCond(userID, coinID uint, transferTypes []entity.TransferType, limit, offset int) (result []*entity.CoinTransfer, err error) {
 	if err = w.Conn().Transaction(func(tx *gorm.DB) error {
-		result, err = w.walletRepository.ScanCoinTransferByCond(tx, userID, coinID, limit, offset)
+		result, err = w.walletRepository.ScanCoinTransferByCond(tx, userID, coinID, transferTypes, limit, offset)
 		return err
 	}, &sql.TxOptions{ReadOnly: true}); err != nil {
 		return nil, err

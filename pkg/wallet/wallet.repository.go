@@ -85,11 +85,12 @@ func (w *walletRepository) ScanWithdrawalRequestByUser(tx *gorm.DB, userID, coin
 	return result, nil
 }
 
-func (w *walletRepository) ScanCoinTransferByCond(tx *gorm.DB, userID, coinID uint, limit, offset int) (result []*entity.CoinTransfer, err error) {
+func (w *walletRepository) ScanCoinTransferByCond(tx *gorm.DB, userID, coinID uint, transferTypes []entity.TransferType, limit, offset int) (result []*entity.CoinTransfer, err error) {
 	var _coinTransfer *entity.CoinTransfer
 	var query *gorm.DB
 
-	query = tx.Table(_coinTransfer.Alias()).Joins("JOIN wallet w ON w.id = ct.id").Where("w.user_id = ? AND w.coin_id = ?", userID, coinID)
+	query = tx.Table(_coinTransfer.Alias()).Joins("JOIN wallet w ON w.id = ct.wallet_id").
+		Where("w.user_id = ? AND w.coin_id = ?", userID, coinID).Where("ct.transfer_type IN ?", transferTypes)
 
 	if limit > 0 {
 		query = query.Limit(limit)

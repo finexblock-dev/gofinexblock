@@ -11,18 +11,33 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type UserAPI interface {
+	FindUserByID() fiber.Handler
+	SearchUser() fiber.Handler
+	BlockUser() fiber.Handler
+	UnblockUser() fiber.Handler
+	CreateMemo() fiber.Handler
+}
+
+type UserHandler struct {
+	userService user.Service
+}
+
+func NewUserHandler(userService user.Service) *UserHandler {
+	return &UserHandler{userService: userService}
+}
+
 // FindUserByID @FindUserByID
-//
-//	@description	Find user by user id.
-//	@security		BearerAuth
-//	@tags			User
-//	@accept			json
-//	@produce		json
-//	@param			FindUserByIDInput	query		dto.FindUserByIDInput	true	"FindUserByIDInput"
-//	@success		200					{object}	entity.UserMetadata		"Success"
-//	@failure		400					{object}	presenter.ErrResponse	"Failed"
-//	@router			/user [get]
-func FindUserByID(service user.Service) fiber.Handler {
+// @description	Find user by user id.
+// @security		BearerAuth
+// @tags			User
+// @accept			json
+// @produce		json
+// @param			FindUserByIDInput	query		dto.FindUserByIDInput	true	"FindUserByIDInput"
+// @success		200					{object}	entity.UserMetadata		"Success"
+// @failure		400					{object}	presenter.ErrResponse	"Failed"
+// @router			/user [get]
+func (u *UserHandler) FindUserByID() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var query = new(dto.FindUserByIDInput)
@@ -32,7 +47,7 @@ func FindUserByID(service user.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseQuery, err)))
 		}
 
-		result, err = service.FindUserMetadata(query.UserID)
+		result, err = u.userService.FindUserMetadata(query.UserID)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToFindUser, err)))
 		}
@@ -51,7 +66,7 @@ func FindUserByID(service user.Service) fiber.Handler {
 // @success		200				{object}	[]entity.UserMetadata	"Success"
 // @failure		400				{object}	presenter.ErrResponse	"Failed"
 // @router			/user/search [get]
-func SearchUser(service user.Service) fiber.Handler {
+func (u *UserHandler) SearchUser() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var query = new(dto.SearchUserInput)
@@ -81,7 +96,7 @@ func SearchUser(service user.Service) fiber.Handler {
 			Offset:          query.Offset,
 		}
 
-		result, err = service.SearchUser(input)
+		result, err = u.userService.SearchUser(input)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToSearchUser, err)))
 		}
@@ -100,7 +115,7 @@ func SearchUser(service user.Service) fiber.Handler {
 // @success		200				{object}	presenter.MsgResponse	"Success"
 // @failure		400				{object}	presenter.ErrResponse	"Failed"
 // @router			/user/block [patch]
-func BlockUser(service user.Service) fiber.Handler {
+func (u *UserHandler) BlockUser() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var body = new(dto.BlockUserInput)
@@ -108,7 +123,7 @@ func BlockUser(service user.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseBody, err)))
 		}
 
-		err = service.BlockUser(body.UserID)
+		err = u.userService.BlockUser(body.UserID)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToBlockUser, err)))
 		}
@@ -127,7 +142,7 @@ func BlockUser(service user.Service) fiber.Handler {
 //	@success		200					{object}	presenter.MsgResponse	"Success"
 //	@failure		400					{object}	presenter.ErrResponse	"Failed"
 //	@router			/user/unblock [patch]
-func UnblockUser(service user.Service) fiber.Handler {
+func (u *UserHandler) UnblockUser() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var body = new(dto.BlockUserInput)
@@ -135,7 +150,7 @@ func UnblockUser(service user.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseBody, err)))
 		}
 
-		err = service.UnBlockUser(body.UserID)
+		err = u.userService.UnBlockUser(body.UserID)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToBlockUser, err)))
 		}
@@ -154,7 +169,7 @@ func UnblockUser(service user.Service) fiber.Handler {
 //	@success		200				{object}	presenter.MsgResponse	"Success"
 //	@failure		400				{object}	presenter.ErrResponse	"Failed"
 //	@router			/user/memo [post]
-func CreateMemo(service user.Service) fiber.Handler {
+func (u *UserHandler) CreateMemo() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var body = new(dto.CreateMemoInput)
@@ -163,7 +178,7 @@ func CreateMemo(service user.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToParseBody, err)))
 		}
 
-		err = service.CreateMemo(body.UserID, body.Description)
+		err = u.userService.CreateMemo(body.UserID, body.Description)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.UserErrResponse(fiber.StatusBadRequest, errors.Join(types.ErrFailedToCreateMemo, err)))
 		}

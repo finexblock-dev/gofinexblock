@@ -45,6 +45,9 @@ func Router(db *gorm.DB, cluster *redis.ClusterClient) *fiber.App {
 	RedisRouter(app, cluster)
 
 	GrpcRouter(app)
+
+	TradeRouter(app, db, cluster)
+
 	return app
 }
 

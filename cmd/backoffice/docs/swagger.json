@@ -1428,6 +1428,15 @@
                         "required": true
                     },
                     {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "transferTypes",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "name": "userId",
                         "in": "query",
@@ -2003,6 +2012,84 @@
                         "description": "Failed",
                         "schema": {
                             "$ref": "#/definitions/presenter.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/trade/search": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Search trade history",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trade"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "2022-01-01T00:00:00Z",
+                        "name": "endTime",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 15,
+                        "name": "orderSymbolId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "2022-01-01T00:00:00Z",
+                        "name": "startTime",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "userId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.OrderMatchingHistory"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.MsgResponse"
                         }
                     }
                 }
@@ -3234,6 +3321,41 @@
                 }
             }
         },
+        "entity.OrderMatchingHistory": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "fee": {
+                    "type": "number"
+                },
+                "filledQuantity": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "orderSymbolId": {
+                    "type": "integer"
+                },
+                "orderType": {
+                    "$ref": "#/definitions/types.OrderType"
+                },
+                "orderUUID": {
+                    "type": "string"
+                },
+                "unitPrice": {
+                    "type": "number"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
         "entity.PartialAdmin": {
             "type": "object",
             "properties": {
@@ -3341,6 +3463,9 @@
                 },
                 "isMetaverseUser": {
                     "type": "boolean"
+                },
+                "lastLogin": {
+                    "type": "string"
                 },
                 "nickname": {
                     "type": "string"
@@ -3483,6 +3608,17 @@
                     "type": "integer"
                 }
             }
+        },
+        "types.OrderType": {
+            "type": "string",
+            "enum": [
+                "BID",
+                "ASK"
+            ],
+            "x-enum-varnames": [
+                "Bid",
+                "Ask"
+            ]
         }
     },
     "securityDefinitions": {

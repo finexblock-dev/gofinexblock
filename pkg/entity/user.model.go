@@ -44,6 +44,7 @@ type UserMetadata struct {
 	IsGoogleUser      bool            `json:"isGoogleUser" query:"isGoogleUser"`
 	IsAppleUser       bool            `json:"isAppleUser" query:"isAppleUser"`
 	IsEmailSignUpUser bool            `json:"isEmailSignUpUser" query:"isEmailSignUpUser"`
+	LastLogin         time.Time       `json:"lastLogin" query:"lastLogin"`
 	CreatedAt         time.Time       `json:"createdAt" query:"createdAt"`
 	UpdatedAt         time.Time       `json:"updatedAt" query:"updatedAt"`
 	UserMemo          *UserMemo       `json:"userMemo" query:"userMemo"`

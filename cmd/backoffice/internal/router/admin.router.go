@@ -11,29 +11,34 @@ import (
 func AdminRouter(router fiber.Router, db *gorm.DB) {
 
 	adminService := admin.NewService(db)
+	adminHandler := handler.NewAdminHandler(adminService)
 
 	adminRouter := router.Group("/admin", middleware.BearerTokenMiddleware(), middleware.AdminApiLogMiddleware(adminService))
 
+	support := SupportRouter(adminRouter, adminService)
+	maintainer := MaintainerRouter(adminRouter, adminService)
+	superUser := SuperUserRouter(adminRouter, adminService)
+
 	// Apis for allowed to all admin
-	SupportRouter(adminRouter, adminService).Get("/", handler.FindAllAdmin(adminService))
-	SupportRouter(adminRouter, adminService).Get("/online", handler.FindOnlineAdmin(adminService))
-	SupportRouter(adminRouter, adminService).Get("/grade", handler.FindAdminByGrade(adminService))
+	support.Get("/", adminHandler.FindAllAdmin())
+	support.Get("/online", adminHandler.FindOnlineAdmin())
+	support.Get("/grade", adminHandler.FindAdminByGrade())
 
-	SupportRouter(adminRouter, adminService).Get("/log/failed", handler.FindLoginFailedLog(adminService))
-	SupportRouter(adminRouter, adminService).Get("/log/login", handler.FindLoginHistory(adminService))
+	support.Get("/log/failed", adminHandler.FindLoginFailedLog())
+	support.Get("/log/login", adminHandler.FindLoginHistory())
 
-	SupportRouter(adminRouter, adminService).Get("/log/api/search", handler.SearchApiLog(adminService))
-	SupportRouter(adminRouter, adminService).Get("/log/grade/search", handler.SearchGradeUpdateLog(adminService))
-	SupportRouter(adminRouter, adminService).Get("/log/password/search", handler.SearchPasswordUpdateLog(adminService))
-	SupportRouter(adminRouter, adminService).Get("/log/delete/search", handler.SearchDeleteLog(adminService))
+	support.Get("/log/api/search", adminHandler.SearchApiLog())
+	support.Get("/log/grade/search", adminHandler.SearchGradeUpdateLog())
+	support.Get("/log/password/search", adminHandler.SearchPasswordUpdateLog())
+	support.Get("/log/delete/search", adminHandler.SearchDeleteLog())
 
 	// Apis for allowed to maintainers
-	MaintainerRouter(adminRouter, adminService).Patch("/block", handler.BlockAdmin(adminService))
-	MaintainerRouter(adminRouter, adminService).Patch("/unblock", handler.UnblockAdmin(adminService))
-	MaintainerRouter(adminRouter, adminService).Patch("/password", handler.UpdatePassword(adminService))
-	MaintainerRouter(adminRouter, adminService).Patch("/email", handler.UpdateEmail(adminService))
-	MaintainerRouter(adminRouter, adminService).Patch("/grade", middleware.AdminGradeUpdateLogMiddleware(adminService), handler.UpdateGrade(adminService))
+	maintainer.Patch("/block", adminHandler.BlockAdmin())
+	maintainer.Patch("/unblock", adminHandler.UnblockAdmin())
+	maintainer.Patch("/password", adminHandler.UpdatePassword())
+	maintainer.Patch("/email", adminHandler.UpdateEmail())
+	maintainer.Patch("/grade", middleware.AdminGradeUpdateLogMiddleware(adminService), adminHandler.UpdateGrade())
 
 	// Apis for allowed to superusers
-	SuperUserRouter(adminRouter, adminService).Delete("/", middleware.AdminDeleteLogMiddleware(adminService), handler.DeleteAdmin(adminService))
+	superUser.Delete("/", middleware.AdminDeleteLogMiddleware(adminService), adminHandler.DeleteAdmin())
 }
