@@ -10,7 +10,9 @@ import (
 	"github.com/finexblock-dev/gofinexblock/cmd/polygon_key/internal/config"
 	geth "github.com/finexblock-dev/gofinexblock/pkg/ethereum"
 	"github.com/finexblock-dev/gofinexblock/pkg/ethereum/hdwallet"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/health"
 	"github.com/finexblock-dev/gofinexblock/pkg/gen/polygon"
+	"github.com/finexblock-dev/gofinexblock/pkg/goaws"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -25,28 +27,19 @@ type PolygonKey struct {
 
 	polygon.UnimplementedHDWalletServer
 	polygon.UnimplementedTransactionServer
+	health.UnimplementedHealthCheckServer
 }
 
-func NewPolygonKey(cfg *config.PolygonKeyConfiguration) (*PolygonKey, error) {
-	endpoint := fmt.Sprintf("https://%v/%v", cfg.Endpoint, cfg.Token)
-	master := fmt.Sprintf("%v%v", cfg.First, cfg.Second)
+func (e *PolygonKey) Check(ctx context.Context, input *health.HealthCheckInput) (*health.HealthCheckOutput, error) {
+	return &health.HealthCheckOutput{Message: fmt.Sprintf("Hello %s", input.Name)}, nil
+}
 
-	conn, err := geth.NewService(endpoint, master)
+func (e *PolygonKey) WhoAmI(ctx context.Context, input *health.WhoAmIInput) (*health.WhoAmIOutput, error) {
+	privateIP, err := goaws.OwnPrivateIP()
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Unknown, err.Error())
 	}
-
-	// Get seed from mnemonic
-	wallet, err := geth.HDWallet(master)
-	if err != nil {
-		return nil, err
-	}
-	return &PolygonKey{
-		gethClient:                     conn,
-		master:                         wallet,
-		UnimplementedHDWalletServer:    polygon.UnimplementedHDWalletServer{},
-		UnimplementedTransactionServer: polygon.UnimplementedTransactionServer{},
-	}, nil
+	return &health.WhoAmIOutput{Message: fmt.Sprintf("Hello %s, I am %s", input.Name, privateIP)}, nil
 }
 
 func (e *PolygonKey) Listen(gRPCServer *grpc.Server, port string) {
@@ -63,6 +56,7 @@ func (e *PolygonKey) Listen(gRPCServer *grpc.Server, port string) {
 func (e *PolygonKey) Register(grpcServer *grpc.Server) {
 	polygon.RegisterTransactionServer(grpcServer, e)
 	polygon.RegisterHDWalletServer(grpcServer, e)
+	health.RegisterHealthCheckServer(grpcServer, e)
 }
 
 // CreateWallet for user
@@ -195,6 +189,11 @@ func (e *PolygonKey) GetBlocks(ctx context.Context, input *polygon.GetBlocksInpu
 	}, nil
 }
 
+func (e *PolygonKey) mustEmbedUnimplementedHealthCheckServer() {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (e *PolygonKey) mustEmbedUnimplementedTransactionServer() {
 	//TODO implement me
 	panic("implement me")
@@ -203,4 +202,26 @@ func (e *PolygonKey) mustEmbedUnimplementedTransactionServer() {
 func (e *PolygonKey) mustEmbedUnimplementedWalletServer() {
 	//TODO implement me
 	panic("implement me")
+}
+
+func NewPolygonKey(cfg *config.PolygonKeyConfiguration) (*PolygonKey, error) {
+	endpoint := fmt.Sprintf("https://%v/%v", cfg.Endpoint, cfg.Token)
+	master := fmt.Sprintf("%v%v", cfg.First, cfg.Second)
+
+	conn, err := geth.NewService(endpoint, master)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get seed from mnemonic
+	wallet, err := geth.HDWallet(master)
+	if err != nil {
+		return nil, err
+	}
+	return &PolygonKey{
+		gethClient:                     conn,
+		master:                         wallet,
+		UnimplementedHDWalletServer:    polygon.UnimplementedHDWalletServer{},
+		UnimplementedTransactionServer: polygon.UnimplementedTransactionServer{},
+	}, nil
 }

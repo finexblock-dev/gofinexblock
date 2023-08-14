@@ -12,6 +12,37 @@ type walletRepository struct {
 	db *gorm.DB
 }
 
+func (w *walletRepository) ScanWalletByCond(tx *gorm.DB, userID, coinID uint) (result *entity.Wallet, err error) {
+	var _wallet *entity.Wallet
+
+	if err = tx.Table(_wallet.TableName()).Where("user_id = ? AND coin_id = ?", userID, coinID).Find(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (w *walletRepository) ScanWithdrawalRequestByCondWithLimitOffset(tx *gorm.DB, coinID uint, status entity.WithdrawalStatus, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
+	var withdrawalRequests []*entity.WithdrawalRequest
+	var table *entity.WithdrawalRequest
+
+	err = tx.Table(table.TableName()).
+		Select("withdrawal_request.*").
+		Joins("join coin_transfer on coin_transfer.id = withdrawal_request.coin_transfer_id").
+		Joins("join wallet on wallet.id = coin_transfer.wallet_id").
+		Where("wallet.coin_id = ?", coinID).
+		Where("withdrawal_request.status = ?", status).
+		Limit(limit).
+		Offset(offset).
+		Find(&withdrawalRequests).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return withdrawalRequests, nil
+}
+
 func (w *walletRepository) ScanWithdrawalRequestByStatusWithLimitOffset(tx *gorm.DB, status entity.WithdrawalStatus, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
 	var table *entity.WithdrawalRequest
 	var query = tx.Table(table.TableName()).Where("status = ?", status)
@@ -31,13 +62,13 @@ func (w *walletRepository) ScanWithdrawalRequestByStatusWithLimitOffset(tx *gorm
 	return result, nil
 }
 
-func (w *walletRepository) ScanWithdrawalRequestByUser(tx *gorm.DB, userID uint, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
+func (w *walletRepository) ScanWithdrawalRequestByUser(tx *gorm.DB, userID, coinID uint, limit, offset int) (result []*entity.WithdrawalRequest, err error) {
 	var _withdrawalRequest *entity.WithdrawalRequest
 	var query *gorm.DB
 
 	query = tx.Table(_withdrawalRequest.Alias()).
 		Joins("JOIN coin_transfer ct ON ct.id = wr.coin_transfer_id").
-		Joins("JOIN wallet w ON w.id = ct.wallet_id AND w.user_id = ?", userID)
+		Joins("JOIN wallet w ON w.id = ct.wallet_id AND w.user_id = ? AND w.coin_id = ?", userID, coinID)
 
 	if limit > 0 {
 		query = query.Limit(limit)
@@ -54,11 +85,12 @@ func (w *walletRepository) ScanWithdrawalRequestByUser(tx *gorm.DB, userID uint,
 	return result, nil
 }
 
-func (w *walletRepository) ScanCoinTransferByUserID(tx *gorm.DB, userID uint, limit, offset int) (result []*entity.CoinTransfer, err error) {
+func (w *walletRepository) ScanCoinTransferByCond(tx *gorm.DB, userID, coinID uint, transferTypes []entity.TransferType, limit, offset int) (result []*entity.CoinTransfer, err error) {
 	var _coinTransfer *entity.CoinTransfer
 	var query *gorm.DB
 
-	query = tx.Table(_coinTransfer.Alias()).Joins("JOIN wallet w ON w.id = ct.id AND w.user_id = ?", userID)
+	query = tx.Table(_coinTransfer.Alias()).Joins("JOIN wallet w ON w.id = ct.wallet_id").
+		Where("w.user_id = ? AND w.coin_id = ?", userID, coinID).Where("ct.transfer_type IN ?", transferTypes)
 
 	if limit > 0 {
 		query = query.Limit(limit)

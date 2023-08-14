@@ -3,12 +3,49 @@ package order
 import (
 	"database/sql"
 	"github.com/finexblock-dev/gofinexblock/pkg/entity"
+	"github.com/finexblock-dev/gofinexblock/pkg/order/structs"
 	"github.com/finexblock-dev/gofinexblock/pkg/types"
 	"gorm.io/gorm"
 )
 
 type orderRepository struct {
 	db *gorm.DB
+}
+
+func (o *orderRepository) SearchOrderMatchingHistory(tx *gorm.DB, input *structs.SearchOrderMatchingHistoryInput) (result []*entity.OrderMatchingHistory, err error) {
+	var _table *entity.OrderMatchingHistory
+
+	var query = tx.Table(_table.TableName())
+
+	if input.OrderSymbolID != 0 {
+		query.Where("order_symbol_id = ?", input.OrderSymbolID)
+	}
+
+	if input.UserID != 0 {
+		query.Where("user_id = ?", input.UserID)
+	}
+
+	if !input.StartTime.IsZero() {
+		query.Where("created_at >= ?", input.StartTime)
+	}
+
+	if !input.EndTime.IsZero() {
+		query.Where("created_at <= ?", input.EndTime)
+	}
+
+	if input.Limit != 0 {
+		query.Limit(input.Limit)
+	}
+
+	if input.Offset != 0 {
+		query.Offset(input.Offset)
+	}
+
+	if err = query.Find(&result).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (o *orderRepository) FindManySymbolByName(tx *gorm.DB, names []string) (result []*entity.OrderSymbol, err error) {
