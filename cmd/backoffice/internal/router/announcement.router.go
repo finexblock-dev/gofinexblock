@@ -13,21 +13,21 @@ func AnnouncementRouter(router fiber.Router, db *gorm.DB) {
 
 	announcementService := announcement.NewService(db)
 	adminService := admin.NewService(db)
+	announcementHandler := handler.NewAnnouncementHandler(announcementService)
 
-	announcementRouter := router.Group("/announcement", middleware.BearerTokenMiddleware(), middleware.AdminApiLogMiddleware(adminService))
+	base := router.Group("/announcement", middleware.BearerTokenMiddleware(), middleware.AdminApiLogMiddleware(adminService))
+	support := SupportRouter(base, adminService)
+	maintainer := MaintainerRouter(base, adminService)
 
-	SupportRouter(announcementRouter, adminService).Get("/", handler.FindAnnouncementByID(announcementService))
-	SupportRouter(announcementRouter, adminService).Get("/all", handler.FindAllAnnouncement(announcementService))
-	SupportRouter(announcementRouter, adminService).Get("/search", handler.SearchAnnouncement(announcementService))
-	SupportRouter(announcementRouter, adminService).Get("/category", handler.FindAllCategory(announcementService))
+	support.Get("/", announcementHandler.FindAnnouncementByID())
+	support.Get("/all", announcementHandler.FindAllAnnouncement())
+	support.Get("/search", announcementHandler.SearchAnnouncement())
+	support.Get("/category", announcementHandler.FindAllCategory())
 
-	MaintainerRouter(announcementRouter, adminService).Post("/", handler.CreateAnnouncement(announcementService))
-
-	MaintainerRouter(announcementRouter, adminService).Patch("/", handler.UpdateAnnouncement(announcementService))
-
-	MaintainerRouter(announcementRouter, adminService).Delete("/", handler.DeleteAnnouncement(announcementService))
-
-	MaintainerRouter(announcementRouter, adminService).Post("/category", handler.CreateCategory(announcementService))
-	MaintainerRouter(announcementRouter, adminService).Patch("/category", handler.UpdateCategory(announcementService))
-	MaintainerRouter(announcementRouter, adminService).Delete("/category", handler.DeleteCategory(announcementService))
+	maintainer.Post("/", announcementHandler.CreateAnnouncement())
+	maintainer.Patch("/", announcementHandler.UpdateAnnouncement())
+	maintainer.Delete("/", announcementHandler.DeleteAnnouncement())
+	maintainer.Post("/category", announcementHandler.CreateCategory())
+	maintainer.Patch("/category", announcementHandler.UpdateCategory())
+	maintainer.Delete("/category", announcementHandler.DeleteCategory())
 }

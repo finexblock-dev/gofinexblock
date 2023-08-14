@@ -107,70 +107,12 @@ trading server로 부터 지정가/시장가 주문 등록/취소 요청을 받�
 
 오더북을 관리하고, 오더북 조회 및 자체 스냅샷 기능을 제공합니다.
 
-## Packages
+## Refactoring
 
-패키지가 추가되면 README.md에 해당 패키지에 대한 설명을 추가해주세요.
+### 2023-08-11
 
-### [entity](pkg/entity/entity.md)
+#### TODO
 
-### [admin](pkg/admin/admin.md)
-
-### [announcement](pkg/announcement/announcement.md)
-
-### [auth](pkg/auth/auth.md)
-
-### [btcd](pkg/btcd/btcd.md)
-
-### [cache](pkg/cache/cache.md)
-
-### [compiler](pkg/compiler/compiler.md)
-
-### [constant](pkg/constant/constant.md)
-
-### [contracts](pkg/contracts/contracts.md)
-
-### [daemon](pkg/daemon/daemon.md)
-
-### [database](pkg/database/database.md)
-
-### [engine](pkg/engine/engine.md)
-
-### [entity](pkg/entity/entity.md)
-
-### [ethereum](pkg/ethereum/ethereum.md)
-
-### [files](pkg/files/files.md)
-
-### [gen](pkg/gen/gen.md)
-
-### [goaws](pkg/goaws/goaws.md)
-
-### [goredis](pkg/goredis/goredis.md)
-
-### [image](pkg/image/image.md)
-
-### [instance](pkg/instance/instance.md)
-
-### [interceptor](pkg/interceptor/interceptor.md)
-
-### [order](pkg/order/order.md)
-
-### [orderbook](pkg/orderbook/orderbook.md)
-
-### [proto](pkg/proto/proto.md)
-
-### [safety](pkg/safety/safety.md)
-
-### [secure](pkg/secure/secure.md)
-
-### [stream](pkg/stream/stream.md)
-
-### [trade](pkg/trade/trade.md)
-
-### [types](pkg/types/types.md)
-
-### [user](pkg/user/user.md)
-
-### [utils](pkg/utils/utils.md)
-
-### [wallet](pkg/wallet/wallet.md)
+1. 공통으로 사용하는 패키지에서 비즈니스 로직을 제거하고 각 application에서 구현하도록 변경.
+2. 공통으로 사용하는 패키지에서 재사용이 되는 로직들은 합쳐서 하나의 패키지로 사용하도록 변경.
+3. fiber => gin으로 변경(net/http 패키지와 호환)

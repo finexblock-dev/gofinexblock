@@ -11,6 +11,10 @@ type repository struct {
 	cluster *redis.ClusterClient
 }
 
+func (r *repository) Keys(ctx context.Context, pattern string) (result []string, err error) {
+	return r.cluster.Keys(ctx, pattern).Result()
+}
+
 func (r *repository) XRange(ctx context.Context, stream, start, end string) ([]redis.XMessage, error) {
 	return r.cluster.XRange(ctx, stream, start, end).Result()
 }

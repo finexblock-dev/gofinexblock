@@ -10,6 +10,12 @@ type service struct {
 	repository Repository
 }
 
+func (s *service) Keys(pattern string) (result []string, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Hour)
+	defer cancel()
+	return s.repository.Keys(ctx, pattern)
+}
+
 func (s *service) XRange(stream, start, end string) ([]redis.XMessage, error) {
 	return s.repository.XRange(context.Background(), stream, start, end)
 }

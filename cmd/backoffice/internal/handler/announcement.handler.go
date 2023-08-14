@@ -10,6 +10,27 @@ import (
 	_ "github.com/gofiber/fiber/v2"
 )
 
+type AnnouncementAPI interface {
+	FindAllAnnouncement() fiber.Handler
+	FindAnnouncementByID() fiber.Handler
+	SearchAnnouncement() fiber.Handler
+	CreateAnnouncement() fiber.Handler
+	UpdateAnnouncement() fiber.Handler
+	DeleteAnnouncement() fiber.Handler
+	FindAllCategory() fiber.Handler
+	CreateCategory() fiber.Handler
+	UpdateCategory() fiber.Handler
+	DeleteCategory() fiber.Handler
+}
+
+type AnnouncementHandler struct {
+	announcementService announcement.Service
+}
+
+func NewAnnouncementHandler(announcementService announcement.Service) AnnouncementAPI {
+	return &AnnouncementHandler{announcementService: announcementService}
+}
+
 // FindAllAnnouncement @FindAllAnnouncement
 //
 //	@description	Find all announcement.
@@ -21,7 +42,7 @@ import (
 //	@success		200							{object}	[]entity.Announcement			"Success"
 //	@failure		400							{object}	presenter.ErrResponse			"Failed"
 //	@router			/announcement/all [get]
-func FindAllAnnouncement(service announcement.Service) fiber.Handler {
+func (a *AnnouncementHandler) FindAllAnnouncement() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var result []*entity.Announcement
@@ -31,7 +52,7 @@ func FindAllAnnouncement(service announcement.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
-		if result, err = service.FindAllAnnouncement(query.Limit, query.Offset); err != nil {
+		if result, err = a.announcementService.FindAllAnnouncement(query.Limit, query.Offset); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
@@ -50,7 +71,7 @@ func FindAllAnnouncement(service announcement.Service) fiber.Handler {
 //	@success		200							{object}	entity.Announcement				"Success"
 //	@failure		400							{object}	presenter.ErrResponse			"Failed"
 //	@router			/announcement [get]
-func FindAnnouncementByID(service announcement.Service) fiber.Handler {
+func (a *AnnouncementHandler) FindAnnouncementByID() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var query = new(dto.FindAnnouncementByIDInput)
@@ -60,7 +81,7 @@ func FindAnnouncementByID(service announcement.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
-		if result, err = service.FindAnnouncementByID(query.ID); err != nil {
+		if result, err = a.announcementService.FindAnnouncementByID(query.ID); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
@@ -79,7 +100,7 @@ func FindAnnouncementByID(service announcement.Service) fiber.Handler {
 //	@success		200						{object}	[]entity.Announcement		"Success"
 //	@failure		400						{object}	presenter.ErrResponse		"Failed"
 //	@router			/announcement/search [get]
-func SearchAnnouncement(service announcement.Service) fiber.Handler {
+func (a *AnnouncementHandler) SearchAnnouncement() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var query = new(dto.SearchAnnouncementInput)
@@ -99,7 +120,7 @@ func SearchAnnouncement(service announcement.Service) fiber.Handler {
 			Offset:     query.Offset,
 		}
 
-		if result, err = service.SearchAnnouncement(input); err != nil {
+		if result, err = a.announcementService.SearchAnnouncement(input); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
@@ -118,7 +139,7 @@ func SearchAnnouncement(service announcement.Service) fiber.Handler {
 //	@success		200						{object}	presenter.MsgResponse		"Success"
 //	@failure		400						{object}	presenter.ErrResponse		"Failed"
 //	@router			/announcement [post]
-func CreateAnnouncement(service announcement.Service) fiber.Handler {
+func (a *AnnouncementHandler) CreateAnnouncement() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var body = new(dto.CreateAnnouncementInput)
@@ -140,7 +161,7 @@ func CreateAnnouncement(service announcement.Service) fiber.Handler {
 			Pinned:       body.Pinned,
 		}
 
-		if _, err = service.InsertAnnouncement(_announcement); err != nil {
+		if _, err = a.announcementService.InsertAnnouncement(_announcement); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
@@ -159,7 +180,7 @@ func CreateAnnouncement(service announcement.Service) fiber.Handler {
 //	@success		200						{object}	presenter.MsgResponse		"Success"
 //	@failure		400						{object}	presenter.ErrResponse		"Failed"
 //	@router			/announcement [patch]
-func UpdateAnnouncement(service announcement.Service) fiber.Handler {
+func (a *AnnouncementHandler) UpdateAnnouncement() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var body = new(dto.UpdateAnnouncementInput)
@@ -181,7 +202,7 @@ func UpdateAnnouncement(service announcement.Service) fiber.Handler {
 			Pinned:       body.Pinned,
 		}
 
-		if _, err = service.UpdateAnnouncement(body.ID, input); err != nil {
+		if _, err = a.announcementService.UpdateAnnouncement(body.ID, input); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
@@ -201,7 +222,7 @@ func UpdateAnnouncement(service announcement.Service) fiber.Handler {
 //	@success		200						{object}	presenter.MsgResponse		"Success"
 //	@failure		400						{object}	presenter.ErrResponse		"Failed"
 //	@router			/announcement [delete]
-func DeleteAnnouncement(service announcement.Service) fiber.Handler {
+func (a *AnnouncementHandler) DeleteAnnouncement() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var query = new(dto.DeleteAnnouncementInput)
@@ -210,7 +231,7 @@ func DeleteAnnouncement(service announcement.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
-		if err = service.DeleteAnnouncement(query.AnnouncementID); err != nil {
+		if err = a.announcementService.DeleteAnnouncement(query.AnnouncementID); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
@@ -229,7 +250,7 @@ func DeleteAnnouncement(service announcement.Service) fiber.Handler {
 //	@success		200						{object}	[]entity.AnnouncementCategory	"Success"
 //	@failure		400						{object}	presenter.ErrResponse			"Failed"
 //	@router			/announcement/category [get]
-func FindAllCategory(service announcement.Service) fiber.Handler {
+func (a *AnnouncementHandler) FindAllCategory() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var result []*entity.AnnouncementCategory
@@ -239,7 +260,7 @@ func FindAllCategory(service announcement.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
-		if result, err = service.FindAllCategory(query.Limit, query.Offset); err != nil {
+		if result, err = a.announcementService.FindAllCategory(query.Limit, query.Offset); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
@@ -258,7 +279,7 @@ func FindAllCategory(service announcement.Service) fiber.Handler {
 //	@success		200					{object}	presenter.MsgResponse	"Success"
 //	@failure		400					{object}	presenter.ErrResponse	"Failed"
 //	@router			/announcement/category [post]
-func CreateCategory(service announcement.Service) fiber.Handler {
+func (a *AnnouncementHandler) CreateCategory() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var body = new(dto.CreateCategoryInput)
@@ -267,7 +288,7 @@ func CreateCategory(service announcement.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
-		if _, err = service.InsertCategory(body.KoreanType, body.EnglishType, body.ChineseType); err != nil {
+		if _, err = a.announcementService.InsertCategory(body.KoreanType, body.EnglishType, body.ChineseType); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
@@ -287,7 +308,7 @@ func CreateCategory(service announcement.Service) fiber.Handler {
 //	@success		200					{object}	presenter.MsgResponse	"Success"
 //	@failure		400					{object}	presenter.ErrResponse	"Failed"
 //	@router			/announcement/category [patch]
-func UpdateCategory(service announcement.Service) fiber.Handler {
+func (a *AnnouncementHandler) UpdateCategory() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var body = new(dto.UpdateCategoryInput)
@@ -296,7 +317,7 @@ func UpdateCategory(service announcement.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
-		if err = service.UpdateCategory(body.ID, body.KoreanType, body.EnglishType, body.ChineseType); err != nil {
+		if err = a.announcementService.UpdateCategory(body.ID, body.KoreanType, body.EnglishType, body.ChineseType); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
@@ -315,7 +336,7 @@ func UpdateCategory(service announcement.Service) fiber.Handler {
 //	@success		200					{object}	presenter.MsgResponse	"Success"
 //	@failure		400					{object}	presenter.ErrResponse	"Failed"
 //	@router			/announcement/category [delete]
-func DeleteCategory(service announcement.Service) fiber.Handler {
+func (a *AnnouncementHandler) DeleteCategory() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var query = new(dto.DeleteCategoryInput)
@@ -324,7 +345,7 @@ func DeleteCategory(service announcement.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 
-		if err = service.DeleteCategory(query.ID); err != nil {
+		if err = a.announcementService.DeleteCategory(query.ID); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.AnnouncementErrResponse(fiber.StatusBadRequest, err))
 		}
 

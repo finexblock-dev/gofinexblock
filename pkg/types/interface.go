@@ -3,6 +3,8 @@ package types
 import (
 	"context"
 	"database/sql"
+	"database/sql/driver"
+	"encoding/json"
 	"fmt"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -63,4 +65,26 @@ type SingleStreamConsumer interface {
 type MultiStreamConsumer interface {
 	BaseConsumer
 	ReadStreams(streams []Stream, group Group, consumer Consumer, count int64, block time.Duration) ([]redis.XStream, error)
+}
+
+type Metadata map[string]interface{}
+
+func (m Metadata) Value() (driver.Value, error) {
+	if m == nil {
+		return nil, nil
+	}
+	b, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+	return string(b), nil
+}
+
+func (m *Metadata) Scan(value interface{}) error {
+	if value == nil {
+		*m = nil
+		return nil
+	}
+
+	return json.Unmarshal([]byte(fmt.Sprintf("%s", value)), &m)
 }
