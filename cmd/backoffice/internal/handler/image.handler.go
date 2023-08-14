@@ -2,14 +2,27 @@ package handler
 
 import (
 	"errors"
-	"github.com/finexblock-dev/gofinexblock/cmd/backoffice/internal/types"
 	"github.com/finexblock-dev/gofinexblock/cmd/backoffice/internal/handler/dto"
 	"github.com/finexblock-dev/gofinexblock/cmd/backoffice/internal/presenter"
+	"github.com/finexblock-dev/gofinexblock/cmd/backoffice/internal/types"
 	"github.com/finexblock-dev/gofinexblock/pkg/entity"
 	"github.com/finexblock-dev/gofinexblock/pkg/image"
 	"github.com/gofiber/fiber/v2"
 	"mime/multipart"
 )
+
+type ImageAPI interface {
+	UploadImage() fiber.Handler
+	ListImage() fiber.Handler
+}
+
+type ImageHandler struct {
+	imageService image.Service
+}
+
+func NewImageHandler(imageService image.Service) ImageAPI {
+	return &ImageHandler{imageService: imageService}
+}
 
 // UploadImage @UploadImage
 //
@@ -22,7 +35,7 @@ import (
 //	@success		200		{object}	[]entity.Image			"Success"
 //	@failure		400		{object}	presenter.MsgResponse	"Failed"
 //	@router			/image [post]
-func UploadImage(service image.Service) fiber.Handler {
+func (i *ImageHandler) UploadImage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var result []*entity.Image
 		var err error
@@ -33,7 +46,7 @@ func UploadImage(service image.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.ImageErrResponse(errors.Join(types.ErrFailedToParseImages, err)))
 		}
 
-		if result, err = service.UploadFile(files); err != nil {
+		if result, err = i.imageService.UploadFile(files); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.ImageErrResponse(errors.Join(types.ErrFailedToUploadFiles, err)))
 		}
 
@@ -52,7 +65,7 @@ func UploadImage(service image.Service) fiber.Handler {
 //	@success		200				{object}	[]entity.Image			"Success"
 //	@failure		400				{object}	presenter.MsgResponse	"Failed"
 //	@router			/image [get]
-func ListImage(service image.Service) fiber.Handler {
+func (i *ImageHandler) ListImage() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 		var query = new(dto.ListImageInput)
@@ -62,7 +75,7 @@ func ListImage(service image.Service) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.ImageErrResponse(errors.Join(types.ErrFailedToParseQuery, err)))
 		}
 
-		if result, err = service.FindAllImages(query.Limit, query.Offset); err != nil {
+		if result, err = i.imageService.FindAllImages(query.Limit, query.Offset); err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(presenter.ImageErrResponse(errors.Join(err)))
 		}
 

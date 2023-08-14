@@ -11,6 +11,17 @@ import (
 	"time"
 )
 
+type SSHConfig struct {
+	SSHHost string
+	SSHUser string
+	SSHPem  string
+	SSHPort int
+}
+
+func NewSSHConfig(SSHHost string, SSHUser string, SSHPem string, SSHPort int) *SSHConfig {
+	return &SSHConfig{SSHHost: SSHHost, SSHUser: SSHUser, SSHPem: SSHPem, SSHPort: SSHPort}
+}
+
 type ViaSSHDialer struct {
 	client *ssh.Client
 }
@@ -19,21 +30,19 @@ func (d *ViaSSHDialer) Dial(addr string) (net.Conn, error) {
 	return d.client.Dial("tcp", addr)
 }
 
-func unixSSHDial() (agent.Agent, error) {
-	var client agent.Agent
-	conn, err := net.Dial("unix", os.Getenv("SSH_AUTH_SOCK"))
-	if err != nil {
-		log.Fatalf("Failed to unix dial : %v", err)
-	}
-	client = agent.NewClient(conn)
-	return client, nil
+func (d *ViaSSHDialer) SetDeadline(t time.Time) error {
+	return nil
 }
 
-func tcpSSHDial(sshHost string, sshPort int, sshConfig *ssh.ClientConfig) (*ssh.Client, error) {
-	return ssh.Dial("tcp", fmt.Sprintf("%v:%v", sshHost, sshPort), sshConfig)
+func (d *ViaSSHDialer) SetReadDeadline(t time.Time) error {
+	return nil
 }
 
-func getSSHConfig(sshUser, pem string) *ssh.ClientConfig {
+func (d *ViaSSHDialer) SetWriteDeadline(t time.Time) error {
+	return nil
+}
+
+func clientConfig(sshUser, pem string) *ssh.ClientConfig {
 
 	key, err := ioutil.ReadFile(pem)
 	if err != nil {
@@ -54,13 +63,16 @@ func getSSHConfig(sshUser, pem string) *ssh.ClientConfig {
 	}
 }
 
-func getSSHConnection(sshHost, sshUser, sshPassword string, sshPort int) (*ssh.Client, error) {
-	sshConfig := getSSHConfig(sshUser, sshPassword)
-
+func setAgentClient(cfg *SSHConfig, sshConfig *ssh.ClientConfig) {
 	var agentClient agent.Agent
 	// Establish a connection to the local ssh-agent
 	if conn, err := net.Dial("unix", os.Getenv("SSH_AUTH_SOCK")); err == nil {
-		defer conn.Close()
+		defer func(conn net.Conn) {
+			err := conn.Close()
+			if err != nil {
+				log.Fatalf("Failed to close connection")
+			}
+		}(conn)
 
 		// Create a new instance of the ssh agent
 		agentClient = agent.NewClient(conn)
@@ -70,12 +82,20 @@ func getSSHConnection(sshHost, sshUser, sshPassword string, sshPort int) (*ssh.C
 	if agentClient != nil {
 		sshConfig.Auth = append(sshConfig.Auth, ssh.PublicKeysCallback(agentClient.Signers))
 	}
-	// When there's a non empty password add the password AuthMethod
-	if sshPassword != "" {
+
+	// When there's a non-empty password add the password AuthMethod
+	if cfg.SSHPem != "" {
 		sshConfig.Auth = append(sshConfig.Auth, ssh.PasswordCallback(func() (string, error) {
-			return sshPassword, nil
+			return cfg.SSHPem, nil
 		}))
 	}
+}
 
-	return ssh.Dial("tcp", fmt.Sprintf("%v:%v", sshHost, sshPort), sshConfig)
+func sshConnection(cfg *SSHConfig, sshClientConfig *ssh.ClientConfig) *ssh.Client {
+	conn, err := ssh.Dial("tcp", fmt.Sprintf("%v:%v", cfg.SSHHost, cfg.SSHPort), sshClientConfig)
+	if err != nil {
+		log.Fatalf("Failed to dial through tcp : %v", err)
+	}
+
+	return conn
 }

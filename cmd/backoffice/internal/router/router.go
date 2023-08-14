@@ -18,7 +18,6 @@ func Router(db *gorm.DB, cluster *redis.ClusterClient) *fiber.App {
 		WriteTimeout:       time.Hour,
 		AppName:            "finexblock-backoffice",
 		EnableIPValidation: true,
-		EnablePrintRoutes:  true,
 	})
 
 	app.Use(recover.New()).Use(cors.New()).Use(logger.New())
@@ -46,6 +45,9 @@ func Router(db *gorm.DB, cluster *redis.ClusterClient) *fiber.App {
 	RedisRouter(app, cluster)
 
 	GrpcRouter(app)
+
+	TradeRouter(app, db, cluster)
+
 	return app
 }
 
