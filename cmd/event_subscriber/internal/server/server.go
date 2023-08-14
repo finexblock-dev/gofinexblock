@@ -5,13 +5,18 @@ import (
 	"fmt"
 	"github.com/finexblock-dev/gofinexblock/cmd/event_subscriber/internal/channel"
 	"github.com/finexblock-dev/gofinexblock/pkg/gen/grpc_order"
+	"github.com/finexblock-dev/gofinexblock/pkg/gen/health"
+	"github.com/finexblock-dev/gofinexblock/pkg/goaws"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"log"
 	"net"
 )
 
 type Server struct {
 	grpc_order.UnimplementedEventServer
+	health.UnimplementedHealthCheckServer
 
 	balanceUpdate       *channel.BalanceUpdateChannel
 	orderCancellation   *channel.OrderCancellationChannel
@@ -21,6 +26,18 @@ type Server struct {
 	orderInitialize     *channel.OrderInitializeChannel
 	chartDrawer         *channel.ChartDrawerChannel
 	marketOrderMatching *channel.MarketOrderMatchingChannel
+}
+
+func (s *Server) Check(ctx context.Context, input *health.HealthCheckInput) (*health.HealthCheckOutput, error) {
+	return &health.HealthCheckOutput{Message: fmt.Sprintf("Hello %s", input.Name)}, nil
+}
+
+func (s *Server) WhoAmI(ctx context.Context, input *health.WhoAmIInput) (*health.WhoAmIOutput, error) {
+	privateIP, err := goaws.OwnPrivateIP()
+	if err != nil {
+		return nil, status.Errorf(codes.Unknown, err.Error())
+	}
+	return &health.WhoAmIOutput{Message: fmt.Sprintf("Hello %s, I am %s", input.Name, privateIP)}, nil
 }
 
 func (s *Server) Listen(gRPCServer *grpc.Server, port string) {
@@ -36,6 +53,7 @@ func (s *Server) Listen(gRPCServer *grpc.Server, port string) {
 
 func (s *Server) Register(grpcServer *grpc.Server) {
 	grpc_order.RegisterEventServer(grpcServer, s)
+	health.RegisterHealthCheckServer(grpcServer, s)
 }
 
 func NewServer(
@@ -118,3 +136,8 @@ func (s *Server) BalanceUpdateEvent(ctx context.Context, input *grpc_order.Balan
 }
 
 func (s *Server) mustEmbedUnimplementedEventServer() {}
+
+func (s *Server) mustEmbedUnimplementedHealthCheckServer() {
+	//TODO implement me
+	panic("implement me")
+}

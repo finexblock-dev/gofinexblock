@@ -37,3 +37,10 @@ type (
 		Key string `json:"key" validate:"required"`
 	}
 )
+
+type (
+	// KeysInput @KeysInput
+	KeysInput struct {
+		Pattern string `json:"pattern" validate:"required"`
+	}
+)
